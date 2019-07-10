@@ -3,6 +3,10 @@ id = "org.cloudfoundry.bundler"
 name = "Bundler Buildpack"
 version = "{{ .Version }}"
 
+[metadata]
+include_files = ["bin/build","bin/detect","buildpack.toml"]
+pre_package = "./scripts/build.sh"
+
 [[stacks]]
 id = "org.cloudfoundry.stacks.cflinuxfs3"
 
