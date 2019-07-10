@@ -1,5 +1,5 @@
 [buildpack]
-id = "org.cloudfoundry.buildpacks.bundler"
+id = "org.cloudfoundry.bundler"
 name = "Bundler Buildpack"
 version = "0.0.1"
 

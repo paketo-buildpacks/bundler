@@ -1,24 +1,42 @@
 #!/usr/bin/env bash
-set -euo pipefail
+set -eo pipefail
 
-TARGET_OS=${1:-linux}
+cd "$(dirname "${BASH_SOURCE[0]}")/.."
+./scripts/install_tools.sh
 
-cd "$( dirname "${BASH_SOURCE[0]}" )/.."
+PACKAGE_DIR=${PACKAGE_DIR:-"${PWD##*/}_$(openssl rand -hex 4)"}
 
-echo "Target OS is $TARGET_OS"
-echo -n "Creating buildpack directory..."
-bp_dir=/tmp/"${PWD##*/}"_$(openssl rand -hex 12)
-mkdir $bp_dir
-echo "done"
+full_path=$(realpath "$PACKAGE_DIR")
+args=".bin/packager -uncached"
 
-echo -n "Copying buildpack.toml..."
-cp buildpack.toml $bp_dir/buildpack.toml
-echo "done"
-
-# TODO: Update list of built binaries as they are written
-for b in detect build; do
-    echo -n "Building $b..."
-    GOOS=$TARGET_OS go build -o $bp_dir/bin/$b ./cmd/$b
-    echo "done"
+while getopts "acv:" arg
+do
+    case $arg in
+    a) archive=true;;
+    c) cached=true;;
+    v) version="${OPTARG}";;
+    esac
 done
-echo "Buildpack packaged into: $bp_dir"
+
+if [[ ! -z "$cached" ]]; then #package as cached
+    full_path="$full_path-cached"
+    args=".bin/packager"
+fi
+
+if [[ ! -z "$archive" ]]; then #package as archive
+    args="${args} -archive"
+fi
+
+if [[ -z "$version" ]]; then #version not provided, use latest git tag
+    git_tag=$(git describe --abbrev=0 --tags)
+    version=${git_tag:1}
+fi
+
+go run -ldflags="-X main.VersionString=${version}" scripts/template.go
+
+eval "${args}" "${full_path}"
+
+if [[ -n "$BP_REWRITE_HOST" ]]; then
+    sed -i '' -e "s|^uri = \"https:\/\/buildpacks\.cloudfoundry\.org\(.*\)\"$|uri = \"http://$BP_REWRITE_HOST\1\"|g" "$full_path/buildpack.toml"
+fi
+

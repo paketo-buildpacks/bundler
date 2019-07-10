@@ -1,16 +1,12 @@
 package gems_test
 
 import (
-	"os"
 	"path/filepath"
-	"strings"
 	"testing"
 
-	"github.com/cloudfoundry/libcfbuildpack/layers"
-
 	"github.com/buildpack/libbuildpack/buildplan"
+	"github.com/cloudfoundry/bundler-cnb/gems"
 	"github.com/cloudfoundry/libcfbuildpack/test"
-	"bundler-cnb/gems"
 	"github.com/golang/mock/gomock"
 	. "github.com/onsi/gomega"
 	"github.com/sclevine/spec"
@@ -134,78 +130,77 @@ func testGems(t *testing.T, when spec.G, it spec.S) {
 			//	})
 			//})
 
-			when.Focus("the app is not vendored", func() {
-
-				it("contributes gems to the cache layer when included in the build plan", func() {
-					factory.AddBuildPlan(gems.Dependency, buildplan.Dependency{
-						Metadata: buildplan.Metadata{"build": true},
-					})
-
-					contributor, _, err := gems.NewContributor(factory.Build, mockPkgManager)
-					Expect(err).NotTo(HaveOccurred())
-
-					Expect(contributor.Contribute()).To(Succeed())
-
-					layer := factory.Build.Layers.Layer(gems.Dependency)
-
-					defaultGemPath = filepath.Join(layer.Root,)
-					mockPkgManager.EXPECT().Install(layer).Do(func(location string) {
-						test.WriteFile(
-							t,
-							filepath.Join(layer, "Gemfile"), // this should be where gems are written eg GEM_PATH?
-							"some module",
-						)
-					})
-
-					Expect(layer).To(test.HaveLayerMetadata(true, true, false))
-					Expect(filepath.Join(layer.Root, "test_module")).To(BeARegularFile()) // TODO: change this to be correct
-					// Override env variables
-					environmentDefaults := map[string]string{
-						"RAILS_ENV":      "production",
-						"RACK_ENV":       "production",
-						"RAILS_GROUPS":   "assets",
-						"BUNDLE_WITHOUT": "development:test",
-						"BUNDLE_GEMFILE": "Gemfile",
-						"BUNDLE_BIN":     filepath.Join(layer.Root, "binstubs"),
-						"BUNDLE_CONFIG":  filepath.Join(layer.Root, "bundle_config"),
-						"GEM_HOME":       filepath.Join(layer.Root, "gem_home"),
-						"GEM_PATH": strings.Join([]string{
-							filepath.Join(layer.Root, "gem_home"),
-							filepath.Join(layer.Root, "bundler"),
-						}, ":"),
-					}
-
-					for key, value := range environmentDefaults {
-						Expect(layer).To(test.HaveOverrideSharedEnvironment(key,  value))
-					}
-
-
-					Expect(layer).To(test.HaveOverrideSharedEnvironment("NODE_PATH", layer.Root))
-
-					Expect(filepath.Join(factory.Build.Application.Root, "node_gems")).NotTo(BeADirectory())
-				})
-
-				it("contributes gems to the launch layer when included in the build plan", func() {
-					factory.AddBuildPlan(gems.Dependency, buildplan.Dependency{
-						Metadata: buildplan.Metadata{"launch": true},
-					})
-
-					contributor, _, err := gems.NewContributor(factory.Build, mockPkgManager)
-					Expect(err).NotTo(HaveOccurred())
-
-					Expect(contributor.Contribute()).To(Succeed())
-
-					// TODO: add start command
-					Expect(factory.Build.Layers).To(test.HaveLaunchMetadata(layers.Metadata{Processes: []layers.Process{{"", ""}}}))
-
-					layer := factory.Build.Layers.Layer(gems.Dependency)
-					Expect(layer).To(test.HaveLayerMetadata(false, true, true))
-					Expect(filepath.Join(layer.Root, "test_module")).To(BeARegularFile())
-					Expect(layer).To(test.HaveOverrideSharedEnvironment("NODE_PATH", layer.Root))
-
-					Expect(filepath.Join(factory.Build.Application.Root, "node_gems")).NotTo(BeADirectory())
-				})
-			})
+			//when("the app is not vendored", func() {
+			//
+			//	it("contributes gems to the cache layer when included in the build plan", func() {
+			//		factory.AddBuildPlan(gems.Dependency, buildplan.Dependency{
+			//			Metadata: buildplan.Metadata{"build": true},
+			//		})
+			//
+			//		contributor, _, err := gems.NewContributor(factory.Build, mockPkgManager)
+			//		Expect(err).NotTo(HaveOccurred())
+			//
+			//		Expect(contributor.Contribute()).To(Succeed())
+			//
+			//		layer := factory.Build.Layers.Layer(gems.Dependency)
+			//
+			//		defaultGemPath := filepath.Join(layer.Root)
+			//		mockPkgManager.EXPECT().Install(layer).Do(func(location string) {
+			//			test.WriteFile(
+			//				t,
+			//				filepath.Join(layer, "Gemfile"), // this should be where gems are written eg GEM_PATH?
+			//				"some module",
+			//			)
+			//		})
+			//
+			//		Expect(layer).To(test.HaveLayerMetadata(true, true, false))
+			//		Expect(filepath.Join(layer.Root, "test_module")).To(BeARegularFile()) // TODO: change this to be correct
+			//		// Override env variables
+			//		environmentDefaults := map[string]string{
+			//			"RAILS_ENV":      "production",
+			//			"RACK_ENV":       "production",
+			//			"RAILS_GROUPS":   "assets",
+			//			"BUNDLE_WITHOUT": "development:test",
+			//			"BUNDLE_GEMFILE": "Gemfile",
+			//			"BUNDLE_BIN":     filepath.Join(layer.Root, "binstubs"),
+			//			"BUNDLE_CONFIG":  filepath.Join(layer.Root, "bundle_config"),
+			//			"GEM_HOME":       filepath.Join(layer.Root, "gem_home"),
+			//			"GEM_PATH": strings.Join([]string{
+			//				filepath.Join(layer.Root, "gem_home"),
+			//				filepath.Join(layer.Root, "bundler"),
+			//			}, ":"),
+			//		}
+			//
+			//		for key, value := range environmentDefaults {
+			//			Expect(layer).To(test.HaveOverrideSharedEnvironment(key, value))
+			//		}
+			//
+			//		Expect(layer).To(test.HaveOverrideSharedEnvironment("NODE_PATH", layer.Root))
+			//
+			//		Expect(filepath.Join(factory.Build.Application.Root, "node_gems")).NotTo(BeADirectory())
+			//	})
+			//
+			//	it("contributes gems to the launch layer when included in the build plan", func() {
+			//		factory.AddBuildPlan(gems.Dependency, buildplan.Dependency{
+			//			Metadata: buildplan.Metadata{"launch": true},
+			//		})
+			//
+			//		contributor, _, err := gems.NewContributor(factory.Build, mockPkgManager)
+			//		Expect(err).NotTo(HaveOccurred())
+			//
+			//		Expect(contributor.Contribute()).To(Succeed())
+			//
+			//		// TODO: add start command
+			//		Expect(factory.Build.Layers).To(test.HaveLau(layers.Metadata{Processes: []layers.Process{{"", ""}}}))
+			//
+			//		layer := factory.Build.Layers.Layer(gems.Dependency)
+			//		Expect(layer).To(test.HaveLayerMetadata(false, true, true))
+			//		Expect(filepath.Join(layer.Root, "test_module")).To(BeARegularFile())
+			//		Expect(layer).To(test.HaveOverrideSharedEnvironment("NODE_PATH", layer.Root))
+			//
+			//		Expect(filepath.Join(factory.Build.Application.Root, "node_gems")).NotTo(BeADirectory())
+			//	})
+			//})
 		})
 	})
 }
