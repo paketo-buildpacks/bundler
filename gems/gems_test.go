@@ -1,10 +1,10 @@
 package gems_test
 
 import (
+	"github.com/cloudfoundry/libcfbuildpack/buildpackplan"
 	"path/filepath"
 	"testing"
 
-	"github.com/buildpack/libbuildpack/buildplan"
 	"github.com/cloudfoundry/bundler-cnb/gems"
 	"github.com/cloudfoundry/libcfbuildpack/test"
 	"github.com/golang/mock/gomock"
@@ -41,7 +41,9 @@ func testGems(t *testing.T, when spec.G, it spec.S) {
 
 		when("there is no Gemfile.lock", func() {
 			it("fails", func() {
-				factory.AddBuildPlan(gems.Dependency, buildplan.Dependency{})
+				factory.AddPlan(buildpackplan.Plan{
+					Name: gems.Dependency,
+				})
 
 				_, _, err := gems.NewContributor(factory.Build, mockPkgManager)
 				Expect(err).To(HaveOccurred())
@@ -58,7 +60,9 @@ func testGems(t *testing.T, when spec.G, it spec.S) {
 			})
 
 			it("returns true if a build plan exists", func() {
-				factory.AddBuildPlan(gems.Dependency, buildplan.Dependency{})
+				factory.AddPlan(buildpackplan.Plan{
+					Name: gems.Dependency,
+				})
 
 				_, willContribute, err := gems.NewContributor(factory.Build, mockPkgManager)
 				Expect(err).NotTo(HaveOccurred())
@@ -72,7 +76,9 @@ func testGems(t *testing.T, when spec.G, it spec.S) {
 			})
 
 			it("uses Gemfile for identity", func() {
-				factory.AddBuildPlan(gems.Dependency, buildplan.Dependency{})
+				factory.AddPlan(buildpackplan.Plan{
+					Name: gems.Dependency,
+				})
 
 				contributor, _, _ := gems.NewContributor(factory.Build, mockPkgManager)
 				name, version := contributor.Metadata.Identity()
@@ -92,7 +98,7 @@ func testGems(t *testing.T, when spec.G, it spec.S) {
 			//	})
 			//
 			//	it("contributes gems to the cache layer when included in the build plan", func() {
-			//		factory.AddBuildPlan(gems.Dependency, buildplan.Dependency{
+			//		factory.AddPlan(gems.Dependency, buildplan.Dependency{
 			//			Metadata: buildplan.Metadata{"build": true},
 			//		})
 			//
@@ -110,7 +116,7 @@ func testGems(t *testing.T, when spec.G, it spec.S) {
 			//	})
 			//
 			//	it("contributes gems to the launch layer when included in the build plan", func() {
-			//		factory.AddBuildPlan(gems.Dependency, buildplan.Dependency{
+			//		factory.AddPlan(gems.Dependency, buildplan.Dependency{
 			//			Metadata: buildplan.Metadata{"launch": true},
 			//		})
 			//
@@ -133,7 +139,7 @@ func testGems(t *testing.T, when spec.G, it spec.S) {
 			//when("the app is not vendored", func() {
 			//
 			//	it("contributes gems to the cache layer when included in the build plan", func() {
-			//		factory.AddBuildPlan(gems.Dependency, buildplan.Dependency{
+			//		factory.AddPlan(gems.Dependency, buildplan.Dependency{
 			//			Metadata: buildplan.Metadata{"build": true},
 			//		})
 			//
@@ -181,7 +187,7 @@ func testGems(t *testing.T, when spec.G, it spec.S) {
 			//	})
 			//
 			//	it("contributes gems to the launch layer when included in the build plan", func() {
-			//		factory.AddBuildPlan(gems.Dependency, buildplan.Dependency{
+			//		factory.AddPlan(gems.Dependency, buildplan.Dependency{
 			//			Metadata: buildplan.Metadata{"launch": true},
 			//		})
 			//

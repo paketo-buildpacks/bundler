@@ -37,9 +37,9 @@ type Contributor struct {
 }
 
 func NewContributor(context build.Build, pkgManager PackageManager) (Contributor, bool, error) {
-	plan, shouldUseBundler := context.BuildPlan[Dependency]
-	if !shouldUseBundler {
-		return Contributor{}, false, nil
+	plan, shouldUseBundler, err := context.Plans.GetShallowMerged(Dependency)
+	if err != nil || !shouldUseBundler {
+		return Contributor{}, false, err
 	}
 
 	gemFile := filepath.Join(context.Application.Root, "Gemfile")
@@ -64,13 +64,8 @@ func NewContributor(context build.Build, pkgManager PackageManager) (Contributor
 		Metadata:   Metadata{hex.EncodeToString(hash[:])},
 	}
 
-	if _, ok := plan.Metadata["build"]; ok {
-		contributor.buildContribution = true
-	}
-
-	if _, ok := plan.Metadata["launch"]; ok {
-		contributor.launchContribution = true
-	}
+	contributor.buildContribution, _ = plan.Metadata["build"].(bool)
+	contributor.launchContribution, _ = plan.Metadata["launch"].(bool)
 
 	return contributor, true, nil
 }

@@ -50,17 +50,26 @@ func runDetect(context detect.Detect) (int, error) {
 	}
 
 
-	return context.Pass(buildplan.BuildPlan{
-		ruby.Dependency: buildplan.Dependency{
-			Version:  rubyVersion,
-			Metadata: buildplan.Metadata{"build": true, "launch": true},
+	return context.Pass(buildplan.Plan{
+		Requires: []buildplan.Required{
+			{
+				Name:     ruby.Dependency,
+				Version:  rubyVersion,
+				Metadata: buildplan.Metadata{"build": true, "launch": true},
+			},
+			{
+				Name:     bundler.Dependency,
+				Version:  bundlerVersion,
+				Metadata: buildplan.Metadata{"build": true, "launch": true},
+			},
+			{
+				Name:     gems.Dependency,
+				Metadata: buildplan.Metadata{"launch": true},
+			},
 		},
-		bundler.Dependency: buildplan.Dependency{
-			Version:  bundlerVersion,
-			Metadata: buildplan.Metadata{"build": true, "launch": true},
-		},
-		gems.Dependency: buildplan.Dependency{
-			Metadata: buildplan.Metadata{"launch": true},
+		Provides: []buildplan.Provided{
+			{bundler.Dependency},
+			{gems.Dependency},
 		},
 	})
 }

@@ -1,10 +1,9 @@
 package main
 
 import (
+	"fmt"
 	"github.com/cloudfoundry/bundler-cnb/bundler"
 	"github.com/cloudfoundry/bundler-cnb/gems"
-	"fmt"
-	"github.com/buildpack/libbuildpack/buildplan"
 	"github.com/cloudfoundry/libcfbuildpack/build"
 )
 
@@ -26,8 +25,5 @@ func runBuild(context build.Build) (int, error) {
 		}
 	}
 
-	return context.Success(buildplan.BuildPlan{})
-
-
-	return 0, fmt.Errorf("not implemented")
+	return context.Success()
 }

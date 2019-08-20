@@ -72,17 +72,26 @@ BUNDLED WITH
 				code, err := runDetect(factory.Detect)
 				Expect(err).NotTo(HaveOccurred())
 				Expect(code).To(Equal(detect.PassStatusCode))
-				Expect(factory.Output).To(Equal(buildplan.BuildPlan{
-					ruby.Dependency: buildplan.Dependency{
-						Version:  "'~> 3.2','< 3.2.5'",
-						Metadata: buildplan.Metadata{"build": true, "launch": true},
+				Expect(factory.Plans.Plan).To(Equal(buildplan.Plan{
+					Requires: []buildplan.Required{
+						{
+							Name:     ruby.Dependency,
+							Version:  "'~> 3.2','< 3.2.5'",
+							Metadata: buildplan.Metadata{"build": true, "launch": true},
+						},
+						{
+							Name:     bundler.Dependency,
+							Version:  "1.16.4",
+							Metadata: buildplan.Metadata{"build": true, "launch": true},
+						},
+						{
+							Name:     gems.Dependency,
+							Metadata: buildplan.Metadata{"launch": true},
+						},
 					},
-					bundler.Dependency: buildplan.Dependency{
-						Version:  "1.16.4",
-						Metadata: buildplan.Metadata{"build": true, "launch": true},
-					},
-					gems.Dependency: buildplan.Dependency{
-						Metadata: buildplan.Metadata{"launch": true},
+					Provides: []buildplan.Provided{
+						{bundler.Dependency},
+						{gems.Dependency},
 					},
 				}))
 			})
@@ -118,17 +127,26 @@ BUNDLED WITH
 			code, err := runDetect(factory.Detect)
 			Expect(err).NotTo(HaveOccurred())
 			Expect(code).To(Equal(detect.PassStatusCode))
-			Expect(factory.Output).To(Equal(buildplan.BuildPlan{
-				ruby.Dependency: buildplan.Dependency{
-					Version:  "'~> 3.2'",
-					Metadata: buildplan.Metadata{"build": true, "launch": true},
+			Expect(factory.Plans.Plan).To(Equal(buildplan.Plan{
+				Requires: []buildplan.Required{
+					{
+						Name:     ruby.Dependency,
+						Version:  "'~> 3.2'",
+						Metadata: buildplan.Metadata{"build": true, "launch": true},
+					},
+					{
+						Name:     bundler.Dependency,
+						Version:  "2.0.1",
+						Metadata: buildplan.Metadata{"build": true, "launch": true},
+					},
+					{
+						Name:     gems.Dependency,
+						Metadata: buildplan.Metadata{"launch": true},
+					},
 				},
-				bundler.Dependency: buildplan.Dependency{
-					Version:  "2.0.1",
-					Metadata: buildplan.Metadata{"build": true, "launch": true},
-				},
-				gems.Dependency: buildplan.Dependency{
-					Metadata: buildplan.Metadata{"launch": true},
+				Provides: []buildplan.Provided{
+					{bundler.Dependency},
+					{gems.Dependency},
 				},
 			}))
 		})
