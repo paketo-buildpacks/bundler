@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"os"
+	"os/exec"
 	"path/filepath"
 
 	"github.com/buildpack/libbuildpack/buildplan"
@@ -32,6 +33,16 @@ func main() {
 // TODO: implement the following
 // 		- install nodjs, npm, and yarn if needed
 func runDetect(context detect.Detect) (int, error) {
+	// TODO: include to image of cloudfoundry:cnb
+	path, err := exec.LookPath("bundle")
+	if err != nil {
+		_, err := exec.Command("gem", "install", "bundler").Output()
+		if err != nil {
+			return context.Fail(), fmt.Errorf("can't install bundler")
+		}
+
+	}
+
 	gemfile := filepath.Join(context.Application.Root, "Gemfile")
 	if exists, err := helper.FileExists(gemfile); err != nil {
 		return context.Fail(), fmt.Errorf("error checking filepath %s", gemfile)
