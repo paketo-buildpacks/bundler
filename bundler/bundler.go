@@ -24,20 +24,18 @@ func (b Bundler) run(dir string, args ...string) error {
 	return cmd.Run()
 }
 
-
 func GetBundlerVersion(gemFile string) (version string, err error) {
 	return Version(gemFile)
 }
 
-// TODO: depends on the following guarenteee
-// the currently used bundler is a valid dependency in our buildpack.toml
 func Version(gemfile string) (string, error) {
 	dir := filepath.Dir(gemfile)
 	code := `
 stdout, $stdout = $stdout, $stderr
 begin
   def data()
-    return Bundler::VERSION
+    v = Bundler::Dsl.evaluate("Gemfile", 'Gemfile.lock', {}).locked_gems.bundler_version.version
+    v == "" ? Bundler::VERSION : v
   end
   out = data()
   stdout.puts({error:nil, data:out}.to_json)
@@ -54,8 +52,8 @@ end
 		return "", err
 	}
 	output := struct {
-		Error string      `json:"error"`
-		Data  string 	  `json:"data"`
+		Error string `json:"error"`
+		Data  string `json:"data"`
 	}{}
 	if err := json.Unmarshal(body, &output); err != nil {
 		return "", err
