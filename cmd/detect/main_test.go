@@ -1,13 +1,14 @@
 package main
 
 import (
+	"fmt"
+	"path/filepath"
+	"testing"
+
+	"github.com/buildpack/libbuildpack/buildplan"
 	"github.com/cloudfoundry/bundler-cnb/bundler"
 	"github.com/cloudfoundry/bundler-cnb/gems"
 	"github.com/cloudfoundry/bundler-cnb/ruby"
-	"fmt"
-	"github.com/buildpack/libbuildpack/buildplan"
-	"path/filepath"
-	"testing"
 
 	. "github.com/onsi/gomega"
 
@@ -40,8 +41,8 @@ func testDetect(t *testing.T, when spec.G, it spec.S) {
 	})
 
 	when("Gemfile is present", func() {
-		when("Gemfile.lock was bundled with version 1.X.X", func(){
-			it.Before(func(){
+		when("Gemfile.lock was bundled with version 1.X.X", func() {
+			it.Before(func() {
 				GemfileString := fmt.Sprintf(`ruby '~> 3.2', '< 3.2.5'
 
 gem 'uglifier', '>= 1.3.0'`)
@@ -96,14 +97,14 @@ BUNDLED WITH
 				}))
 			})
 		})
-		when("Gemfile.lock was bundled with version 1.X.X", func(){
-		it.Before(func(){
-			GemfileString := fmt.Sprintf(`ruby '~> 3.2'
+		when("Gemfile.lock was bundled with version 1.X.X", func() {
+			it.Before(func() {
+				GemfileString := fmt.Sprintf(`ruby '~> 3.2'
 
 gem 'uglifier', '>= 1.3.0'`)
-			test.WriteFile(t, filepath.Join(factory.Detect.Application.Root, "Gemfile"), GemfileString)
+				test.WriteFile(t, filepath.Join(factory.Detect.Application.Root, "Gemfile"), GemfileString)
 
-			GemfileLockString := fmt.Sprintf(`GEM
+				GemfileLockString := fmt.Sprintf(`GEM
   specs:
     execjs (2.7.0)
     uglifier (3.1.7)
@@ -121,36 +122,36 @@ RUBY VERSION
 BUNDLED WITH
    2.0.1
 `)
-			test.WriteFile(t, filepath.Join(factory.Detect.Application.Root, "Gemfile.lock"), GemfileLockString)
+				test.WriteFile(t, filepath.Join(factory.Detect.Application.Root, "Gemfile.lock"), GemfileLockString)
+			})
+			it("detection succeeds with bundler and ruby versions from the Gemfile.lock", func() {
+				code, err := runDetect(factory.Detect)
+				Expect(err).NotTo(HaveOccurred())
+				Expect(code).To(Equal(detect.PassStatusCode))
+				Expect(factory.Plans.Plan).To(Equal(buildplan.Plan{
+					Requires: []buildplan.Required{
+						{
+							Name:     ruby.Dependency,
+							Version:  "'~> 3.2'",
+							Metadata: buildplan.Metadata{"build": true, "launch": true},
+						},
+						{
+							Name:     bundler.Dependency,
+							Version:  "2.0.1",
+							Metadata: buildplan.Metadata{"build": true, "launch": true},
+						},
+						{
+							Name:     gems.Dependency,
+							Metadata: buildplan.Metadata{"launch": true},
+						},
+					},
+					Provides: []buildplan.Provided{
+						{bundler.Dependency},
+						{gems.Dependency},
+					},
+				}))
+			})
 		})
-		it("detection succeeds with bundler and ruby versions from the Gemfile.lock", func() {
-			code, err := runDetect(factory.Detect)
-			Expect(err).NotTo(HaveOccurred())
-			Expect(code).To(Equal(detect.PassStatusCode))
-			Expect(factory.Plans.Plan).To(Equal(buildplan.Plan{
-				Requires: []buildplan.Required{
-					{
-						Name:     ruby.Dependency,
-						Version:  "'~> 3.2'",
-						Metadata: buildplan.Metadata{"build": true, "launch": true},
-					},
-					{
-						Name:     bundler.Dependency,
-						Version:  "2.0.1",
-						Metadata: buildplan.Metadata{"build": true, "launch": true},
-					},
-					{
-						Name:     gems.Dependency,
-						Metadata: buildplan.Metadata{"launch": true},
-					},
-				},
-				Provides: []buildplan.Provided{
-					{bundler.Dependency},
-					{gems.Dependency},
-				},
-			}))
-		})
-	})
 
 	})
 

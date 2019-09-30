@@ -1,15 +1,16 @@
 package main
 
 import (
+	"fmt"
+	"os"
+	"path/filepath"
+
+	"github.com/buildpack/libbuildpack/buildplan"
 	"github.com/cloudfoundry/bundler-cnb/bundler"
 	"github.com/cloudfoundry/bundler-cnb/gems"
 	"github.com/cloudfoundry/bundler-cnb/ruby"
-	"fmt"
-	"github.com/buildpack/libbuildpack/buildplan"
 	"github.com/cloudfoundry/libcfbuildpack/detect"
 	"github.com/cloudfoundry/libcfbuildpack/helper"
-	"os"
-	"path/filepath"
 )
 
 func main() {
@@ -49,7 +50,6 @@ func runDetect(context detect.Detect) (int, error) {
 		return context.Fail(), fmt.Errorf("unable to resolve bundler version %s", err)
 	}
 
-
 	return context.Pass(buildplan.Plan{
 		Requires: []buildplan.Required{
 			{
@@ -68,8 +68,8 @@ func runDetect(context detect.Detect) (int, error) {
 			},
 		},
 		Provides: []buildplan.Provided{
-			{bundler.Dependency},
-			{gems.Dependency},
+			{Name: bundler.Dependency},
+			{Name: gems.Dependency},
 		},
 	})
 }

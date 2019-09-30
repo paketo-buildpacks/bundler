@@ -17,7 +17,7 @@ func GetRubyVersion(gemFile string) (version string, err error) {
 	}
 
 	for index, str := range constraints {
-		constraints[index] = fmt.Sprintf("'%s'",str)
+		constraints[index] = fmt.Sprintf("'%s'", str)
 	}
 
 	return strings.Join(constraints, ","), nil
@@ -46,8 +46,8 @@ end
 		return []string{}, err
 	}
 	output := struct {
-		Error string      `json:"error"`
-		Data  []string 	  `json:"data"`
+		Error string   `json:"error"`
+		Data  []string `json:"data"`
 	}{}
 	if err := json.Unmarshal(body, &output); err != nil {
 		return []string{}, err
