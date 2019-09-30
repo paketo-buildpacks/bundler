@@ -34,7 +34,7 @@ func main() {
 // 		- install nodjs, npm, and yarn if needed
 func runDetect(context detect.Detect) (int, error) {
 	// TODO: include to image of cloudfoundry:cnb
-	path, err := exec.LookPath("bundle")
+	_, err := exec.LookPath("bundle")
 	if err != nil {
 		_, err := exec.Command("gem", "install", "bundler").Output()
 		if err != nil {
@@ -51,7 +51,6 @@ func runDetect(context detect.Detect) (int, error) {
 	}
 
 	var rubyVersion, bundlerVersion string
-	var err error
 	// update how these are calculated
 	if rubyVersion, err = ruby.GetRubyVersion(gemfile); err != nil {
 		return context.Fail(), fmt.Errorf("unable to resolve ruby version %s", err)

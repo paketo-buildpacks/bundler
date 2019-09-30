@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+
 	"github.com/cloudfoundry/bundler-cnb/bundler"
 	"github.com/cloudfoundry/bundler-cnb/gems"
 	"github.com/cloudfoundry/libcfbuildpack/build"
@@ -13,15 +14,25 @@ func main() {
 
 func runBuild(context build.Build) (int, error) {
 	context.Logger.FirstLine(context.Logger.PrettyIdentity(context.Buildpack))
-
-	contributor, willContribute, err := gems.NewContributor(context, bundler.Bundler{})
+	bundlerContributor, willContributeBundler, err := bundler.NewContributor(context)
 	if err != nil {
 		return context.Failure(102), err
 	}
 
-	if willContribute {
-		if err := contributor.Contribute(); err != nil {
+	if willContributeBundler {
+		err := bundlerContributor.Contribute()
+		if err != nil {
 			return context.Failure(103), err
+		}
+
+		gemsContributor, willContributeGems, err := gems.NewContributor(context, bundler.Bundler{})
+		if err != nil {
+			return context.Failure(102), err
+		}
+		if willContributeGems {
+			if err := gemsContributor.Contribute(); err != nil {
+				return context.Failure(103), err
+			}
 		}
 	}
 

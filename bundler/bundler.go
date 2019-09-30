@@ -9,6 +9,7 @@ import (
 )
 
 const Dependency = "bundler"
+const BundlerGem = "bundler.gem"
 
 type Bundler struct{}
 
