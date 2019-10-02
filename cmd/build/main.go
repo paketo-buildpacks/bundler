@@ -25,7 +25,7 @@ func runBuild(context build.Build) (int, error) {
 			return context.Failure(103), err
 		}
 
-		gemsContributor, willContributeGems, err := gems.NewContributor(context, bundler.Bundler{})
+		gemsContributor, willContributeGems, err := gems.NewContributor(context, bundlerContributor.BundlerLayer.Root)
 		if err != nil {
 			return context.Failure(102), err
 		}
