@@ -69,8 +69,6 @@ func (r BundlerRunner) RunWithOutput(bin, dir string, args ...string) (string, e
 	}
 
 	err := cmd.Run()
-	// this is on purpose, we return whatever is in the buffer regardless of an error occurring
-	//  this defers handling of the error to the caller, see CheckPlatformReqs in composer.go
 	return buf.String(), err
 }
 
