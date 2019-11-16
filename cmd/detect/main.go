@@ -36,7 +36,7 @@ func runDetect(context detect.Detect) (int, error) {
 	// TODO: include to image of cloudfoundry:cnb
 	_, err := exec.LookPath("bundle")
 	if err != nil {
-		_, err := exec.Command("gem", "install", "bundler").Output()
+		_, err := exec.Command("gem", "install", "bundler", "-v", "1.17.3", "--user-install").CombinedOutput()
 		if err != nil {
 			return context.Fail(), fmt.Errorf("can't install bundler")
 		}
