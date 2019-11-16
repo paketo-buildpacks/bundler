@@ -38,12 +38,11 @@ rescue => e
 end
 `
 
-	cmd := exec.Command("ruby", "-rjson", "-rbundler", "-e", code)
+	cmd := exec.Command("ruby", "-r", "json", "-r", "bundler", "-e", code)
 	cmd.Dir = dir
-	body, err := cmd.Output()
+	body, err := cmd.CombinedOutput()
 	if err != nil {
-		fmt.Println(body)
-		return []string{}, err
+		return []string{}, fmt.Errorf("%s %s", err.Error(), string(body))
 	}
 	output := struct {
 		Error string   `json:"error"`
