@@ -39,21 +39,13 @@ func NewBundler(appRoot, bundlerPath string, logger logger.Logger) Bundler {
 			Logger: logger,
 		},
 		workingDir:  appRoot,
-		bundlerPath: filepath.Join(bundlerPath, BundlerCmd),
+		bundlerPath: filepath.Join(bundlerPath, "bin", BundlerCmd),
 	}
 }
 
 func (b Bundler) Install(args ...string) error {
 	args = append([]string{"install", "--quiet"}, args...)
 	return b.Runner.Run(b.bundlerPath, b.workingDir, args...)
-}
-
-func (b Bundler) run(dir string, args ...string) error {
-	cmd := exec.Command("bundle", args...)
-	cmd.Dir = dir
-	cmd.Stdout = os.Stdout
-	cmd.Stderr = os.Stderr
-	return cmd.Run()
 }
 
 func GetBundlerVersion(gemFile string) (version string, err error) {

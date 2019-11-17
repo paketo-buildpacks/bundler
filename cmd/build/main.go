@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"os"
 
 	"github.com/cloudfoundry/bundler-cnb/bundler"
 	"github.com/cloudfoundry/bundler-cnb/gems"
@@ -9,7 +10,18 @@ import (
 )
 
 func main() {
-	fmt.Println("Implement build")
+	context, err := build.DefaultBuild()
+	if err != nil {
+		_, _ = fmt.Fprintf(os.Stderr, "failed to create default build context: %s", err)
+		os.Exit(100)
+	}
+
+	code, err := runBuild(context)
+	if err != nil {
+		context.Logger.Info(err.Error())
+	}
+
+	os.Exit(code)
 }
 
 func runBuild(context build.Build) (int, error) {
