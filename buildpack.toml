@@ -14,12 +14,16 @@ id = "bundler"
 stacks = ["org.cloudfoundry.stacks.cflinuxfs3","io.buildpacks.stacks.bionic"]
 uri = "https://rubygems.org/downloads/bundler-2.0.2.gem"
 version = "2.0.2"
+sha256 = "4c2ae1fce8a072b832ac7188f1e530a7cff8f0a69d8a9621b32d1407db00a2d0"
+source_sha256 = "4c2ae1fce8a072b832ac7188f1e530a7cff8f0a69d8a9621b32d1407db00a2d0"
 
 [[metadata.dependencies]]
 id = "bundler"
 stacks = ["org.cloudfoundry.stacks.cflinuxfs3","io.buildpacks.stacks.bionic"]
 uri = "https://rubygems.org/downloads/bundler-1.17.3.gem"
 version = "1.17.3"
+sha256 = "bc4bf75b548b27451aa9f443b18c46a739dd22ad79f7a5f90b485376a67dc352"
+source_sha256 = "bc4bf75b548b27451aa9f443b18c46a739dd22ad79f7a5f90b485376a67dc352"
 
 [[stacks]]
 id = "org.cloudfoundry.stacks.cflinuxfs3"
