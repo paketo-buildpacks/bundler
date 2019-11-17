@@ -5,6 +5,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"strings"
 
 	"github.com/buildpack/libbuildpack/buildplan"
 	"github.com/cloudfoundry/bundler-cnb/bundler"
@@ -64,12 +65,12 @@ func runDetect(context detect.Detect) (int, error) {
 		Requires: []buildplan.Required{
 			{
 				Name:     ruby.Dependency,
-				Version:  rubyVersion,
+				Version:  strings.Replace(rubyVersion, "'", "", -1),
 				Metadata: buildplan.Metadata{"build": true, "launch": true},
 			},
 			{
 				Name:     bundler.Dependency,
-				Version:  bundlerVersion,
+				Version:  strings.Replace(bundlerVersion, "'", "", -1),
 				Metadata: buildplan.Metadata{"build": true, "launch": true},
 			},
 			{
