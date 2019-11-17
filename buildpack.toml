@@ -8,11 +8,18 @@ version = "{{ .Version }}"
 [metadata]
 include_files = ["bin/build","bin/detect","buildpack.toml"]
 pre_package = "./scripts/build.sh"
+
 [[metadata.dependencies]]
-id = "composer"
-stacks = ["org.cloudfoundry.stacks.cflinuxfs2","org.cloudfoundry.stacks.cflinuxfs3","io.buildpacks.stacks.bionic"]
+id = "bundler"
+stacks = ["org.cloudfoundry.stacks.cflinuxfs3","io.buildpacks.stacks.bionic"]
 uri = "https://rubygems.org/downloads/bundler-2.0.2.gem"
 version = "2.0.2"
+
+[[metadata.dependencies]]
+id = "bundler"
+stacks = ["org.cloudfoundry.stacks.cflinuxfs3","io.buildpacks.stacks.bionic"]
+uri = "https://rubygems.org/downloads/bundler-1.17.3.gem"
+version = "1.17.3"
 
 [[stacks]]
 id = "org.cloudfoundry.stacks.cflinuxfs3"
