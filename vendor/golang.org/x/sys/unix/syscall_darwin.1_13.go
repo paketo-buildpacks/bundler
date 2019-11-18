@@ -27,8 +27,11 @@ func libc_fdopendir_trampoline()
 
 func Getdirentries(fd int, buf []byte, basep *uintptr) (n int, err error) {
 	// Simulate Getdirentries using fdopendir/readdir_r/closedir.
+<<<<<<< HEAD
 	const ptrSize = unsafe.Sizeof(uintptr(0))
 
+=======
+>>>>>>> root_branch/master
 	// We store the number of entries to skip in the seek
 	// offset of fd. See issue #31368.
 	// It's not the full required semantics, but should handle the case

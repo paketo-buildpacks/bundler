@@ -80,7 +80,7 @@ install_pack() {
 install_packager () {
     if [ ! -f .bin/packager ]; then
         echo "installing packager in .bin directory"
-        go build -o .bin/packager github.com/cloudfoundry/libcfbuildpack/packager
+        go get github.com/cloudfoundry/libcfbuildpack/packager && go build -o .bin/packager github.com/cloudfoundry/libcfbuildpack/packager
     fi
 }
 
@@ -109,7 +109,5 @@ mkdir -p .bin
 export PATH=$(pwd)/.bin:$PATH
 
 install_pack
-if [[ -z "${BP_PACKAGED_PATH}" ]]; then
-    install_packager
-fi
+install_packager
 
