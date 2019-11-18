@@ -108,7 +108,7 @@ func (c Contributor) setAppVendorDir() error {
 	if err != nil {
 		return err
 	}
-	return c.bundlerPackagesLayer.OverrideSharedEnv("BUNDLE_PATH", filepath.Join(c.bundlerPackagesLayer.Root, c.bundlerBuildpackYAML.Bundler.VendorDirectory))
+	return c.bundlerPackagesLayer.OverrideSharedEnv("BUNDLE_PATH", filepath.Join(c.app.Root, c.bundlerBuildpackYAML.Bundler.VendorDirectory))
 }
 
 func (c Contributor) contributeBundlerPackages(layer layers.Layer) error {
