@@ -101,7 +101,6 @@ func (c Contributor) Contribute() error {
 
 	return helper.WriteSymlink(filepath.Join(c.bundlerPackagesLayer.Root, c.bundlerBuildpackYAML.Bundler.VendorDirectory),
 		symlinkPath)
-
 }
 
 func (c Contributor) setAppVendorDir() error {
@@ -109,7 +108,7 @@ func (c Contributor) setAppVendorDir() error {
 	if err != nil {
 		return err
 	}
-	return nil
+	return c.bundlerPackagesLayer.OverrideSharedEnv("BUNDLE_PATH", filepath.Join(c.bundlerPackagesLayer.Root, c.bundlerBuildpackYAML.Bundler.VendorDirectory))
 }
 
 func (c Contributor) contributeBundlerPackages(layer layers.Layer) error {
