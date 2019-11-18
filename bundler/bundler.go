@@ -16,7 +16,6 @@ import (
 
 const (
 	Dependency         = "bundler"
-	CacheDependency    = "ruby-bundler-cache"
 	PackagesDependency = "ruby-bundler-packages"
 	BundlerGem         = "bundler.gem"
 	Gemfile            = "Gemfile"

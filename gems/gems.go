@@ -36,7 +36,6 @@ type Contributor struct {
 	app                  application.Application
 	bundlerLayer         layers.Layer
 	bundlerPackagesLayer layers.Layer
-	cacheLayer           layers.Layer
 	bundlerMetadata      Metadata
 	bundler              bundler.Bundler
 	bundlerBuildpackYAML bundler.BuildpackYAML
@@ -74,7 +73,6 @@ func NewContributor(context build.Build, bundlerPath string) (Contributor, bool,
 		app:                  context.Application,
 		bundlerLayer:         context.Layers.Layer(bundler.Dependency),
 		bundlerPackagesLayer: context.Layers.Layer(bundler.PackagesDependency),
-		cacheLayer:           context.Layers.Layer(bundler.CacheDependency),
 		bundlerMetadata:      Metadata{"Ruby Bundler", hex.EncodeToString(hash[:])},
 		bundler:              bundler.NewBundler(context.Application.Root, bundlerPath, context.Logger),
 		bundlerBuildpackYAML: buildpackYAML,
@@ -84,11 +82,6 @@ func NewContributor(context build.Build, bundlerPath string) (Contributor, bool,
 }
 
 func (c Contributor) Contribute() error {
-	randomHash := generateRandomHash()
-	if err := c.cacheLayer.Contribute(Metadata{"Ruby Bundler Cache", hex.EncodeToString(randomHash[:])}, func(layer layers.Layer) error { return nil }, layers.Cache); err != nil {
-		return err
-	}
-
 	if err := c.setAppVendorDir(); err != nil {
 		return err
 	}
@@ -99,8 +92,15 @@ func (c Contributor) Contribute() error {
 		return err
 	}
 
+	symlinkPath := filepath.Join(c.app.Root, c.bundlerBuildpackYAML.Bundler.VendorDirectory)
+	if _, err := os.Lstat(symlinkPath); err == nil {
+		if err := os.Remove(symlinkPath); err != nil {
+			return err
+		}
+	}
+
 	return helper.WriteSymlink(filepath.Join(c.bundlerPackagesLayer.Root, c.bundlerBuildpackYAML.Bundler.VendorDirectory),
-		filepath.Join(c.app.Root, c.bundlerBuildpackYAML.Bundler.VendorDirectory))
+		symlinkPath)
 
 }
 
