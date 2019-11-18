@@ -16,9 +16,10 @@ type Metadata struct {
 	Hash string
 }
 type Contributor struct {
-	BundlerLayer      layers.DependencyLayer
-	RubyLayer         layers.Layer
-	buildContribution bool
+	BundlerLayer       layers.DependencyLayer
+	RubyLayer          layers.Layer
+	buildContribution  bool
+	launchContribution bool
 }
 
 func NewContributor(builder build.Build) (Contributor, bool, error) {
@@ -44,6 +45,9 @@ func NewContributor(builder build.Build) (Contributor, bool, error) {
 
 	if _, ok := plan.Metadata["build"]; ok {
 		contributor.buildContribution = true
+	}
+	if _, ok := plan.Metadata["launch"]; ok {
+		contributor.launchContribution = true
 	}
 
 	return contributor, true, nil
@@ -72,6 +76,9 @@ func (n Contributor) flags() []layers.Flag {
 
 	if n.buildContribution {
 		flags = append(flags, layers.Build)
+	}
+	if n.launchContribution {
+		flags = append(flags, layers.Launch)
 	}
 
 	return flags
