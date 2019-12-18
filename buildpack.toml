@@ -29,6 +29,16 @@ api = "0.2"
     uri = "https://buildpacks.cloudfoundry.org/dependencies/bundler/bundler-2.1.0-any-stack-b263e858.tgz"
     version = "2.1.0"
 
+  [[metadata.dependencies]]
+    id = "bundler"
+    name = "Bundler"
+    sha256 = "dd5d424bc5af910899059545b997b85cd8e164331985965ee2f6de8e6233e1ca"
+    source = "https://github.com/bundler/bundler/tree/v2.1.1"
+    source_sha256 = "c20e3e7a18de9d99b5919eaaee4dbeecc55ffcbfd08e1807572a618f426fdfc2"
+    stacks = ["io.buildpacks.stacks.bionic", "org.cloudfoundry.stacks.cflinuxfs3"]
+    uri = "https://buildpacks.cloudfoundry.org/dependencies/bundler/bundler-2.1.1-any-stack-dd5d424b.tgz"
+    version = "2.1.1"
+
 [[stacks]]
   id = "org.cloudfoundry.stacks.cflinuxfs3"
 
