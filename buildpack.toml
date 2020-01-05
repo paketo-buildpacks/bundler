@@ -22,22 +22,22 @@ api = "0.2"
   [[metadata.dependencies]]
     id = "bundler"
     name = "Bundler"
-    sha256 = "61a9123c9dd5bd1cebd7a74ee4cfaa13b06ba8604385beb313f325e91f03c8a0"
-    source = "https://github.com/bundler/bundler/tree/v2.1.2"
-    source_sha256 = "a3d89c9a7fbfe9364512cac10bc8dc4f9c370e41375c03cd36cad31eef6fb961"
-    stacks = ["io.buildpacks.stacks.bionic", "org.cloudfoundry.stacks.cflinuxfs3"]
-    uri = "https://buildpacks.cloudfoundry.org/dependencies/bundler/bundler-2.1.2-any-stack-61a9123c.tgz"
-    version = "2.1.2"
-
-  [[metadata.dependencies]]
-    id = "bundler"
-    name = "Bundler"
     sha256 = "b2cb7a855ac8259b2cda6c16adc92a1413b5f5e93268d19d8c7ca13de6dcc37b"
     source = "https://github.com/bundler/bundler/tree/v2.1.3"
     source_sha256 = "9b9a9a5685121403eda1ae148ed3a34c86418f2a2beec7df82a45d4baca0e5d2"
     stacks = ["io.buildpacks.stacks.bionic", "org.cloudfoundry.stacks.cflinuxfs3"]
     uri = "https://buildpacks.cloudfoundry.org/dependencies/bundler/bundler-2.1.3-any-stack-b2cb7a85.tgz"
     version = "2.1.3"
+
+  [[metadata.dependencies]]
+    id = "bundler"
+    name = "Bundler"
+    sha256 = "df7bed898d3de06ddeee32f1df71a25a86e653587c13245dfd0b0e006098be79"
+    source = "https://github.com/bundler/bundler/tree/v2.1.4"
+    source_sha256 = "50014d21d6712079da4d6464de12bb93c278f87c9200d0b60ba99f32c25af489"
+    stacks = ["io.buildpacks.stacks.bionic", "org.cloudfoundry.stacks.cflinuxfs3"]
+    uri = "https://buildpacks.cloudfoundry.org/dependencies/bundler/bundler-2.1.4-any-stack-df7bed89.tgz"
+    version = "2.1.4"
 
 [[stacks]]
   id = "org.cloudfoundry.stacks.cflinuxfs3"
