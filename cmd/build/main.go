@@ -1,29 +1,21 @@
 package main
 
 import (
-	"fmt"
+	"os"
+	"time"
+
 	"github.com/cloudfoundry/bundler-cnb/bundler"
-	"github.com/cloudfoundry/bundler-cnb/gems"
-	"github.com/cloudfoundry/libcfbuildpack/build"
+	"github.com/cloudfoundry/packit"
+	"github.com/cloudfoundry/packit/cargo"
+	"github.com/cloudfoundry/packit/postal"
 )
 
 func main() {
-	fmt.Println("Implement build")
-}
+	logEmitter := bundler.NewLogEmitter(os.Stdout)
+	entryResolver := bundler.NewPlanEntryResolver(logEmitter)
+	dependencyManager := postal.NewService(cargo.NewTransport())
+	planRefinery := bundler.NewPlanRefinery()
+	clock := bundler.NewClock(time.Now)
 
-func runBuild(context build.Build) (int, error) {
-	context.Logger.FirstLine(context.Logger.PrettyIdentity(context.Buildpack))
-
-	contributor, willContribute, err := gems.NewContributor(context, bundler.Bundler{})
-	if err != nil {
-		return context.Failure(102), err
-	}
-
-	if willContribute {
-		if err := contributor.Contribute(); err != nil {
-			return context.Failure(103), err
-		}
-	}
-
-	return context.Success()
+	packit.Build(bundler.Build(entryResolver, dependencyManager, planRefinery, logEmitter, clock))
 }
