@@ -62,7 +62,7 @@ func Detect(buildpackYMLParser, gemfileLockParser, gemfileParser VersionParser) 
 
 		if version != "" {
 			requirements = append(requirements, packit.BuildPlanRequirement{
-				Name:    Ruby,
+				Name:    MRI,
 				Version: version,
 				Metadata: BuildPlanMetadata{
 					VersionSource: GemfileSource,

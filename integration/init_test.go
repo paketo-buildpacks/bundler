@@ -21,8 +21,8 @@ import (
 )
 
 var (
-	rubyBuildpack           string
-	offlineRubyBuildpack    string
+	mriBuildpack            string
+	offlineMRIBuildpack     string
 	bundlerBuildpack        string
 	offlineBundlerBuildpack string
 )
@@ -39,23 +39,23 @@ func TestIntegration(t *testing.T) {
 	offlineBundlerBuildpack, _, err = dagger.PackageCachedBuildpack(root)
 	Expect(err).NotTo(HaveOccurred())
 
-	rubyBuildpack, err = dagger.GetLatestBuildpack("ruby-cnb")
+	mriBuildpack, err = dagger.GetLatestBuildpack("mri-cnb")
 	Expect(err).ToNot(HaveOccurred())
 
-	rubySource, err := dagger.GetLatestUnpackagedBuildpack("ruby-cnb")
+	mriSource, err := dagger.GetLatestUnpackagedBuildpack("mri-cnb")
 	Expect(err).ToNot(HaveOccurred())
 
-	offlineRubyBuildpack, _, err = dagger.PackageCachedBuildpack(rubySource)
+	offlineMRIBuildpack, _, err = dagger.PackageCachedBuildpack(mriSource)
 	Expect(err).ToNot(HaveOccurred())
 
 	// HACK: we need to fix dagger and the package.sh scripts so that this isn't required
 	bundlerBuildpack = fmt.Sprintf("%s.tgz", bundlerBuildpack)
 	offlineBundlerBuildpack = fmt.Sprintf("%s.tgz", offlineBundlerBuildpack)
-	offlineRubyBuildpack = fmt.Sprintf("%s.tgz", offlineRubyBuildpack)
+	offlineMRIBuildpack = fmt.Sprintf("%s.tgz", offlineMRIBuildpack)
 
 	defer func() {
-		dagger.DeleteBuildpack(rubyBuildpack)
-		dagger.DeleteBuildpack(offlineRubyBuildpack)
+		dagger.DeleteBuildpack(mriBuildpack)
+		dagger.DeleteBuildpack(offlineMRIBuildpack)
 		dagger.DeleteBuildpack(bundlerBuildpack)
 		dagger.DeleteBuildpack(offlineBundlerBuildpack)
 	}()

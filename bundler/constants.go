@@ -2,7 +2,7 @@ package bundler
 
 const (
 	Bundler            = "bundler"
-	Ruby               = "ruby"
+	MRI                = "mri"
 	BuildpackYMLSource = "buildpack.yml"
 	GemfileLockSource  = "Gemfile.lock"
 	GemfileSource      = "Gemfile"

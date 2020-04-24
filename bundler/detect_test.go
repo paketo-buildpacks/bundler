@@ -120,7 +120,7 @@ func testDetect(t *testing.T, context spec.G, it spec.S) {
 				},
 				Requires: []packit.BuildPlanRequirement{
 					{
-						Name:    "ruby",
+						Name:    "mri",
 						Version: "~> 2.7.0",
 						Metadata: bundler.BuildPlanMetadata{
 							VersionSource: "Gemfile",

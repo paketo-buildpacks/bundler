@@ -45,7 +45,7 @@ func testBuildpackYML(t *testing.T, context spec.G, it spec.S) {
 			var logs fmt.Stringer
 			image, logs, err = pack.WithNoColor().Build.
 				WithNoPull().
-				WithBuildpacks(rubyBuildpack, bundlerBuildpack).
+				WithBuildpacks(mriBuildpack, bundlerBuildpack).
 				Execute(name, filepath.Join("testdata", "buildpack_yml_version"))
 			Expect(err).ToNot(HaveOccurred(), logs.String)
 

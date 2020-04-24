@@ -45,7 +45,7 @@ func testLogging(t *testing.T, context spec.G, it spec.S) {
 			var logs fmt.Stringer
 			image, logs, err = pack.WithNoColor().Build.
 				WithNoPull().
-				WithBuildpacks(rubyBuildpack, bundlerBuildpack).
+				WithBuildpacks(mriBuildpack, bundlerBuildpack).
 				Execute(name, filepath.Join("testdata", "simple_app"))
 			Expect(err).ToNot(HaveOccurred(), logs.String)
 
@@ -53,19 +53,19 @@ func testLogging(t *testing.T, context spec.G, it spec.S) {
 			Expect(err).ToNot(HaveOccurred())
 
 			sequence := []interface{}{
-				MatchRegexp(`Ruby MRI Buildpack`),
-				"  Resolving Ruby MRI version",
+				MatchRegexp(`MRI Buildpack`),
+				"  Resolving MRI version",
 				"    Candidate version sources (in priority order):",
 				"      Gemfile -> \"~> 2.6.0\"",
 				"",
-				MatchRegexp(`    Selected Ruby MRI version \(using Gemfile\): 2\.6\.\d+`),
+				MatchRegexp(`    Selected MRI version \(using Gemfile\): 2\.6\.\d+`),
 				"",
 				"  Executing build process",
-				MatchRegexp(`    Installing Ruby MRI 2\.6\.\d+`),
+				MatchRegexp(`    Installing MRI 2\.6\.\d+`),
 				MatchRegexp(`      Completed in \d+\.?\d*`),
 				"",
 				"  Configuring environment",
-				MatchRegexp(`    GEM_PATH -> "/home/vcap/.gem/ruby/2\.6\.\d+:/layers/org.cloudfoundry.ruby-mri/ruby/lib/ruby/gems/2\.6\.\d+"`),
+				MatchRegexp(`    GEM_PATH -> "/home/vcap/.gem/ruby/2\.6\.\d+:/layers/org.cloudfoundry.mri/mri/lib/ruby/gems/2\.6\.\d+"`),
 				"",
 				fmt.Sprintf("Bundler Buildpack %s", buildpackVersion),
 				"  Resolving Bundler version",

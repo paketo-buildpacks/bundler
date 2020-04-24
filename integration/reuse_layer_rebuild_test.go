@@ -65,7 +65,7 @@ func testReusingLayerRebuild(t *testing.T, context spec.G, it spec.S) {
 
 			build := pack.WithNoColor().Build.
 				WithNoPull().
-				WithBuildpacks(rubyBuildpack, bundlerBuildpack)
+				WithBuildpacks(mriBuildpack, bundlerBuildpack)
 
 			firstImage, logs, err = build.Execute(name, filepath.Join("testdata", "simple_app"))
 			Expect(err).NotTo(HaveOccurred())
@@ -74,8 +74,8 @@ func testReusingLayerRebuild(t *testing.T, context spec.G, it spec.S) {
 
 			Expect(firstImage.Buildpacks).To(HaveLen(2))
 
-			Expect(firstImage.Buildpacks[0].Key).To(Equal("org.cloudfoundry.ruby-mri"))
-			Expect(firstImage.Buildpacks[0].Layers).To(HaveKey("ruby"))
+			Expect(firstImage.Buildpacks[0].Key).To(Equal("org.cloudfoundry.mri"))
+			Expect(firstImage.Buildpacks[0].Layers).To(HaveKey("mri"))
 			Expect(firstImage.Buildpacks[1].Key).To(Equal("org.cloudfoundry.bundler"))
 			Expect(firstImage.Buildpacks[1].Layers).To(HaveKey("bundler"))
 
@@ -113,8 +113,8 @@ func testReusingLayerRebuild(t *testing.T, context spec.G, it spec.S) {
 
 			Expect(secondImage.Buildpacks).To(HaveLen(2))
 
-			Expect(secondImage.Buildpacks[0].Key).To(Equal("org.cloudfoundry.ruby-mri"))
-			Expect(secondImage.Buildpacks[0].Layers).To(HaveKey("ruby"))
+			Expect(secondImage.Buildpacks[0].Key).To(Equal("org.cloudfoundry.mri"))
+			Expect(secondImage.Buildpacks[0].Layers).To(HaveKey("mri"))
 			Expect(secondImage.Buildpacks[1].Key).To(Equal("org.cloudfoundry.bundler"))
 			Expect(secondImage.Buildpacks[1].Layers).To(HaveKey("bundler"))
 
@@ -162,7 +162,7 @@ func testReusingLayerRebuild(t *testing.T, context spec.G, it spec.S) {
 
 			build := pack.WithNoColor().Build.
 				WithNoPull().
-				WithBuildpacks(rubyBuildpack, bundlerBuildpack)
+				WithBuildpacks(mriBuildpack, bundlerBuildpack)
 
 			firstImage, logs, err = build.Execute(name, filepath.Join("testdata", "simple_app"))
 			Expect(err).NotTo(HaveOccurred())
@@ -170,8 +170,8 @@ func testReusingLayerRebuild(t *testing.T, context spec.G, it spec.S) {
 			imageIDs[firstImage.ID] = struct{}{}
 
 			Expect(firstImage.Buildpacks).To(HaveLen(2))
-			Expect(firstImage.Buildpacks[0].Key).To(Equal("org.cloudfoundry.ruby-mri"))
-			Expect(firstImage.Buildpacks[0].Layers).To(HaveKey("ruby"))
+			Expect(firstImage.Buildpacks[0].Key).To(Equal("org.cloudfoundry.mri"))
+			Expect(firstImage.Buildpacks[0].Layers).To(HaveKey("mri"))
 			Expect(firstImage.Buildpacks[1].Key).To(Equal("org.cloudfoundry.bundler"))
 			Expect(firstImage.Buildpacks[1].Layers).To(HaveKey("bundler"))
 
@@ -208,8 +208,8 @@ func testReusingLayerRebuild(t *testing.T, context spec.G, it spec.S) {
 			imageIDs[secondImage.ID] = struct{}{}
 
 			Expect(secondImage.Buildpacks).To(HaveLen(2))
-			Expect(secondImage.Buildpacks[0].Key).To(Equal("org.cloudfoundry.ruby-mri"))
-			Expect(secondImage.Buildpacks[0].Layers).To(HaveKey("ruby"))
+			Expect(secondImage.Buildpacks[0].Key).To(Equal("org.cloudfoundry.mri"))
+			Expect(secondImage.Buildpacks[0].Layers).To(HaveKey("mri"))
 			Expect(secondImage.Buildpacks[1].Key).To(Equal("org.cloudfoundry.bundler"))
 			Expect(secondImage.Buildpacks[1].Layers).To(HaveKey("bundler"))
 
