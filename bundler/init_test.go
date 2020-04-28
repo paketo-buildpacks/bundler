@@ -7,7 +7,7 @@ import (
 	"github.com/sclevine/spec/report"
 )
 
-func TestUnitNode(t *testing.T) {
+func TestUnitBundler(t *testing.T) {
 	suite := spec.New("bundler", spec.Report(report.Terminal{}))
 	suite("Build", testBuild)
 	suite("BuildpackYMLParser", testBuildpackYMLParser)
