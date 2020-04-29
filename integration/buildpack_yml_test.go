@@ -8,6 +8,7 @@ import (
 	"github.com/cloudfoundry/occam"
 	"github.com/sclevine/spec"
 
+	. "github.com/cloudfoundry/occam/matchers"
 	. "github.com/onsi/gomega"
 )
 
@@ -52,7 +53,7 @@ func testBuildpackYML(t *testing.T, context spec.G, it spec.S) {
 			buildpackVersion, err := GetGitVersion()
 			Expect(err).ToNot(HaveOccurred())
 
-			sequence := []interface{}{
+			Expect(logs).To(ContainLines(
 				fmt.Sprintf("Bundler Buildpack %s", buildpackVersion),
 				"  Resolving Bundler version",
 				"    Candidate version sources (in priority order):",
@@ -66,9 +67,7 @@ func testBuildpackYML(t *testing.T, context spec.G, it spec.S) {
 				"",
 				"  Configuring environment",
 				MatchRegexp(`    GEM_PATH -> "\$GEM_PATH:/layers/org.cloudfoundry.bundler/bundler"`),
-			}
-
-			Expect(GetBuildLogs(logs.String())).To(ContainSequence(sequence), logs.String())
+			))
 		})
 	})
 }

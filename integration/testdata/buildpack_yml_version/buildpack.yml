@@ -1,5 +1,5 @@
 ---
-ruby:
+mri:
   version: 2.7.x
 bundler:
   version: 1.17.x

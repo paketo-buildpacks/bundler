@@ -8,7 +8,6 @@ import (
 func main() {
 	buildpackYMLParser := bundler.NewBuildpackYMLParser()
 	gemfileLockParser := bundler.NewGemfileLockParser()
-	gemfileParser := bundler.NewGemfileParser()
 
-	packit.Detect(bundler.Detect(buildpackYMLParser, gemfileLockParser, gemfileParser))
+	packit.Detect(bundler.Detect(buildpackYMLParser, gemfileLockParser))
 }
