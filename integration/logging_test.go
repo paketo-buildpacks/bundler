@@ -8,6 +8,7 @@ import (
 	"github.com/cloudfoundry/occam"
 	"github.com/sclevine/spec"
 
+	. "github.com/cloudfoundry/occam/matchers"
 	. "github.com/onsi/gomega"
 )
 
@@ -52,21 +53,7 @@ func testLogging(t *testing.T, context spec.G, it spec.S) {
 			buildpackVersion, err := GetGitVersion()
 			Expect(err).ToNot(HaveOccurred())
 
-			sequence := []interface{}{
-				MatchRegexp(`MRI Buildpack`),
-				"  Resolving MRI version",
-				"    Candidate version sources (in priority order):",
-				"      Gemfile -> \"~> 2.6.0\"",
-				"",
-				MatchRegexp(`    Selected MRI version \(using Gemfile\): 2\.6\.\d+`),
-				"",
-				"  Executing build process",
-				MatchRegexp(`    Installing MRI 2\.6\.\d+`),
-				MatchRegexp(`      Completed in \d+\.?\d*`),
-				"",
-				"  Configuring environment",
-				MatchRegexp(`    GEM_PATH -> "/home/vcap/.gem/ruby/2\.6\.\d+:/layers/org.cloudfoundry.mri/mri/lib/ruby/gems/2\.6\.\d+"`),
-				"",
+			Expect(logs).To(ContainLines(
 				fmt.Sprintf("Bundler Buildpack %s", buildpackVersion),
 				"  Resolving Bundler version",
 				"    Candidate version sources (in priority order):",
@@ -80,9 +67,7 @@ func testLogging(t *testing.T, context spec.G, it spec.S) {
 				"",
 				"  Configuring environment",
 				MatchRegexp(`    GEM_PATH -> "\$GEM_PATH:/layers/org.cloudfoundry.bundler/bundler"`),
-			}
-
-			Expect(GetBuildLogs(logs.String())).To(ContainSequence(sequence), logs.String())
+			))
 		})
 	})
 }

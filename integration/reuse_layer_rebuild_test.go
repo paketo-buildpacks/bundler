@@ -82,7 +82,7 @@ func testReusingLayerRebuild(t *testing.T, context spec.G, it spec.S) {
 			buildpackVersion, err := GetGitVersion()
 			Expect(err).ToNot(HaveOccurred())
 
-			Expect(GetBuildLogs(logs.String())).To(ContainSequence([]interface{}{
+			Expect(logs).To(ContainLines(
 				fmt.Sprintf("Bundler Buildpack %s", buildpackVersion),
 				"  Resolving Bundler version",
 				"    Candidate version sources (in priority order):",
@@ -96,7 +96,7 @@ func testReusingLayerRebuild(t *testing.T, context spec.G, it spec.S) {
 				"",
 				"  Configuring environment",
 				MatchRegexp(`    GEM_PATH -> "\$GEM_PATH:/layers/org.cloudfoundry.bundler/bundler"`),
-			}), logs.String())
+			))
 
 			firstContainer, err = docker.Container.Run.WithMemory("128m").WithCommand("ruby run.rb").Execute(firstImage.ID)
 			Expect(err).NotTo(HaveOccurred())
@@ -118,7 +118,7 @@ func testReusingLayerRebuild(t *testing.T, context spec.G, it spec.S) {
 			Expect(secondImage.Buildpacks[1].Key).To(Equal("org.cloudfoundry.bundler"))
 			Expect(secondImage.Buildpacks[1].Layers).To(HaveKey("bundler"))
 
-			Expect(GetBuildLogs(logs.String())).To(ContainSequence([]interface{}{
+			Expect(logs).To(ContainLines(
 				fmt.Sprintf("Bundler Buildpack %s", buildpackVersion),
 				"  Resolving Bundler version",
 				"    Candidate version sources (in priority order):",
@@ -127,7 +127,7 @@ func testReusingLayerRebuild(t *testing.T, context spec.G, it spec.S) {
 				"    Selected Bundler version (using Gemfile.lock): 1.17.3",
 				"",
 				"  Reusing cached layer /layers/org.cloudfoundry.bundler/bundler",
-			}), logs.String())
+			))
 
 			secondContainer, err = docker.Container.Run.WithMemory("128m").WithCommand("ruby run.rb").Execute(secondImage.ID)
 			Expect(err).NotTo(HaveOccurred())
@@ -178,7 +178,7 @@ func testReusingLayerRebuild(t *testing.T, context spec.G, it spec.S) {
 			buildpackVersion, err := GetGitVersion()
 			Expect(err).ToNot(HaveOccurred())
 
-			Expect(GetBuildLogs(logs.String())).To(ContainSequence([]interface{}{
+			Expect(logs).To(ContainLines(
 				fmt.Sprintf("Bundler Buildpack %s", buildpackVersion),
 				"  Resolving Bundler version",
 				"    Candidate version sources (in priority order):",
@@ -192,7 +192,7 @@ func testReusingLayerRebuild(t *testing.T, context spec.G, it spec.S) {
 				"",
 				"  Configuring environment",
 				MatchRegexp(`    GEM_PATH -> "\$GEM_PATH:/layers/org.cloudfoundry.bundler/bundler"`),
-			}), logs.String())
+			))
 
 			firstContainer, err = docker.Container.Run.WithMemory("128m").WithCommand("ruby run.rb").Execute(firstImage.ID)
 			Expect(err).NotTo(HaveOccurred())
@@ -213,7 +213,7 @@ func testReusingLayerRebuild(t *testing.T, context spec.G, it spec.S) {
 			Expect(secondImage.Buildpacks[1].Key).To(Equal("org.cloudfoundry.bundler"))
 			Expect(secondImage.Buildpacks[1].Layers).To(HaveKey("bundler"))
 
-			Expect(GetBuildLogs(logs.String())).To(ContainSequence([]interface{}{
+			Expect(logs).To(ContainLines(
 				fmt.Sprintf("Bundler Buildpack %s", buildpackVersion),
 				"  Resolving Bundler version",
 				"    Candidate version sources (in priority order):",
@@ -227,7 +227,7 @@ func testReusingLayerRebuild(t *testing.T, context spec.G, it spec.S) {
 				"",
 				"  Configuring environment",
 				MatchRegexp(`    GEM_PATH -> "\$GEM_PATH:/layers/org.cloudfoundry.bundler/bundler"`),
-			}), logs.String())
+			))
 
 			secondContainer, err = docker.Container.Run.WithMemory("128m").WithCommand("ruby run.rb").Execute(secondImage.ID)
 			Expect(err).NotTo(HaveOccurred())

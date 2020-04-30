@@ -17,7 +17,7 @@ type BuildPlanMetadata struct {
 	Build         bool   `toml:"build"`
 }
 
-func Detect(buildpackYMLParser, gemfileLockParser, gemfileParser VersionParser) packit.DetectFunc {
+func Detect(buildpackYMLParser, gemfileLockParser VersionParser) packit.DetectFunc {
 	return func(context packit.DetectContext) (packit.DetectResult, error) {
 		var requirements []packit.BuildPlanRequirement
 
@@ -49,23 +49,6 @@ func Detect(buildpackYMLParser, gemfileLockParser, gemfileParser VersionParser) 
 				Version: version,
 				Metadata: BuildPlanMetadata{
 					VersionSource: GemfileLockSource,
-					Launch:        true,
-					Build:         true,
-				},
-			})
-		}
-
-		version, err = gemfileParser.ParseVersion(filepath.Join(context.WorkingDir, GemfileSource))
-		if err != nil {
-			return packit.DetectResult{}, err
-		}
-
-		if version != "" {
-			requirements = append(requirements, packit.BuildPlanRequirement{
-				Name:    MRI,
-				Version: version,
-				Metadata: BuildPlanMetadata{
-					VersionSource: GemfileSource,
 					Launch:        true,
 					Build:         true,
 				},
