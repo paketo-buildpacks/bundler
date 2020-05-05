@@ -66,7 +66,7 @@ func testLogging(t *testing.T, context spec.G, it spec.S) {
 				MatchRegexp(`      Completed in \d+\.?\d*`),
 				"",
 				"  Configuring environment",
-				MatchRegexp(`    GEM_PATH -> "\$GEM_PATH:/layers/org.cloudfoundry.bundler/bundler"`),
+				MatchRegexp(`    GEM_PATH -> "\$GEM_PATH:/layers/paketo-community.bundler/bundler"`),
 			))
 		})
 	})

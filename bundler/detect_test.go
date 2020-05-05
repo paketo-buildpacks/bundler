@@ -4,9 +4,9 @@ import (
 	"errors"
 	"testing"
 
-	"github.com/cloudfoundry/bundler-cnb/bundler"
-	"github.com/cloudfoundry/bundler-cnb/bundler/fakes"
 	"github.com/cloudfoundry/packit"
+	"github.com/paketo-community/bundler/bundler"
+	"github.com/paketo-community/bundler/bundler/fakes"
 	"github.com/sclevine/spec"
 
 	. "github.com/onsi/gomega"

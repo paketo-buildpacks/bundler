@@ -4,7 +4,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/cloudfoundry/bundler-cnb/bundler"
+	"github.com/paketo-community/bundler/bundler"
 	"github.com/sclevine/spec"
 
 	. "github.com/onsi/gomega"

@@ -4,10 +4,10 @@ import (
 	"os"
 	"time"
 
-	"github.com/cloudfoundry/bundler-cnb/bundler"
 	"github.com/cloudfoundry/packit"
 	"github.com/cloudfoundry/packit/cargo"
 	"github.com/cloudfoundry/packit/postal"
+	"github.com/paketo-community/bundler/bundler"
 )
 
 func main() {

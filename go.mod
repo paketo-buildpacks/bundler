@@ -1,4 +1,4 @@
-module github.com/cloudfoundry/bundler-cnb
+module github.com/paketo-community/bundler
 
 require (
 	cloud.google.com/go v0.53.0 // indirect

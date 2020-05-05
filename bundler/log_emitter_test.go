@@ -5,9 +5,9 @@ import (
 	"testing"
 	"time"
 
-	"github.com/cloudfoundry/bundler-cnb/bundler"
 	"github.com/cloudfoundry/packit"
 	"github.com/cloudfoundry/packit/postal"
+	"github.com/paketo-community/bundler/bundler"
 	"github.com/sclevine/spec"
 
 	. "github.com/onsi/gomega"

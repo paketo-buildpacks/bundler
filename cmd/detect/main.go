@@ -1,8 +1,8 @@
 package main
 
 import (
-	"github.com/cloudfoundry/bundler-cnb/bundler"
 	"github.com/cloudfoundry/packit"
+	"github.com/paketo-community/bundler/bundler"
 )
 
 func main() {

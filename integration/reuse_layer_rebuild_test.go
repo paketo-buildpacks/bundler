@@ -76,7 +76,7 @@ func testReusingLayerRebuild(t *testing.T, context spec.G, it spec.S) {
 
 			Expect(firstImage.Buildpacks[0].Key).To(Equal("org.cloudfoundry.mri"))
 			Expect(firstImage.Buildpacks[0].Layers).To(HaveKey("mri"))
-			Expect(firstImage.Buildpacks[1].Key).To(Equal("org.cloudfoundry.bundler"))
+			Expect(firstImage.Buildpacks[1].Key).To(Equal("paketo-community.bundler"))
 			Expect(firstImage.Buildpacks[1].Layers).To(HaveKey("bundler"))
 
 			buildpackVersion, err := GetGitVersion()
@@ -95,7 +95,7 @@ func testReusingLayerRebuild(t *testing.T, context spec.G, it spec.S) {
 				MatchRegexp(`      Completed in \d+\.?\d*`),
 				"",
 				"  Configuring environment",
-				MatchRegexp(`    GEM_PATH -> "\$GEM_PATH:/layers/org.cloudfoundry.bundler/bundler"`),
+				MatchRegexp(`    GEM_PATH -> "\$GEM_PATH:/layers/paketo-community.bundler/bundler"`),
 			))
 
 			firstContainer, err = docker.Container.Run.WithMemory("128m").WithCommand("ruby run.rb").Execute(firstImage.ID)
@@ -115,7 +115,7 @@ func testReusingLayerRebuild(t *testing.T, context spec.G, it spec.S) {
 
 			Expect(secondImage.Buildpacks[0].Key).To(Equal("org.cloudfoundry.mri"))
 			Expect(secondImage.Buildpacks[0].Layers).To(HaveKey("mri"))
-			Expect(secondImage.Buildpacks[1].Key).To(Equal("org.cloudfoundry.bundler"))
+			Expect(secondImage.Buildpacks[1].Key).To(Equal("paketo-community.bundler"))
 			Expect(secondImage.Buildpacks[1].Layers).To(HaveKey("bundler"))
 
 			Expect(logs).To(ContainLines(
@@ -126,7 +126,7 @@ func testReusingLayerRebuild(t *testing.T, context spec.G, it spec.S) {
 				"",
 				"    Selected Bundler version (using Gemfile.lock): 1.17.3",
 				"",
-				"  Reusing cached layer /layers/org.cloudfoundry.bundler/bundler",
+				"  Reusing cached layer /layers/paketo-community.bundler/bundler",
 			))
 
 			secondContainer, err = docker.Container.Run.WithMemory("128m").WithCommand("ruby run.rb").Execute(secondImage.ID)
@@ -172,7 +172,7 @@ func testReusingLayerRebuild(t *testing.T, context spec.G, it spec.S) {
 			Expect(firstImage.Buildpacks).To(HaveLen(2))
 			Expect(firstImage.Buildpacks[0].Key).To(Equal("org.cloudfoundry.mri"))
 			Expect(firstImage.Buildpacks[0].Layers).To(HaveKey("mri"))
-			Expect(firstImage.Buildpacks[1].Key).To(Equal("org.cloudfoundry.bundler"))
+			Expect(firstImage.Buildpacks[1].Key).To(Equal("paketo-community.bundler"))
 			Expect(firstImage.Buildpacks[1].Layers).To(HaveKey("bundler"))
 
 			buildpackVersion, err := GetGitVersion()
@@ -191,7 +191,7 @@ func testReusingLayerRebuild(t *testing.T, context spec.G, it spec.S) {
 				MatchRegexp(`      Completed in \d+\.?\d*`),
 				"",
 				"  Configuring environment",
-				MatchRegexp(`    GEM_PATH -> "\$GEM_PATH:/layers/org.cloudfoundry.bundler/bundler"`),
+				MatchRegexp(`    GEM_PATH -> "\$GEM_PATH:/layers/paketo-community.bundler/bundler"`),
 			))
 
 			firstContainer, err = docker.Container.Run.WithMemory("128m").WithCommand("ruby run.rb").Execute(firstImage.ID)
@@ -210,7 +210,7 @@ func testReusingLayerRebuild(t *testing.T, context spec.G, it spec.S) {
 			Expect(secondImage.Buildpacks).To(HaveLen(2))
 			Expect(secondImage.Buildpacks[0].Key).To(Equal("org.cloudfoundry.mri"))
 			Expect(secondImage.Buildpacks[0].Layers).To(HaveKey("mri"))
-			Expect(secondImage.Buildpacks[1].Key).To(Equal("org.cloudfoundry.bundler"))
+			Expect(secondImage.Buildpacks[1].Key).To(Equal("paketo-community.bundler"))
 			Expect(secondImage.Buildpacks[1].Layers).To(HaveKey("bundler"))
 
 			Expect(logs).To(ContainLines(
@@ -226,7 +226,7 @@ func testReusingLayerRebuild(t *testing.T, context spec.G, it spec.S) {
 				MatchRegexp(`      Completed in \d+\.?\d*`),
 				"",
 				"  Configuring environment",
-				MatchRegexp(`    GEM_PATH -> "\$GEM_PATH:/layers/org.cloudfoundry.bundler/bundler"`),
+				MatchRegexp(`    GEM_PATH -> "\$GEM_PATH:/layers/paketo-community.bundler/bundler"`),
 			))
 
 			secondContainer, err = docker.Container.Run.WithMemory("128m").WithCommand("ruby run.rb").Execute(secondImage.ID)
