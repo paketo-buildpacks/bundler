@@ -1,7 +1,7 @@
 api = "0.2"
 
 [buildpack]
-  id = "paketo-community.bundler"
+  id = "paketo-community/bundler"
   name = "Bundler Buildpack"
   version = "{{ .Version }}"
 
