@@ -24,11 +24,11 @@ api = "0.2"
   [[metadata.dependencies]]
     id = "bundler"
     name = "Bundler"
-    sha256 = "df7bed898d3de06ddeee32f1df71a25a86e653587c13245dfd0b0e006098be79"
+    sha256 = "d17dcc07a6fd5a0eb9361a1837d410226f2b81c2ceb75976e07f7859971c0ce3"
     source = "https://github.com/bundler/bundler/tree/v2.1.4"
     source_sha256 = "50014d21d6712079da4d6464de12bb93c278f87c9200d0b60ba99f32c25af489"
-    stacks = ["org.cloudfoundry.stacks.cflinuxfs3"]
-    uri = "https://buildpacks.cloudfoundry.org/dependencies/bundler/bundler-2.1.4-any-stack-df7bed89.tgz"
+    stacks = ["io.buildpacks.stacks.bionic", "org.cloudfoundry.stacks.cflinuxfs3"]
+    uri = "https://buildpacks.cloudfoundry.org/dependencies/bundler/bundler_2.1.4_linux_noarch_any-stack_d17dcc07.tgz"
     version = "2.1.4"
 
 [[stacks]]
