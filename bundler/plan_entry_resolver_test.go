@@ -4,8 +4,8 @@ import (
 	"bytes"
 	"testing"
 
-	"github.com/cloudfoundry/bundler-cnb/bundler"
 	"github.com/cloudfoundry/packit"
+	"github.com/paketo-community/bundler/bundler"
 	"github.com/sclevine/spec"
 
 	. "github.com/onsi/gomega"
