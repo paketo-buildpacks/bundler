@@ -30,7 +30,6 @@ func testBuild(t *testing.T, context spec.G, it spec.S) {
 		timeStamp         time.Time
 		planRefinery      *fakes.BuildPlanRefinery
 		buffer            *bytes.Buffer
-		fileRewriter      *fakes.FileRewriter
 
 		build packit.BuildFunc
 	)
@@ -79,8 +78,6 @@ func testBuild(t *testing.T, context spec.G, it spec.S) {
 
 		planRefinery = &fakes.BuildPlanRefinery{}
 
-		fileRewriter = &fakes.FileRewriter{}
-
 		timeStamp = time.Now()
 		clock = bundler.NewClock(func() time.Time {
 			return timeStamp
@@ -109,7 +106,6 @@ func testBuild(t *testing.T, context spec.G, it spec.S) {
 			planRefinery,
 			logEmitter,
 			clock,
-			fileRewriter,
 		)
 	})
 
@@ -202,9 +198,6 @@ func testBuild(t *testing.T, context spec.G, it spec.S) {
 		Expect(dependencyManager.InstallCall.Receives.Dependency).To(Equal(postal.Dependency{Name: "Bundler"}))
 		Expect(dependencyManager.InstallCall.Receives.CnbPath).To(Equal(cnbDir))
 		Expect(dependencyManager.InstallCall.Receives.LayerPath).To(Equal(filepath.Join(layersDir, "bundler")))
-
-		Expect(fileRewriter.RewriteCall.CallCount).To(Equal(1))
-		Expect(fileRewriter.RewriteCall.Receives.Filename).To(Equal(filepath.Join(layersDir, "bundler", "bin")))
 
 		Expect(buffer.String()).To(ContainSubstring("Some Buildpack some-version"))
 		Expect(buffer.String()).To(ContainSubstring("Resolving Bundler version"))
@@ -632,28 +625,6 @@ func testBuild(t *testing.T, context spec.G, it spec.S) {
 					Layers: packit.Layers{Path: layersDir},
 				})
 				Expect(err).To(MatchError(ContainSubstring("permission denied")))
-			})
-		})
-
-		context("when the shebang can not be rewritten", func() {
-			it("returns an error", func() {
-				fileRewriter.RewriteCall.Returns.Error = errors.New("some-error")
-				_, err := build(packit.BuildContext{
-					CNBPath: cnbDir,
-					Plan: packit.BuildpackPlan{
-						Entries: []packit.BuildpackPlanEntry{
-							{
-								Name:    "bundler",
-								Version: "2.0.x",
-								Metadata: map[string]interface{}{
-									"version-source": "buildpack.yml",
-								},
-							},
-						},
-					},
-					Layers: packit.Layers{Path: layersDir},
-				})
-				Expect(err).To(MatchError(ContainSubstring("some-error")))
 			})
 		})
 	})
