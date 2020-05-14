@@ -24,18 +24,12 @@ type BuildPlanRefinery interface {
 	BillOfMaterial(dependency postal.Dependency) packit.BuildpackPlan
 }
 
-//go:generate faux --interface FileRewriter --output fakes/file_rewriter.go
-type FileRewriter interface {
-	Rewrite(filename string) error
-}
-
 func Build(
 	entries EntryResolver,
 	dependencies DependencyManager,
 	planRefinery BuildPlanRefinery,
 	logger LogEmitter,
 	clock Clock,
-	fileRewriter FileRewriter,
 ) packit.BuildFunc {
 	return func(context packit.BuildContext) (packit.BuildResult, error) {
 		logger.Title("%s %s", context.BuildpackInfo.Name, context.BuildpackInfo.Version)
@@ -94,11 +88,6 @@ func Build(
 		logger.Subprocess("Installing Bundler %s", dependency.Version)
 		then := clock.Now()
 		err = dependencies.Install(dependency, context.CNBPath, bundlerLayer.Path)
-		if err != nil {
-			return packit.BuildResult{}, err
-		}
-
-		err = fileRewriter.Rewrite(filepath.Join(bundlerLayer.Path, "bin"))
 		if err != nil {
 			return packit.BuildResult{}, err
 		}

@@ -74,7 +74,7 @@ func testReusingLayerRebuild(t *testing.T, context spec.G, it spec.S) {
 
 			Expect(firstImage.Buildpacks).To(HaveLen(2))
 
-			Expect(firstImage.Buildpacks[0].Key).To(Equal("org.cloudfoundry.mri"))
+			Expect(firstImage.Buildpacks[0].Key).To(Equal("paketo-community/mri"))
 			Expect(firstImage.Buildpacks[0].Layers).To(HaveKey("mri"))
 			Expect(firstImage.Buildpacks[1].Key).To(Equal("paketo-community/bundler"))
 			Expect(firstImage.Buildpacks[1].Layers).To(HaveKey("bundler"))
@@ -113,7 +113,7 @@ func testReusingLayerRebuild(t *testing.T, context spec.G, it spec.S) {
 
 			Expect(secondImage.Buildpacks).To(HaveLen(2))
 
-			Expect(secondImage.Buildpacks[0].Key).To(Equal("org.cloudfoundry.mri"))
+			Expect(secondImage.Buildpacks[0].Key).To(Equal("paketo-community/mri"))
 			Expect(secondImage.Buildpacks[0].Layers).To(HaveKey("mri"))
 			Expect(secondImage.Buildpacks[1].Key).To(Equal("paketo-community/bundler"))
 			Expect(secondImage.Buildpacks[1].Layers).To(HaveKey("bundler"))
@@ -170,7 +170,7 @@ func testReusingLayerRebuild(t *testing.T, context spec.G, it spec.S) {
 			imageIDs[firstImage.ID] = struct{}{}
 
 			Expect(firstImage.Buildpacks).To(HaveLen(2))
-			Expect(firstImage.Buildpacks[0].Key).To(Equal("org.cloudfoundry.mri"))
+			Expect(firstImage.Buildpacks[0].Key).To(Equal("paketo-community/mri"))
 			Expect(firstImage.Buildpacks[0].Layers).To(HaveKey("mri"))
 			Expect(firstImage.Buildpacks[1].Key).To(Equal("paketo-community/bundler"))
 			Expect(firstImage.Buildpacks[1].Layers).To(HaveKey("bundler"))
@@ -208,7 +208,7 @@ func testReusingLayerRebuild(t *testing.T, context spec.G, it spec.S) {
 			imageIDs[secondImage.ID] = struct{}{}
 
 			Expect(secondImage.Buildpacks).To(HaveLen(2))
-			Expect(secondImage.Buildpacks[0].Key).To(Equal("org.cloudfoundry.mri"))
+			Expect(secondImage.Buildpacks[0].Key).To(Equal("paketo-community/mri"))
 			Expect(secondImage.Buildpacks[0].Layers).To(HaveKey("mri"))
 			Expect(secondImage.Buildpacks[1].Key).To(Equal("paketo-community/bundler"))
 			Expect(secondImage.Buildpacks[1].Layers).To(HaveKey("bundler"))
