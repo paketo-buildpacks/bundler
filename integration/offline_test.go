@@ -7,11 +7,11 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/cloudfoundry/occam"
+	"github.com/paketo-buildpacks/occam"
 	"github.com/sclevine/spec"
 
-	. "github.com/cloudfoundry/occam/matchers"
 	. "github.com/onsi/gomega"
+	. "github.com/paketo-buildpacks/occam/matchers"
 )
 
 func testOffline(t *testing.T, context spec.G, it spec.S) {
@@ -51,12 +51,12 @@ func testOffline(t *testing.T, context spec.G, it spec.S) {
 			var err error
 			image, logs, err = pack.WithNoColor().Build.
 				WithNoPull().
-				WithBuildpacks(offlineMRIBuildpack, offlineBundlerBuildpack).
+				WithBuildpacks(offlineMRIBuildpack, offlineBundlerBuildpack, buildPlanBuildpack).
 				WithNetwork("none").
-				Execute(name, filepath.Join("testdata", "simple_app"))
+				Execute(name, filepath.Join("testdata", "default_app"))
 			Expect(err).NotTo(HaveOccurred(), logs.String())
 
-			container, err = docker.Container.Run.WithMemory("128m").WithCommand("ruby run.rb").Execute(image.ID)
+			container, err = docker.Container.Run.WithCommand("ruby run.rb").Execute(image.ID)
 			Expect(err).NotTo(HaveOccurred())
 
 			Eventually(container).Should(BeAvailable(), ContainerLogs(container.ID))
@@ -69,7 +69,12 @@ func testOffline(t *testing.T, context spec.G, it spec.S) {
 
 			content, err := ioutil.ReadAll(response.Body)
 			Expect(err).NotTo(HaveOccurred())
-			Expect(string(content)).To(MatchRegexp(`Bundler version 1.17.\d+`))
+
+			Expect(string(content)).To(ContainSubstring("/layers/paketo-community_bundler/bundler/bin/bundler"))
+			Expect(string(content)).To(MatchRegexp(`Bundler version 2\.1\.\d+`))
+
+			Expect(string(content)).To(ContainSubstring("/layers/paketo-community_mri/mri/bin/ruby"))
+			Expect(string(content)).To(MatchRegexp(`ruby 2\.6\.\d+`))
 		})
 	})
 }

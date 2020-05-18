@@ -7,11 +7,11 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/cloudfoundry/occam"
+	"github.com/paketo-buildpacks/occam"
 	"github.com/sclevine/spec"
 
-	. "github.com/cloudfoundry/occam/matchers"
 	. "github.com/onsi/gomega"
+	. "github.com/paketo-buildpacks/occam/matchers"
 )
 
 func testReusingLayerRebuild(t *testing.T, context spec.G, it spec.S) {
@@ -65,14 +65,14 @@ func testReusingLayerRebuild(t *testing.T, context spec.G, it spec.S) {
 
 			build := pack.WithNoColor().Build.
 				WithNoPull().
-				WithBuildpacks(mriBuildpack, bundlerBuildpack)
+				WithBuildpacks(mriBuildpack, bundlerBuildpack, buildPlanBuildpack)
 
-			firstImage, logs, err = build.Execute(name, filepath.Join("testdata", "simple_app"))
+			firstImage, logs, err = build.Execute(name, filepath.Join("testdata", "default_app"))
 			Expect(err).NotTo(HaveOccurred())
 
 			imageIDs[firstImage.ID] = struct{}{}
 
-			Expect(firstImage.Buildpacks).To(HaveLen(2))
+			Expect(firstImage.Buildpacks).To(HaveLen(3))
 
 			Expect(firstImage.Buildpacks[0].Key).To(Equal("paketo-community/mri"))
 			Expect(firstImage.Buildpacks[0].Layers).To(HaveKey("mri"))
@@ -86,32 +86,32 @@ func testReusingLayerRebuild(t *testing.T, context spec.G, it spec.S) {
 				fmt.Sprintf("Bundler Buildpack %s", buildpackVersion),
 				"  Resolving Bundler version",
 				"    Candidate version sources (in priority order):",
-				"      Gemfile.lock -> \"1.17.3\"",
+				"      <unknown> -> \"*\"",
 				"",
-				"    Selected Bundler version (using Gemfile.lock): 1.17.3",
+				MatchRegexp(`    Selected Bundler version \(using <unknown>\): 2\.1\.\d+`),
 				"",
 				"  Executing build process",
-				MatchRegexp(`    Installing Bundler 1\.17\.\d+`),
+				MatchRegexp(`    Installing Bundler 2\.1\.\d+`),
 				MatchRegexp(`      Completed in \d+\.?\d*`),
 				"",
 				"  Configuring environment",
 				MatchRegexp(`    GEM_PATH -> "\$GEM_PATH:/layers/paketo-community_bundler/bundler"`),
 			))
 
-			firstContainer, err = docker.Container.Run.WithMemory("128m").WithCommand("ruby run.rb").Execute(firstImage.ID)
+			firstContainer, err = docker.Container.Run.WithCommand("ruby run.rb").Execute(firstImage.ID)
 			Expect(err).NotTo(HaveOccurred())
 
 			containerIDs[firstContainer.ID] = struct{}{}
 
-			Eventually(firstContainer).Should(BeAvailable())
+			Eventually(firstContainer).Should(BeAvailable(), ContainerLogs(firstContainer.ID))
 
 			// Second pack build
-			secondImage, logs, err = build.Execute(name, filepath.Join("testdata", "simple_app"))
+			secondImage, logs, err = build.Execute(name, filepath.Join("testdata", "default_app"))
 			Expect(err).NotTo(HaveOccurred())
 
 			imageIDs[secondImage.ID] = struct{}{}
 
-			Expect(secondImage.Buildpacks).To(HaveLen(2))
+			Expect(secondImage.Buildpacks).To(HaveLen(3))
 
 			Expect(secondImage.Buildpacks[0].Key).To(Equal("paketo-community/mri"))
 			Expect(secondImage.Buildpacks[0].Layers).To(HaveKey("mri"))
@@ -122,19 +122,19 @@ func testReusingLayerRebuild(t *testing.T, context spec.G, it spec.S) {
 				fmt.Sprintf("Bundler Buildpack %s", buildpackVersion),
 				"  Resolving Bundler version",
 				"    Candidate version sources (in priority order):",
-				"      Gemfile.lock -> \"1.17.3\"",
+				"      <unknown> -> \"*\"",
 				"",
-				"    Selected Bundler version (using Gemfile.lock): 1.17.3",
+				MatchRegexp(`    Selected Bundler version \(using <unknown>\): 2\.1\.\d+`),
 				"",
 				"  Reusing cached layer /layers/paketo-community_bundler/bundler",
 			))
 
-			secondContainer, err = docker.Container.Run.WithMemory("128m").WithCommand("ruby run.rb").Execute(secondImage.ID)
+			secondContainer, err = docker.Container.Run.WithCommand("ruby run.rb").Execute(secondImage.ID)
 			Expect(err).NotTo(HaveOccurred())
 
 			containerIDs[secondContainer.ID] = struct{}{}
 
-			Eventually(secondContainer).Should(BeAvailable())
+			Eventually(secondContainer).Should(BeAvailable(), ContainerLogs(secondContainer.ID))
 
 			response, err := http.Get(fmt.Sprintf("http://localhost:%s", secondContainer.HostPort()))
 			Expect(err).NotTo(HaveOccurred())
@@ -142,7 +142,12 @@ func testReusingLayerRebuild(t *testing.T, context spec.G, it spec.S) {
 
 			content, err := ioutil.ReadAll(response.Body)
 			Expect(err).NotTo(HaveOccurred())
-			Expect(string(content)).To(ContainSubstring("Hello World!"))
+
+			Expect(string(content)).To(ContainSubstring("/layers/paketo-community_bundler/bundler/bin/bundler"))
+			Expect(string(content)).To(MatchRegexp(`Bundler version 2\.1\.\d+`))
+
+			Expect(string(content)).To(ContainSubstring("/layers/paketo-community_mri/mri/bin/ruby"))
+			Expect(string(content)).To(MatchRegexp(`ruby 2\.6\.\d+`))
 
 			Expect(secondImage.Buildpacks[1].Layers["bundler"].Metadata["built_at"]).To(Equal(firstImage.Buildpacks[1].Layers["bundler"].Metadata["built_at"]))
 		})
@@ -162,14 +167,14 @@ func testReusingLayerRebuild(t *testing.T, context spec.G, it spec.S) {
 
 			build := pack.WithNoColor().Build.
 				WithNoPull().
-				WithBuildpacks(mriBuildpack, bundlerBuildpack)
+				WithBuildpacks(mriBuildpack, bundlerBuildpack, buildPlanBuildpack)
 
-			firstImage, logs, err = build.Execute(name, filepath.Join("testdata", "simple_app"))
+			firstImage, logs, err = build.Execute(name, filepath.Join("testdata", "gemfile_lock_version"))
 			Expect(err).NotTo(HaveOccurred())
 
 			imageIDs[firstImage.ID] = struct{}{}
 
-			Expect(firstImage.Buildpacks).To(HaveLen(2))
+			Expect(firstImage.Buildpacks).To(HaveLen(3))
 			Expect(firstImage.Buildpacks[0].Key).To(Equal("paketo-community/mri"))
 			Expect(firstImage.Buildpacks[0].Layers).To(HaveKey("mri"))
 			Expect(firstImage.Buildpacks[1].Key).To(Equal("paketo-community/bundler"))
@@ -183,6 +188,7 @@ func testReusingLayerRebuild(t *testing.T, context spec.G, it spec.S) {
 				"  Resolving Bundler version",
 				"    Candidate version sources (in priority order):",
 				"      Gemfile.lock -> \"1.17.3\"",
+				"      <unknown>    -> \"*\"",
 				"",
 				"    Selected Bundler version (using Gemfile.lock): 1.17.3",
 				"",
@@ -194,20 +200,20 @@ func testReusingLayerRebuild(t *testing.T, context spec.G, it spec.S) {
 				MatchRegexp(`    GEM_PATH -> "\$GEM_PATH:/layers/paketo-community_bundler/bundler"`),
 			))
 
-			firstContainer, err = docker.Container.Run.WithMemory("128m").WithCommand("ruby run.rb").Execute(firstImage.ID)
+			firstContainer, err = docker.Container.Run.WithCommand("ruby run.rb").Execute(firstImage.ID)
 			Expect(err).NotTo(HaveOccurred())
 
 			containerIDs[firstContainer.ID] = struct{}{}
 
-			Eventually(firstContainer).Should(BeAvailable())
+			Eventually(firstContainer).Should(BeAvailable(), ContainerLogs(firstContainer.ID))
 
 			// Second pack build
-			secondImage, logs, err = build.Execute(name, filepath.Join("testdata", "different_version_simple_app"))
+			secondImage, logs, err = build.Execute(name, filepath.Join("testdata", "different_version_gemfile_lock"))
 			Expect(err).NotTo(HaveOccurred())
 
 			imageIDs[secondImage.ID] = struct{}{}
 
-			Expect(secondImage.Buildpacks).To(HaveLen(2))
+			Expect(secondImage.Buildpacks).To(HaveLen(3))
 			Expect(secondImage.Buildpacks[0].Key).To(Equal("paketo-community/mri"))
 			Expect(secondImage.Buildpacks[0].Layers).To(HaveKey("mri"))
 			Expect(secondImage.Buildpacks[1].Key).To(Equal("paketo-community/bundler"))
@@ -218,6 +224,7 @@ func testReusingLayerRebuild(t *testing.T, context spec.G, it spec.S) {
 				"  Resolving Bundler version",
 				"    Candidate version sources (in priority order):",
 				"      Gemfile.lock -> \"2.1.4\"",
+				"      <unknown>    -> \"*\"",
 				"",
 				"    Selected Bundler version (using Gemfile.lock): 2.1.4",
 				"",
@@ -229,12 +236,12 @@ func testReusingLayerRebuild(t *testing.T, context spec.G, it spec.S) {
 				MatchRegexp(`    GEM_PATH -> "\$GEM_PATH:/layers/paketo-community_bundler/bundler"`),
 			))
 
-			secondContainer, err = docker.Container.Run.WithMemory("128m").WithCommand("ruby run.rb").Execute(secondImage.ID)
+			secondContainer, err = docker.Container.Run.WithCommand("ruby run.rb").Execute(secondImage.ID)
 			Expect(err).NotTo(HaveOccurred())
 
 			containerIDs[secondContainer.ID] = struct{}{}
 
-			Eventually(secondContainer).Should(BeAvailable())
+			Eventually(secondContainer).Should(BeAvailable(), ContainerLogs(secondContainer.ID))
 
 			response, err := http.Get(fmt.Sprintf("http://localhost:%s", secondContainer.HostPort()))
 			Expect(err).NotTo(HaveOccurred())
@@ -243,7 +250,12 @@ func testReusingLayerRebuild(t *testing.T, context spec.G, it spec.S) {
 
 			content, err := ioutil.ReadAll(response.Body)
 			Expect(err).NotTo(HaveOccurred())
-			Expect(string(content)).To(ContainSubstring("Hello World!"))
+
+			Expect(string(content)).To(ContainSubstring("/layers/paketo-community_bundler/bundler/bin/bundler"))
+			Expect(string(content)).To(MatchRegexp(`Bundler version 2\.1\.\d+`))
+
+			Expect(string(content)).To(ContainSubstring("/layers/paketo-community_mri/mri/bin/ruby"))
+			Expect(string(content)).To(MatchRegexp(`ruby 2\.6\.\d+`))
 
 			Expect(secondImage.Buildpacks[1].Layers["bundler"].Metadata["built_at"]).NotTo(Equal(firstImage.Buildpacks[1].Layers["bundler"].Metadata["built_at"]))
 		})

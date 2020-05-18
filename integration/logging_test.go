@@ -5,10 +5,10 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/cloudfoundry/occam"
+	"github.com/paketo-buildpacks/occam"
 	"github.com/sclevine/spec"
 
-	. "github.com/cloudfoundry/occam/matchers"
+	. "github.com/paketo-buildpacks/occam/matchers"
 	. "github.com/onsi/gomega"
 )
 
@@ -46,8 +46,8 @@ func testLogging(t *testing.T, context spec.G, it spec.S) {
 			var logs fmt.Stringer
 			image, logs, err = pack.WithNoColor().Build.
 				WithNoPull().
-				WithBuildpacks(mriBuildpack, bundlerBuildpack).
-				Execute(name, filepath.Join("testdata", "simple_app"))
+				WithBuildpacks(mriBuildpack, bundlerBuildpack, buildPlanBuildpack).
+				Execute(name, filepath.Join("testdata", "default_app"))
 			Expect(err).ToNot(HaveOccurred(), logs.String)
 
 			buildpackVersion, err := GetGitVersion()
@@ -57,12 +57,12 @@ func testLogging(t *testing.T, context spec.G, it spec.S) {
 				fmt.Sprintf("Bundler Buildpack %s", buildpackVersion),
 				"  Resolving Bundler version",
 				"    Candidate version sources (in priority order):",
-				"      Gemfile.lock -> \"1.17.3\"",
+				"      <unknown> -> \"*\"",
 				"",
-				MatchRegexp(`    Selected Bundler version \(using Gemfile\.lock\): 1\.17\.3`),
+				MatchRegexp(`    Selected Bundler version \(using <unknown>\): 2\.1\.4`),
 				"",
 				"  Executing build process",
-				MatchRegexp(`    Installing Bundler 1\.17\.3`),
+				MatchRegexp(`    Installing Bundler 2\.1\.4`),
 				MatchRegexp(`      Completed in \d+\.?\d*`),
 				"",
 				"  Configuring environment",

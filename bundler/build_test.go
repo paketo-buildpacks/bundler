@@ -9,8 +9,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/cloudfoundry/packit"
-	"github.com/cloudfoundry/packit/postal"
+	"github.com/paketo-buildpacks/packit"
+	"github.com/paketo-buildpacks/packit/postal"
 	"github.com/paketo-community/bundler/bundler"
 	"github.com/paketo-community/bundler/bundler/fakes"
 	"github.com/sclevine/spec"
@@ -29,6 +29,7 @@ func testBuild(t *testing.T, context spec.G, it spec.S) {
 		clock             bundler.Clock
 		timeStamp         time.Time
 		planRefinery      *fakes.BuildPlanRefinery
+		versionShimmer    *fakes.Shimmer
 		buffer            *bytes.Buffer
 
 		build packit.BuildFunc
@@ -74,7 +75,10 @@ func testBuild(t *testing.T, context spec.G, it spec.S) {
 		}
 
 		dependencyManager = &fakes.DependencyManager{}
-		dependencyManager.ResolveCall.Returns.Dependency = postal.Dependency{Name: "Bundler"}
+		dependencyManager.ResolveCall.Returns.Dependency = postal.Dependency{
+			Name:    "Bundler",
+			Version: "2.0.1",
+		}
 
 		planRefinery = &fakes.BuildPlanRefinery{}
 
@@ -100,12 +104,15 @@ func testBuild(t *testing.T, context spec.G, it spec.S) {
 		buffer = bytes.NewBuffer(nil)
 		logEmitter := bundler.NewLogEmitter(buffer)
 
+		versionShimmer = &fakes.Shimmer{}
+
 		build = bundler.Build(
 			entryResolver,
 			dependencyManager,
 			planRefinery,
 			logEmitter,
 			clock,
+			versionShimmer,
 		)
 	})
 
@@ -193,11 +200,20 @@ func testBuild(t *testing.T, context spec.G, it spec.S) {
 		Expect(dependencyManager.ResolveCall.Receives.Stack).To(Equal("some-stack"))
 
 		Expect(planRefinery.BillOfMaterialCall.CallCount).To(Equal(1))
-		Expect(planRefinery.BillOfMaterialCall.Receives.Dependency).To(Equal(postal.Dependency{Name: "Bundler"}))
+		Expect(planRefinery.BillOfMaterialCall.Receives.Dependency).To(Equal(postal.Dependency{
+			Name:    "Bundler",
+			Version: "2.0.1",
+		}))
 
-		Expect(dependencyManager.InstallCall.Receives.Dependency).To(Equal(postal.Dependency{Name: "Bundler"}))
+		Expect(dependencyManager.InstallCall.Receives.Dependency).To(Equal(postal.Dependency{
+			Name:    "Bundler",
+			Version: "2.0.1",
+		}))
 		Expect(dependencyManager.InstallCall.Receives.CnbPath).To(Equal(cnbDir))
 		Expect(dependencyManager.InstallCall.Receives.LayerPath).To(Equal(filepath.Join(layersDir, "bundler")))
+
+		Expect(versionShimmer.ShimCall.Receives.Path).To(Equal(filepath.Join(layersDir, "bundler", "bin")))
+		Expect(versionShimmer.ShimCall.Receives.Version).To(Equal("2.0.1"))
 
 		Expect(buffer.String()).To(ContainSubstring("Some Buildpack some-version"))
 		Expect(buffer.String()).To(ContainSubstring("Resolving Bundler version"))
@@ -625,6 +641,31 @@ func testBuild(t *testing.T, context spec.G, it spec.S) {
 					Layers: packit.Layers{Path: layersDir},
 				})
 				Expect(err).To(MatchError(ContainSubstring("permission denied")))
+			})
+		})
+
+		context("when the version shimmer cannot create version shims", func() {
+			it.Before(func() {
+				versionShimmer.ShimCall.Returns.Error = errors.New("failed to create version shims")
+			})
+
+			it("returns an error", func() {
+				_, err := build(packit.BuildContext{
+					CNBPath: cnbDir,
+					Plan: packit.BuildpackPlan{
+						Entries: []packit.BuildpackPlanEntry{
+							{
+								Name:    "bundler",
+								Version: "2.0.x",
+								Metadata: map[string]interface{}{
+									"version-source": "buildpack.yml",
+								},
+							},
+						},
+					},
+					Layers: packit.Layers{Path: layersDir},
+				})
+				Expect(err).To(MatchError("failed to create version shims"))
 			})
 		})
 	})
