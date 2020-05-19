@@ -4,9 +4,9 @@ import (
 	"os"
 	"time"
 
-	"github.com/cloudfoundry/packit"
-	"github.com/cloudfoundry/packit/cargo"
-	"github.com/cloudfoundry/packit/postal"
+	"github.com/paketo-buildpacks/packit"
+	"github.com/paketo-buildpacks/packit/cargo"
+	"github.com/paketo-buildpacks/packit/postal"
 	"github.com/paketo-community/bundler/bundler"
 )
 
@@ -16,6 +16,7 @@ func main() {
 	dependencyManager := postal.NewService(cargo.NewTransport())
 	planRefinery := bundler.NewPlanRefinery()
 	clock := bundler.NewClock(time.Now)
+	versionShimmer := bundler.NewVersionShimmer()
 
 	packit.Build(bundler.Build(
 		entryResolver,
@@ -23,5 +24,6 @@ func main() {
 		planRefinery,
 		logEmitter,
 		clock,
+		versionShimmer,
 	))
 }

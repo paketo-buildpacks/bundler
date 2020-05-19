@@ -4,8 +4,8 @@ import (
 	"path/filepath"
 	"time"
 
-	"github.com/cloudfoundry/packit"
-	"github.com/cloudfoundry/packit/postal"
+	"github.com/paketo-buildpacks/packit"
+	"github.com/paketo-buildpacks/packit/postal"
 )
 
 //go:generate faux --interface EntryResolver --output fakes/entry_resolver.go
@@ -24,12 +24,18 @@ type BuildPlanRefinery interface {
 	BillOfMaterial(dependency postal.Dependency) packit.BuildpackPlan
 }
 
+//go:generate faux --interface Shimmer --output fakes/shimmer.go
+type Shimmer interface {
+	Shim(path, version string) error
+}
+
 func Build(
 	entries EntryResolver,
 	dependencies DependencyManager,
 	planRefinery BuildPlanRefinery,
 	logger LogEmitter,
 	clock Clock,
+	versionShimmer Shimmer,
 ) packit.BuildFunc {
 	return func(context packit.BuildContext) (packit.BuildResult, error) {
 		logger.Title("%s %s", context.BuildpackInfo.Name, context.BuildpackInfo.Version)
@@ -92,10 +98,16 @@ func Build(
 			return packit.BuildResult{}, err
 		}
 
+		err = versionShimmer.Shim(filepath.Join(bundlerLayer.Path, "bin"), dependency.Version)
+		if err != nil {
+			return packit.BuildResult{}, err
+		}
+
 		logger.Action("Completed in %s", time.Since(then).Round(time.Millisecond))
 		logger.Break()
 
 		bundlerLayer.SharedEnv.Append("GEM_PATH", bundlerLayer.Path, ":")
+
 		logger.Environment(bundlerLayer.SharedEnv)
 
 		return packit.BuildResult{

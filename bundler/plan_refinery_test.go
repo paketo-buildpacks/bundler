@@ -3,7 +3,7 @@ package bundler_test
 import (
 	"testing"
 
-	"github.com/cloudfoundry/packit/postal"
+	"github.com/paketo-buildpacks/packit/postal"
 	"github.com/paketo-community/bundler/bundler"
 	"github.com/sclevine/spec"
 

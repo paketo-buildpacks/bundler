@@ -3,7 +3,7 @@ package bundler
 import (
 	"path/filepath"
 
-	"github.com/cloudfoundry/packit"
+	"github.com/paketo-buildpacks/packit"
 )
 
 //go:generate faux --interface VersionParser --output fakes/version_parser.go
@@ -13,8 +13,6 @@ type VersionParser interface {
 
 type BuildPlanMetadata struct {
 	VersionSource string `toml:"version-source"`
-	Launch        bool   `toml:"launch"`
-	Build         bool   `toml:"build"`
 }
 
 func Detect(buildpackYMLParser, gemfileLockParser VersionParser) packit.DetectFunc {
@@ -32,8 +30,6 @@ func Detect(buildpackYMLParser, gemfileLockParser VersionParser) packit.DetectFu
 				Version: version,
 				Metadata: BuildPlanMetadata{
 					VersionSource: BuildpackYMLSource,
-					Launch:        true,
-					Build:         true,
 				},
 			})
 		}
@@ -49,8 +45,6 @@ func Detect(buildpackYMLParser, gemfileLockParser VersionParser) packit.DetectFu
 				Version: version,
 				Metadata: BuildPlanMetadata{
 					VersionSource: GemfileLockSource,
-					Launch:        true,
-					Build:         true,
 				},
 			})
 		}

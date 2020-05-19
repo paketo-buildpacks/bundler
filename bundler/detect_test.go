@@ -4,7 +4,7 @@ import (
 	"errors"
 	"testing"
 
-	"github.com/cloudfoundry/packit"
+	"github.com/paketo-buildpacks/packit"
 	"github.com/paketo-community/bundler/bundler"
 	"github.com/paketo-community/bundler/bundler/fakes"
 	"github.com/sclevine/spec"
@@ -60,8 +60,6 @@ func testDetect(t *testing.T, context spec.G, it spec.S) {
 						Version: "1.17.3",
 						Metadata: bundler.BuildPlanMetadata{
 							VersionSource: "buildpack.yml",
-							Launch:        true,
-							Build:         true,
 						},
 					},
 				},
@@ -91,8 +89,6 @@ func testDetect(t *testing.T, context spec.G, it spec.S) {
 						Version: "2.1.4",
 						Metadata: bundler.BuildPlanMetadata{
 							VersionSource: "Gemfile.lock",
-							Launch:        true,
-							Build:         true,
 						},
 					},
 				},

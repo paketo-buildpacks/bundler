@@ -8,8 +8,8 @@ import (
 	"time"
 
 	"github.com/cloudfoundry/dagger"
-	"github.com/cloudfoundry/occam"
-	"github.com/cloudfoundry/packit/pexec"
+	"github.com/paketo-buildpacks/occam"
+	"github.com/paketo-buildpacks/packit/pexec"
 	"github.com/sclevine/spec"
 	"github.com/sclevine/spec/report"
 
@@ -21,6 +21,7 @@ var (
 	offlineMRIBuildpack     string
 	bundlerBuildpack        string
 	offlineBundlerBuildpack string
+	buildPlanBuildpack      string
 )
 
 func TestIntegration(t *testing.T) {
@@ -35,10 +36,13 @@ func TestIntegration(t *testing.T) {
 	offlineBundlerBuildpack, _, err = dagger.PackageCachedBuildpack(root)
 	Expect(err).NotTo(HaveOccurred())
 
-	mriBuildpack, err = dagger.GetLatestBuildpack("mri-cnb")
+	buildPlanBuildpack, err = dagger.GetLatestCommunityBuildpack("ForestEckhardt", "build-plan")
 	Expect(err).ToNot(HaveOccurred())
 
-	mriSource, err := dagger.GetLatestUnpackagedBuildpack("mri-cnb")
+	mriBuildpack, err = dagger.GetLatestCommunityBuildpack("paketo-community", "mri")
+	Expect(err).ToNot(HaveOccurred())
+
+	mriSource, err := dagger.GetLatestUnpackagedCommunityBuildpack("paketo-community", "mri")
 	Expect(err).ToNot(HaveOccurred())
 
 	offlineMRIBuildpack, _, err = dagger.PackageCachedBuildpack(mriSource)
@@ -54,12 +58,15 @@ func TestIntegration(t *testing.T) {
 		dagger.DeleteBuildpack(offlineMRIBuildpack)
 		dagger.DeleteBuildpack(bundlerBuildpack)
 		dagger.DeleteBuildpack(offlineBundlerBuildpack)
+		dagger.DeleteBuildpack(buildPlanBuildpack)
 	}()
 
-	SetDefaultEventuallyTimeout(5 * time.Second)
+	SetDefaultEventuallyTimeout(10 * time.Second)
 
 	suite := spec.New("Integration", spec.Report(report.Terminal{}))
-	suite("BuildpackYML", testBuildpackYML)
+	suite("buildpack.yml", testBuildpackYML)
+	suite("gemfile.lock", testGemfileLock)
+	suite("Default", testDefault)
 	suite("Logging", testLogging)
 	suite("Offline", testOffline)
 	suite("ReusingLayerRebuild", testReusingLayerRebuild)
