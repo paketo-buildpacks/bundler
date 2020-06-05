@@ -10,6 +10,7 @@ import (
 	"time"
 
 	"github.com/paketo-buildpacks/packit"
+	"github.com/paketo-buildpacks/packit/chronos"
 	"github.com/paketo-buildpacks/packit/postal"
 	"github.com/paketo-community/bundler/bundler"
 	"github.com/paketo-community/bundler/bundler/fakes"
@@ -26,7 +27,7 @@ func testBuild(t *testing.T, context spec.G, it spec.S) {
 		cnbDir            string
 		entryResolver     *fakes.EntryResolver
 		dependencyManager *fakes.DependencyManager
-		clock             bundler.Clock
+		clock             chronos.Clock
 		timeStamp         time.Time
 		planRefinery      *fakes.BuildPlanRefinery
 		versionShimmer    *fakes.Shimmer
@@ -83,7 +84,7 @@ func testBuild(t *testing.T, context spec.G, it spec.S) {
 		planRefinery = &fakes.BuildPlanRefinery{}
 
 		timeStamp = time.Now()
-		clock = bundler.NewClock(func() time.Time {
+		clock = chronos.NewClock(func() time.Time {
 			return timeStamp
 		})
 

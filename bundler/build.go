@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/paketo-buildpacks/packit"
+	"github.com/paketo-buildpacks/packit/chronos"
 	"github.com/paketo-buildpacks/packit/postal"
 )
 
@@ -34,7 +35,7 @@ func Build(
 	dependencies DependencyManager,
 	planRefinery BuildPlanRefinery,
 	logger LogEmitter,
-	clock Clock,
+	clock chronos.Clock,
 	versionShimmer Shimmer,
 ) packit.BuildFunc {
 	return func(context packit.BuildContext) (packit.BuildResult, error) {
@@ -86,25 +87,26 @@ func Build(
 			return packit.BuildResult{}, err
 		}
 
+		logger.Subprocess("Installing Bundler %s", dependency.Version)
+		duration, err := clock.Measure(func() error {
+			err := dependencies.Install(dependency, context.CNBPath, bundlerLayer.Path)
+			if err != nil {
+				return err
+			}
+
+			return versionShimmer.Shim(filepath.Join(bundlerLayer.Path, "bin"), dependency.Version)
+		})
+		if err != nil {
+			return packit.BuildResult{}, err
+		}
+
+		logger.Action("Completed in %s", duration.Round(time.Millisecond))
+		logger.Break()
+
 		bundlerLayer.Metadata = map[string]interface{}{
 			DepKey:     dependency.SHA256,
 			"built_at": clock.Now().Format(time.RFC3339Nano),
 		}
-
-		logger.Subprocess("Installing Bundler %s", dependency.Version)
-		then := clock.Now()
-		err = dependencies.Install(dependency, context.CNBPath, bundlerLayer.Path)
-		if err != nil {
-			return packit.BuildResult{}, err
-		}
-
-		err = versionShimmer.Shim(filepath.Join(bundlerLayer.Path, "bin"), dependency.Version)
-		if err != nil {
-			return packit.BuildResult{}, err
-		}
-
-		logger.Action("Completed in %s", time.Since(then).Round(time.Millisecond))
-		logger.Break()
 
 		bundlerLayer.SharedEnv.Append("GEM_PATH", bundlerLayer.Path, ":")
 
