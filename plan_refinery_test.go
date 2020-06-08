@@ -4,7 +4,7 @@ import (
 	"testing"
 
 	"github.com/paketo-buildpacks/packit/postal"
-	"github.com/paketo-community/bundler/bundler"
+	"github.com/paketo-community/bundler"
 	"github.com/sclevine/spec"
 
 	. "github.com/onsi/gomega"
