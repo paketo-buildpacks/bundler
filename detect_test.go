@@ -5,8 +5,8 @@ import (
 	"testing"
 
 	"github.com/paketo-buildpacks/packit"
-	"github.com/paketo-community/bundler/bundler"
-	"github.com/paketo-community/bundler/bundler/fakes"
+	"github.com/paketo-community/bundler"
+	"github.com/paketo-community/bundler/fakes"
 	"github.com/sclevine/spec"
 
 	. "github.com/onsi/gomega"

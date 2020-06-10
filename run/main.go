@@ -7,22 +7,30 @@ import (
 	"github.com/paketo-buildpacks/packit/cargo"
 	"github.com/paketo-buildpacks/packit/chronos"
 	"github.com/paketo-buildpacks/packit/postal"
-	"github.com/paketo-community/bundler/bundler"
+	"github.com/paketo-community/bundler"
 )
 
 func main() {
+	buildpackYMLParser := bundler.NewBuildpackYMLParser()
+	gemfileLockParser := bundler.NewGemfileLockParser()
 	logEmitter := bundler.NewLogEmitter(os.Stdout)
 	entryResolver := bundler.NewPlanEntryResolver(logEmitter)
 	dependencyManager := postal.NewService(cargo.NewTransport())
 	planRefinery := bundler.NewPlanRefinery()
 	versionShimmer := bundler.NewVersionShimmer()
 
-	packit.Build(bundler.Build(
-		entryResolver,
-		dependencyManager,
-		planRefinery,
-		logEmitter,
-		chronos.DefaultClock,
-		versionShimmer,
-	))
+	packit.Run(
+		bundler.Detect(
+			buildpackYMLParser,
+			gemfileLockParser,
+		),
+		bundler.Build(
+			entryResolver,
+			dependencyManager,
+			planRefinery,
+			logEmitter,
+			chronos.DefaultClock,
+			versionShimmer,
+		),
+	)
 }
