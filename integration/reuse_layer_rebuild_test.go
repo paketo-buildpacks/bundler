@@ -4,7 +4,9 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
+	"os"
 	"path/filepath"
+	"regexp"
 	"testing"
 
 	"github.com/paketo-buildpacks/occam"
@@ -24,7 +26,9 @@ func testReusingLayerRebuild(t *testing.T, context spec.G, it spec.S) {
 
 		imageIDs     map[string]struct{}
 		containerIDs map[string]struct{}
-		name         string
+
+		name   string
+		source string
 	)
 
 	it.Before(func() {
@@ -36,7 +40,6 @@ func testReusingLayerRebuild(t *testing.T, context spec.G, it spec.S) {
 		pack = occam.NewPack()
 		imageIDs = map[string]struct{}{}
 		containerIDs = map[string]struct{}{}
-
 	})
 
 	it.After(func() {
@@ -49,6 +52,7 @@ func testReusingLayerRebuild(t *testing.T, context spec.G, it spec.S) {
 		}
 
 		Expect(docker.Volume.Remove.Execute(occam.CacheVolumeNames(name))).To(Succeed())
+		Expect(os.RemoveAll(source)).To(Succeed())
 	})
 
 	context("when an app is rebuilt and does not change", func() {
@@ -63,11 +67,14 @@ func testReusingLayerRebuild(t *testing.T, context spec.G, it spec.S) {
 				secondContainer occam.Container
 			)
 
+			source, err = occam.Source(filepath.Join("testdata", "default_app"))
+			Expect(err).NotTo(HaveOccurred())
+
 			build := pack.WithNoColor().Build.
 				WithNoPull().
 				WithBuildpacks(mriBuildpack, bundlerBuildpack, buildPlanBuildpack)
 
-			firstImage, logs, err = build.Execute(name, filepath.Join("testdata", "default_app"))
+			firstImage, logs, err = build.Execute(name, source)
 			Expect(err).NotTo(HaveOccurred())
 
 			imageIDs[firstImage.ID] = struct{}{}
@@ -106,7 +113,7 @@ func testReusingLayerRebuild(t *testing.T, context spec.G, it spec.S) {
 			Eventually(firstContainer).Should(BeAvailable(), ContainerLogs(firstContainer.ID))
 
 			// Second pack build
-			secondImage, logs, err = build.Execute(name, filepath.Join("testdata", "default_app"))
+			secondImage, logs, err = build.Execute(name, source)
 			Expect(err).NotTo(HaveOccurred())
 
 			imageIDs[secondImage.ID] = struct{}{}
@@ -165,11 +172,14 @@ func testReusingLayerRebuild(t *testing.T, context spec.G, it spec.S) {
 				secondContainer occam.Container
 			)
 
+			source, err = occam.Source(filepath.Join("testdata", "gemfile_lock_version"))
+			Expect(err).NotTo(HaveOccurred())
+
 			build := pack.WithNoColor().Build.
 				WithNoPull().
 				WithBuildpacks(mriBuildpack, bundlerBuildpack, buildPlanBuildpack)
 
-			firstImage, logs, err = build.Execute(name, filepath.Join("testdata", "gemfile_lock_version"))
+			firstImage, logs, err = build.Execute(name, source)
 			Expect(err).NotTo(HaveOccurred())
 
 			imageIDs[firstImage.ID] = struct{}{}
@@ -207,8 +217,15 @@ func testReusingLayerRebuild(t *testing.T, context spec.G, it spec.S) {
 
 			Eventually(firstContainer).Should(BeAvailable(), ContainerLogs(firstContainer.ID))
 
+			contents, err := ioutil.ReadFile(filepath.Join(source, "Gemfile.lock"))
+			Expect(err).NotTo(HaveOccurred())
+
+			re := regexp.MustCompile(`BUNDLED WITH\s+\d+\.\d+\.\d+`)
+			err = ioutil.WriteFile(filepath.Join(source, "Gemfile.lock"), re.ReplaceAll(contents, []byte("BUNDLED WITH\n   2.1.4")), 0644)
+			Expect(err).NotTo(HaveOccurred())
+
 			// Second pack build
-			secondImage, logs, err = build.Execute(name, filepath.Join("testdata", "different_version_gemfile_lock"))
+			secondImage, logs, err = build.Execute(name, source)
 			Expect(err).NotTo(HaveOccurred())
 
 			imageIDs[secondImage.ID] = struct{}{}
@@ -253,9 +270,6 @@ func testReusingLayerRebuild(t *testing.T, context spec.G, it spec.S) {
 
 			Expect(string(content)).To(ContainSubstring("/layers/paketo-community_bundler/bundler/bin/bundler"))
 			Expect(string(content)).To(MatchRegexp(`Bundler version 2\.1\.\d+`))
-
-			Expect(string(content)).To(ContainSubstring("/layers/paketo-community_mri/mri/bin/ruby"))
-			Expect(string(content)).To(MatchRegexp(`ruby 2\.6\.\d+`))
 
 			Expect(secondImage.Buildpacks[1].Layers["bundler"].Metadata["built_at"]).NotTo(Equal(firstImage.Buildpacks[1].Layers["bundler"].Metadata["built_at"]))
 		})

@@ -2,14 +2,15 @@ package integration
 
 import (
 	"fmt"
+	"os"
 	"path/filepath"
 	"testing"
 
 	"github.com/paketo-buildpacks/occam"
 	"github.com/sclevine/spec"
 
-	. "github.com/paketo-buildpacks/occam/matchers"
 	. "github.com/onsi/gomega"
+	. "github.com/paketo-buildpacks/occam/matchers"
 )
 
 func testLogging(t *testing.T, context spec.G, it spec.S) {
@@ -27,7 +28,9 @@ func testLogging(t *testing.T, context spec.G, it spec.S) {
 	context("when the buildpack is run with pack build", func() {
 		var (
 			image occam.Image
-			name  string
+
+			name   string
+			source string
 		)
 
 		it.Before(func() {
@@ -39,15 +42,19 @@ func testLogging(t *testing.T, context spec.G, it spec.S) {
 		it.After(func() {
 			Expect(docker.Image.Remove.Execute(image.ID)).To(Succeed())
 			Expect(docker.Volume.Remove.Execute(occam.CacheVolumeNames(name))).To(Succeed())
+			Expect(os.RemoveAll(source)).To(Succeed())
 		})
 
 		it("logs useful information for the user", func() {
 			var err error
+			source, err = occam.Source(filepath.Join("testdata", "default_app"))
+			Expect(err).ToNot(HaveOccurred())
+
 			var logs fmt.Stringer
 			image, logs, err = pack.WithNoColor().Build.
 				WithNoPull().
 				WithBuildpacks(mriBuildpack, bundlerBuildpack, buildPlanBuildpack).
-				Execute(name, filepath.Join("testdata", "default_app"))
+				Execute(name, source)
 			Expect(err).ToNot(HaveOccurred(), logs.String)
 
 			buildpackVersion, err := GetGitVersion()

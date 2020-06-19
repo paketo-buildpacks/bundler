@@ -63,7 +63,7 @@ func TestIntegration(t *testing.T) {
 
 	SetDefaultEventuallyTimeout(10 * time.Second)
 
-	suite := spec.New("Integration", spec.Report(report.Terminal{}))
+	suite := spec.New("Integration", spec.Report(report.Terminal{}), spec.Parallel())
 	suite("buildpack.yml", testBuildpackYML)
 	suite("gemfile.lock", testGemfileLock)
 	suite("Default", testDefault)
