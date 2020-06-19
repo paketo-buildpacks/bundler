@@ -53,14 +53,6 @@ func TestIntegration(t *testing.T) {
 	offlineBundlerBuildpack = fmt.Sprintf("%s.tgz", offlineBundlerBuildpack)
 	offlineMRIBuildpack = fmt.Sprintf("%s.tgz", offlineMRIBuildpack)
 
-	defer func() {
-		dagger.DeleteBuildpack(mriBuildpack)
-		dagger.DeleteBuildpack(offlineMRIBuildpack)
-		dagger.DeleteBuildpack(bundlerBuildpack)
-		dagger.DeleteBuildpack(offlineBundlerBuildpack)
-		dagger.DeleteBuildpack(buildPlanBuildpack)
-	}()
-
 	SetDefaultEventuallyTimeout(10 * time.Second)
 
 	suite := spec.New("Integration", spec.Report(report.Terminal{}), spec.Parallel())
@@ -70,7 +62,19 @@ func TestIntegration(t *testing.T) {
 	suite("Logging", testLogging)
 	suite("Offline", testOffline)
 	suite("ReusingLayerRebuild", testReusingLayerRebuild)
+
+	defer AfterSuite(t)
 	suite.Run(t)
+}
+
+func AfterSuite(t *testing.T) {
+	var Expect = NewWithT(t).Expect
+
+	Expect(dagger.DeleteBuildpack(mriBuildpack)).To(Succeed())
+	Expect(dagger.DeleteBuildpack(offlineMRIBuildpack)).To(Succeed())
+	Expect(dagger.DeleteBuildpack(bundlerBuildpack)).To(Succeed())
+	Expect(dagger.DeleteBuildpack(offlineBundlerBuildpack)).To(Succeed())
+	Expect(dagger.DeleteBuildpack(buildPlanBuildpack)).To(Succeed())
 }
 
 func ContainerLogs(id string) func() string {
