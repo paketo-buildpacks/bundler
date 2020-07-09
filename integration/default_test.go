@@ -59,7 +59,11 @@ func testDefault(t *testing.T, context spec.G, it spec.S) {
 			var logs fmt.Stringer
 			image, logs, err = pack.WithNoColor().Build.
 				WithNoPull().
-				WithBuildpacks(mriBuildpack, bundlerBuildpack, buildPlanBuildpack).
+				WithBuildpacks(
+					settings.Buildpacks.MRI.Online,
+					settings.Buildpacks.Bundler.Online,
+					settings.Buildpacks.BuildPlan.Online,
+				).
 				Execute(name, source)
 			Expect(err).ToNot(HaveOccurred(), logs.String)
 
@@ -82,11 +86,8 @@ func testDefault(t *testing.T, context spec.G, it spec.S) {
 			Expect(string(content)).To(ContainSubstring("/layers/paketo-community_mri/mri/bin/ruby"))
 			Expect(string(content)).To(MatchRegexp(`ruby 2\.6\.\d+`))
 
-			buildpackVersion, err := GetGitVersion()
-			Expect(err).ToNot(HaveOccurred())
-
 			Expect(logs).To(ContainLines(
-				fmt.Sprintf("Bundler Buildpack %s", buildpackVersion),
+				"Bundler Buildpack 1.2.3",
 				"  Resolving Bundler version",
 				"    Candidate version sources (in priority order):",
 				"      <unknown> -> \"*\"",

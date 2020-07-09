@@ -1,0 +1,4 @@
+{
+  "build-plan": "github.com/ForestEckhardt/build-plan",
+  "mri": "github.com/paketo-community/mri"
+}
