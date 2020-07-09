@@ -72,7 +72,11 @@ func testReusingLayerRebuild(t *testing.T, context spec.G, it spec.S) {
 
 			build := pack.WithNoColor().Build.
 				WithNoPull().
-				WithBuildpacks(mriBuildpack, bundlerBuildpack, buildPlanBuildpack)
+				WithBuildpacks(
+					settings.Buildpacks.MRI.Online,
+					settings.Buildpacks.Bundler.Online,
+					settings.Buildpacks.BuildPlan.Online,
+				)
 
 			firstImage, logs, err = build.Execute(name, source)
 			Expect(err).NotTo(HaveOccurred())
@@ -86,11 +90,8 @@ func testReusingLayerRebuild(t *testing.T, context spec.G, it spec.S) {
 			Expect(firstImage.Buildpacks[1].Key).To(Equal("paketo-community/bundler"))
 			Expect(firstImage.Buildpacks[1].Layers).To(HaveKey("bundler"))
 
-			buildpackVersion, err := GetGitVersion()
-			Expect(err).ToNot(HaveOccurred())
-
 			Expect(logs).To(ContainLines(
-				fmt.Sprintf("Bundler Buildpack %s", buildpackVersion),
+				"Bundler Buildpack 1.2.3",
 				"  Resolving Bundler version",
 				"    Candidate version sources (in priority order):",
 				"      <unknown> -> \"*\"",
@@ -126,7 +127,7 @@ func testReusingLayerRebuild(t *testing.T, context spec.G, it spec.S) {
 			Expect(secondImage.Buildpacks[1].Layers).To(HaveKey("bundler"))
 
 			Expect(logs).To(ContainLines(
-				fmt.Sprintf("Bundler Buildpack %s", buildpackVersion),
+				"Bundler Buildpack 1.2.3",
 				"  Resolving Bundler version",
 				"    Candidate version sources (in priority order):",
 				"      <unknown> -> \"*\"",
@@ -177,7 +178,11 @@ func testReusingLayerRebuild(t *testing.T, context spec.G, it spec.S) {
 
 			build := pack.WithNoColor().Build.
 				WithNoPull().
-				WithBuildpacks(mriBuildpack, bundlerBuildpack, buildPlanBuildpack)
+				WithBuildpacks(
+					settings.Buildpacks.MRI.Online,
+					settings.Buildpacks.Bundler.Online,
+					settings.Buildpacks.BuildPlan.Online,
+				)
 
 			firstImage, logs, err = build.Execute(name, source)
 			Expect(err).NotTo(HaveOccurred())
@@ -190,11 +195,8 @@ func testReusingLayerRebuild(t *testing.T, context spec.G, it spec.S) {
 			Expect(firstImage.Buildpacks[1].Key).To(Equal("paketo-community/bundler"))
 			Expect(firstImage.Buildpacks[1].Layers).To(HaveKey("bundler"))
 
-			buildpackVersion, err := GetGitVersion()
-			Expect(err).ToNot(HaveOccurred())
-
 			Expect(logs).To(ContainLines(
-				fmt.Sprintf("Bundler Buildpack %s", buildpackVersion),
+				"Bundler Buildpack 1.2.3",
 				"  Resolving Bundler version",
 				"    Candidate version sources (in priority order):",
 				"      Gemfile.lock -> \"1.17.3\"",
@@ -237,7 +239,7 @@ func testReusingLayerRebuild(t *testing.T, context spec.G, it spec.S) {
 			Expect(secondImage.Buildpacks[1].Layers).To(HaveKey("bundler"))
 
 			Expect(logs).To(ContainLines(
-				fmt.Sprintf("Bundler Buildpack %s", buildpackVersion),
+				"Bundler Buildpack 1.2.3",
 				"  Resolving Bundler version",
 				"    Candidate version sources (in priority order):",
 				"      Gemfile.lock -> \"2.1.4\"",
