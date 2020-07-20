@@ -1,5 +1,7 @@
 # Bundler Cloud Native Buildpack
 
+## `gcr.io/paketo-community/bundler`
+
 The Bundler CNB provides the Bundler binary. The buildpack installs the Bundler 
 onto the `$PATH` and `$GEM_PATH` which makes it available for subsequent buildpacks
 and in the final running container.
