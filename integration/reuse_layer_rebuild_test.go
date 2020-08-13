@@ -91,7 +91,7 @@ func testReusingLayerRebuild(t *testing.T, context spec.G, it spec.S) {
 			Expect(firstImage.Buildpacks[1].Layers).To(HaveKey("bundler"))
 
 			Expect(logs).To(ContainLines(
-				"Bundler Buildpack 1.2.3",
+				"Paketo Bundler Buildpack 1.2.3",
 				"  Resolving Bundler version",
 				"    Candidate version sources (in priority order):",
 				"      <unknown> -> \"*\"",
@@ -127,7 +127,7 @@ func testReusingLayerRebuild(t *testing.T, context spec.G, it spec.S) {
 			Expect(secondImage.Buildpacks[1].Layers).To(HaveKey("bundler"))
 
 			Expect(logs).To(ContainLines(
-				"Bundler Buildpack 1.2.3",
+				"Paketo Bundler Buildpack 1.2.3",
 				"  Resolving Bundler version",
 				"    Candidate version sources (in priority order):",
 				"      <unknown> -> \"*\"",
@@ -196,7 +196,7 @@ func testReusingLayerRebuild(t *testing.T, context spec.G, it spec.S) {
 			Expect(firstImage.Buildpacks[1].Layers).To(HaveKey("bundler"))
 
 			Expect(logs).To(ContainLines(
-				"Bundler Buildpack 1.2.3",
+				"Paketo Bundler Buildpack 1.2.3",
 				"  Resolving Bundler version",
 				"    Candidate version sources (in priority order):",
 				"      Gemfile.lock -> \"1.17.3\"",
@@ -239,7 +239,7 @@ func testReusingLayerRebuild(t *testing.T, context spec.G, it spec.S) {
 			Expect(secondImage.Buildpacks[1].Layers).To(HaveKey("bundler"))
 
 			Expect(logs).To(ContainLines(
-				"Bundler Buildpack 1.2.3",
+				"Paketo Bundler Buildpack 1.2.3",
 				"  Resolving Bundler version",
 				"    Candidate version sources (in priority order):",
 				"      Gemfile.lock -> \"2.1.4\"",
