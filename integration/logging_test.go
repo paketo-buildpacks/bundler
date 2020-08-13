@@ -62,7 +62,7 @@ func testLogging(t *testing.T, context spec.G, it spec.S) {
 			Expect(err).ToNot(HaveOccurred(), logs.String)
 
 			Expect(logs).To(ContainLines(
-				"Bundler Buildpack 1.2.3",
+				"Paketo Bundler Buildpack 1.2.3",
 				"  Resolving Bundler version",
 				"    Candidate version sources (in priority order):",
 				"      <unknown> -> \"*\"",
