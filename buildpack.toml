@@ -2,7 +2,7 @@ api = "0.2"
 
 [buildpack]
   id = "paketo-community/bundler"
-  name = "Bundler Buildpack"
+  name = "Paketo Bundler Buildpack"
 
 [metadata]
   include_files = ["bin/build", "bin/detect", "bin/run", "buildpack.toml"]
