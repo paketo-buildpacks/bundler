@@ -87,7 +87,7 @@ func testGemfileLock(t *testing.T, context spec.G, it spec.S) {
 			Expect(string(content)).To(MatchRegexp(`ruby 2\.7\.\d+`))
 
 			Expect(logs).To(ContainLines(
-				"Paketo Bundler Buildpack 1.2.3",
+				MatchRegexp(fmt.Sprintf(`%s \d+\.\d+\.\d+`, settings.Buildpack.Name)),
 				"  Resolving Bundler version",
 				"    Candidate version sources (in priority order):",
 				"      Gemfile.lock -> \"1.17.3\"",
