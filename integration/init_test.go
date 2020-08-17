@@ -7,6 +7,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/BurntSushi/toml"
 	"github.com/paketo-buildpacks/occam"
 	"github.com/sclevine/spec"
 	"github.com/sclevine/spec/report"
@@ -29,6 +30,11 @@ var settings struct {
 		}
 	}
 
+	Buildpack struct {
+		ID   string
+		Name string
+	}
+
 	Config struct {
 		BuildPlan string `json:"build-plan"`
 		MRI       string `json:"mri"`
@@ -45,6 +51,13 @@ func TestIntegration(t *testing.T) {
 	Expect(err).NotTo(HaveOccurred())
 
 	Expect(json.NewDecoder(file).Decode(&settings.Config)).To(Succeed())
+	Expect(file.Close()).To(Succeed())
+
+	file, err = os.Open("../buildpack.toml")
+	Expect(err).NotTo(HaveOccurred())
+
+	_, err = toml.DecodeReader(file, &settings)
+	Expect(err).NotTo(HaveOccurred())
 	Expect(file.Close()).To(Succeed())
 
 	buildpackStore := occam.NewBuildpackStore()
