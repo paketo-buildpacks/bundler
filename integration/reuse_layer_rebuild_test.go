@@ -7,6 +7,7 @@ import (
 	"os"
 	"path/filepath"
 	"regexp"
+	"strings"
 	"testing"
 
 	"github.com/paketo-buildpacks/occam"
@@ -87,7 +88,7 @@ func testReusingLayerRebuild(t *testing.T, context spec.G, it spec.S) {
 
 			Expect(firstImage.Buildpacks[0].Key).To(Equal("paketo-community/mri"))
 			Expect(firstImage.Buildpacks[0].Layers).To(HaveKey("mri"))
-			Expect(firstImage.Buildpacks[1].Key).To(Equal("paketo-community/bundler"))
+			Expect(firstImage.Buildpacks[1].Key).To(Equal(settings.Buildpack.ID))
 			Expect(firstImage.Buildpacks[1].Layers).To(HaveKey("bundler"))
 
 			Expect(logs).To(ContainLines(
@@ -103,7 +104,7 @@ func testReusingLayerRebuild(t *testing.T, context spec.G, it spec.S) {
 				MatchRegexp(`      Completed in \d+\.?\d*`),
 				"",
 				"  Configuring environment",
-				MatchRegexp(`    GEM_PATH -> "\$GEM_PATH:/layers/paketo-community_bundler/bundler"`),
+				MatchRegexp(fmt.Sprintf(`    GEM_PATH -> "\$GEM_PATH:/layers/%s/bundler"`, strings.ReplaceAll(settings.Buildpack.ID, "/", "_"))),
 			))
 
 			firstContainer, err = docker.Container.Run.WithCommand("ruby run.rb").Execute(firstImage.ID)
@@ -123,7 +124,7 @@ func testReusingLayerRebuild(t *testing.T, context spec.G, it spec.S) {
 
 			Expect(secondImage.Buildpacks[0].Key).To(Equal("paketo-community/mri"))
 			Expect(secondImage.Buildpacks[0].Layers).To(HaveKey("mri"))
-			Expect(secondImage.Buildpacks[1].Key).To(Equal("paketo-community/bundler"))
+			Expect(secondImage.Buildpacks[1].Key).To(Equal(settings.Buildpack.ID))
 			Expect(secondImage.Buildpacks[1].Layers).To(HaveKey("bundler"))
 
 			Expect(logs).To(ContainLines(
@@ -134,7 +135,7 @@ func testReusingLayerRebuild(t *testing.T, context spec.G, it spec.S) {
 				"",
 				MatchRegexp(`    Selected Bundler version \(using <unknown>\): 2\.1\.\d+`),
 				"",
-				"  Reusing cached layer /layers/paketo-community_bundler/bundler",
+				MatchRegexp(fmt.Sprintf("  Reusing cached layer /layers/%s/bundler", strings.ReplaceAll(settings.Buildpack.ID, "/", "_"))),
 			))
 
 			secondContainer, err = docker.Container.Run.WithCommand("ruby run.rb").Execute(secondImage.ID)
@@ -151,7 +152,7 @@ func testReusingLayerRebuild(t *testing.T, context spec.G, it spec.S) {
 			content, err := ioutil.ReadAll(response.Body)
 			Expect(err).NotTo(HaveOccurred())
 
-			Expect(string(content)).To(ContainSubstring("/layers/paketo-community_bundler/bundler/bin/bundler"))
+			Expect(string(content)).To(ContainSubstring(fmt.Sprintf("/layers/%s/bundler/bin/bundler", strings.ReplaceAll(settings.Buildpack.ID, "/", "_"))))
 			Expect(string(content)).To(MatchRegexp(`Bundler version 2\.1\.\d+`))
 
 			Expect(string(content)).To(ContainSubstring("/layers/paketo-community_mri/mri/bin/ruby"))
@@ -192,7 +193,7 @@ func testReusingLayerRebuild(t *testing.T, context spec.G, it spec.S) {
 			Expect(firstImage.Buildpacks).To(HaveLen(3))
 			Expect(firstImage.Buildpacks[0].Key).To(Equal("paketo-community/mri"))
 			Expect(firstImage.Buildpacks[0].Layers).To(HaveKey("mri"))
-			Expect(firstImage.Buildpacks[1].Key).To(Equal("paketo-community/bundler"))
+			Expect(firstImage.Buildpacks[1].Key).To(Equal(settings.Buildpack.ID))
 			Expect(firstImage.Buildpacks[1].Layers).To(HaveKey("bundler"))
 
 			Expect(logs).To(ContainLines(
@@ -209,7 +210,7 @@ func testReusingLayerRebuild(t *testing.T, context spec.G, it spec.S) {
 				MatchRegexp(`      Completed in \d+\.?\d*`),
 				"",
 				"  Configuring environment",
-				MatchRegexp(`    GEM_PATH -> "\$GEM_PATH:/layers/paketo-community_bundler/bundler"`),
+				MatchRegexp(fmt.Sprintf(`    GEM_PATH -> "\$GEM_PATH:/layers/%s/bundler"`, strings.ReplaceAll(settings.Buildpack.ID, "/", "_"))),
 			))
 
 			firstContainer, err = docker.Container.Run.WithCommand("ruby run.rb").Execute(firstImage.ID)
@@ -235,7 +236,7 @@ func testReusingLayerRebuild(t *testing.T, context spec.G, it spec.S) {
 			Expect(secondImage.Buildpacks).To(HaveLen(3))
 			Expect(secondImage.Buildpacks[0].Key).To(Equal("paketo-community/mri"))
 			Expect(secondImage.Buildpacks[0].Layers).To(HaveKey("mri"))
-			Expect(secondImage.Buildpacks[1].Key).To(Equal("paketo-community/bundler"))
+			Expect(secondImage.Buildpacks[1].Key).To(Equal(settings.Buildpack.ID))
 			Expect(secondImage.Buildpacks[1].Layers).To(HaveKey("bundler"))
 
 			Expect(logs).To(ContainLines(
@@ -252,7 +253,7 @@ func testReusingLayerRebuild(t *testing.T, context spec.G, it spec.S) {
 				MatchRegexp(`      Completed in \d+\.?\d*`),
 				"",
 				"  Configuring environment",
-				MatchRegexp(`    GEM_PATH -> "\$GEM_PATH:/layers/paketo-community_bundler/bundler"`),
+				MatchRegexp(fmt.Sprintf(`    GEM_PATH -> "\$GEM_PATH:/layers/%s/bundler"`, strings.ReplaceAll(settings.Buildpack.ID, "/", "_"))),
 			))
 
 			secondContainer, err = docker.Container.Run.WithCommand("ruby run.rb").Execute(secondImage.ID)
@@ -270,7 +271,7 @@ func testReusingLayerRebuild(t *testing.T, context spec.G, it spec.S) {
 			content, err := ioutil.ReadAll(response.Body)
 			Expect(err).NotTo(HaveOccurred())
 
-			Expect(string(content)).To(ContainSubstring("/layers/paketo-community_bundler/bundler/bin/bundler"))
+			Expect(string(content)).To(ContainSubstring(fmt.Sprintf("/layers/%s/bundler/bin/bundler", strings.ReplaceAll(settings.Buildpack.ID, "/", "_"))))
 			Expect(string(content)).To(MatchRegexp(`Bundler version 2\.1\.\d+`))
 
 			Expect(secondImage.Buildpacks[1].Layers["bundler"].Metadata["built_at"]).NotTo(Equal(firstImage.Buildpacks[1].Layers["bundler"].Metadata["built_at"]))
