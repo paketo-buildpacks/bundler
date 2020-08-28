@@ -12,8 +12,8 @@ type VersionParser interface {
 }
 
 type BuildPlanMetadata struct {
-	Version       string `toml:"version"`
 	VersionSource string `toml:"version-source"`
+	Version       string `toml:"version"`
 }
 
 func Detect(buildpackYMLParser, gemfileLockParser VersionParser) packit.DetectFunc {
