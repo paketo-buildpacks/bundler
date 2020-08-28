@@ -12,6 +12,7 @@ type VersionParser interface {
 }
 
 type BuildPlanMetadata struct {
+	Version       string `toml:"version"`
 	VersionSource string `toml:"version-source"`
 }
 
@@ -26,10 +27,10 @@ func Detect(buildpackYMLParser, gemfileLockParser VersionParser) packit.DetectFu
 
 		if version != "" {
 			requirements = append(requirements, packit.BuildPlanRequirement{
-				Name:    Bundler,
-				Version: version,
+				Name: Bundler,
 				Metadata: BuildPlanMetadata{
 					VersionSource: BuildpackYMLSource,
+					Version:       version,
 				},
 			})
 		}
@@ -41,10 +42,10 @@ func Detect(buildpackYMLParser, gemfileLockParser VersionParser) packit.DetectFu
 
 		if version != "" {
 			requirements = append(requirements, packit.BuildPlanRequirement{
-				Name:    Bundler,
-				Version: version,
+				Name: Bundler,
 				Metadata: BuildPlanMetadata{
 					VersionSource: GemfileLockSource,
+					Version:       version,
 				},
 			})
 		}

@@ -56,10 +56,10 @@ func testDetect(t *testing.T, context spec.G, it spec.S) {
 				},
 				Requires: []packit.BuildPlanRequirement{
 					{
-						Name:    bundler.Bundler,
-						Version: "1.17.3",
+						Name: bundler.Bundler,
 						Metadata: bundler.BuildPlanMetadata{
 							VersionSource: "buildpack.yml",
+							Version:       "1.17.3",
 						},
 					},
 				},
@@ -85,10 +85,10 @@ func testDetect(t *testing.T, context spec.G, it spec.S) {
 				},
 				Requires: []packit.BuildPlanRequirement{
 					{
-						Name:    bundler.Bundler,
-						Version: "2.1.4",
+						Name: bundler.Bundler,
 						Metadata: bundler.BuildPlanMetadata{
 							VersionSource: "Gemfile.lock",
+							Version:       "2.1.4",
 						},
 					},
 				},

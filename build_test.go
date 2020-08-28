@@ -66,10 +66,10 @@ func testBuild(t *testing.T, context spec.G, it spec.S) {
 
 		entryResolver = &fakes.EntryResolver{}
 		entryResolver.ResolveCall.Returns.BuildpackPlanEntry = packit.BuildpackPlanEntry{
-			Name:    "bundler",
-			Version: "2.0.x",
+			Name: "bundler",
 			Metadata: map[string]interface{}{
 				"version-source": "buildpack.yml",
+				"version":        "2.0.x",
 				"launch":         true,
 				"build":          true,
 			},
@@ -91,10 +91,10 @@ func testBuild(t *testing.T, context spec.G, it spec.S) {
 		planRefinery.BillOfMaterialCall.Returns.BuildpackPlan = packit.BuildpackPlan{
 			Entries: []packit.BuildpackPlanEntry{
 				{
-					Name:    "bundler",
-					Version: "2.0.x",
+					Name: "bundler",
 					Metadata: map[string]interface{}{
 						"version-source": "buildpack.yml",
+						"version":        "2.0.x",
 						"launch":         true,
 						"build":          true,
 					},
@@ -133,10 +133,10 @@ func testBuild(t *testing.T, context spec.G, it spec.S) {
 			Plan: packit.BuildpackPlan{
 				Entries: []packit.BuildpackPlanEntry{
 					{
-						Name:    "bundler",
-						Version: "2.0.x",
+						Name: "bundler",
 						Metadata: map[string]interface{}{
 							"version-source": "buildpack.yml",
+							"version":        "2.0.x",
 							"launch":         true,
 							"build":          true,
 						},
@@ -150,10 +150,10 @@ func testBuild(t *testing.T, context spec.G, it spec.S) {
 			Plan: packit.BuildpackPlan{
 				Entries: []packit.BuildpackPlanEntry{
 					{
-						Name:    "bundler",
-						Version: "2.0.x",
+						Name: "bundler",
 						Metadata: map[string]interface{}{
 							"version-source": "buildpack.yml",
+							"version":        "2.0.x",
 							"launch":         true,
 							"build":          true,
 						},
@@ -185,10 +185,10 @@ func testBuild(t *testing.T, context spec.G, it spec.S) {
 
 		Expect(entryResolver.ResolveCall.Receives.BuildpackPlanEntrySlice).To(Equal([]packit.BuildpackPlanEntry{
 			{
-				Name:    "bundler",
-				Version: "2.0.x",
+				Name: "bundler",
 				Metadata: map[string]interface{}{
 					"version-source": "buildpack.yml",
+					"version":        "2.0.x",
 					"launch":         true,
 					"build":          true,
 				},
@@ -234,9 +234,9 @@ func testBuild(t *testing.T, context spec.G, it spec.S) {
 			entryResolver.ResolveCall.Returns.BuildpackPlanEntry = packit.BuildpackPlanEntry{
 				Name: "bundler",
 
-				Version: "2.0.x",
 				Metadata: map[string]interface{}{
 					"version-source": "buildpack.yml",
+					"version":        "2.0.x",
 					"build":          true,
 				},
 			}
@@ -244,10 +244,10 @@ func testBuild(t *testing.T, context spec.G, it spec.S) {
 			planRefinery.BillOfMaterialCall.Returns.BuildpackPlan = packit.BuildpackPlan{
 				Entries: []packit.BuildpackPlanEntry{
 					{
-						Name:    "bundler",
-						Version: "2.0.x",
+						Name: "bundler",
 						Metadata: map[string]interface{}{
 							"version-source": "buildpack.yml",
+							"version":        "2.0.x",
 							"build":          true,
 						},
 					},
@@ -267,10 +267,10 @@ func testBuild(t *testing.T, context spec.G, it spec.S) {
 				Plan: packit.BuildpackPlan{
 					Entries: []packit.BuildpackPlanEntry{
 						{
-							Name:    "bundler",
-							Version: "2.0.x",
+							Name: "bundler",
 							Metadata: map[string]interface{}{
 								"version-source": "buildpack.yml",
+								"version":        "2.0.x",
 								"build":          true,
 							},
 						},
@@ -283,10 +283,10 @@ func testBuild(t *testing.T, context spec.G, it spec.S) {
 				Plan: packit.BuildpackPlan{
 					Entries: []packit.BuildpackPlanEntry{
 						{
-							Name:    "bundler",
-							Version: "2.0.x",
+							Name: "bundler",
 							Metadata: map[string]interface{}{
 								"version-source": "buildpack.yml",
+								"version":        "2.0.x",
 								"build":          true,
 							},
 						},
@@ -325,10 +325,9 @@ func testBuild(t *testing.T, context spec.G, it spec.S) {
 
 			entryResolver.ResolveCall.Returns.BuildpackPlanEntry = packit.BuildpackPlanEntry{
 				Name: "bundler",
-
-				Version: "2.0.x",
 				Metadata: map[string]interface{}{
 					"version-source": "buildpack.yml",
+					"version":        "2.0.x",
 					"launch":         true,
 				},
 			}
@@ -336,10 +335,10 @@ func testBuild(t *testing.T, context spec.G, it spec.S) {
 			planRefinery.BillOfMaterialCall.Returns.BuildpackPlan = packit.BuildpackPlan{
 				Entries: []packit.BuildpackPlanEntry{
 					{
-						Name:    "bundler",
-						Version: "2.0.x",
+						Name: "bundler",
 						Metadata: map[string]interface{}{
 							"version-source": "buildpack.yml",
+							"version":        "2.0.x",
 							"launch":         true,
 						},
 					},
@@ -359,10 +358,10 @@ func testBuild(t *testing.T, context spec.G, it spec.S) {
 				Plan: packit.BuildpackPlan{
 					Entries: []packit.BuildpackPlanEntry{
 						{
-							Name:    "bundler",
-							Version: "2.0.x",
+							Name: "bundler",
 							Metadata: map[string]interface{}{
 								"version-source": "buildpack.yml",
+								"version":        "2.0.x",
 								"launch":         true,
 							},
 						},
@@ -375,10 +374,10 @@ func testBuild(t *testing.T, context spec.G, it spec.S) {
 				Plan: packit.BuildpackPlan{
 					Entries: []packit.BuildpackPlanEntry{
 						{
-							Name:    "bundler",
-							Version: "2.0.x",
+							Name: "bundler",
 							Metadata: map[string]interface{}{
 								"version-source": "buildpack.yml",
+								"version":        "2.0.x",
 								"launch":         true,
 							},
 						},
@@ -412,10 +411,10 @@ func testBuild(t *testing.T, context spec.G, it spec.S) {
 			planRefinery.BillOfMaterialCall.Returns.BuildpackPlan = packit.BuildpackPlan{
 				Entries: []packit.BuildpackPlanEntry{
 					{
-						Name:    "new-dep",
-						Version: "some-version",
+						Name: "new-dep",
 						Metadata: map[string]interface{}{
 							"some-extra-field": "an-extra-value",
+							"version":          "2.0.x",
 							"build":            true,
 							"launch":           true,
 						},
@@ -431,10 +430,10 @@ func testBuild(t *testing.T, context spec.G, it spec.S) {
 				Plan: packit.BuildpackPlan{
 					Entries: []packit.BuildpackPlanEntry{
 						{
-							Name:    "bundler",
-							Version: "2.0.x",
+							Name: "bundler",
 							Metadata: map[string]interface{}{
 								"version-source": "buildpack.yml",
+								"version":        "2.0.x",
 								"build":          true,
 								"launch":         true,
 							},
@@ -449,10 +448,10 @@ func testBuild(t *testing.T, context spec.G, it spec.S) {
 				Plan: packit.BuildpackPlan{
 					Entries: []packit.BuildpackPlanEntry{
 						{
-							Name:    "new-dep",
-							Version: "some-version",
+							Name: "new-dep",
 							Metadata: map[string]interface{}{
 								"some-extra-field": "an-extra-value",
+								"version":          "2.0.x",
 								"build":            true,
 								"launch":           true,
 							},
@@ -504,10 +503,10 @@ func testBuild(t *testing.T, context spec.G, it spec.S) {
 				Plan: packit.BuildpackPlan{
 					Entries: []packit.BuildpackPlanEntry{
 						{
-							Name:    "bundler",
-							Version: "2.0.x",
+							Name: "bundler",
 							Metadata: map[string]interface{}{
 								"version-source": "buildpack.yml",
+								"version":        "2.0.x",
 							},
 						},
 					},
@@ -544,10 +543,10 @@ func testBuild(t *testing.T, context spec.G, it spec.S) {
 					Plan: packit.BuildpackPlan{
 						Entries: []packit.BuildpackPlanEntry{
 							{
-								Name:    "bundler",
-								Version: "2.0.x",
+								Name: "bundler",
 								Metadata: map[string]interface{}{
 									"version-source": "buildpack.yml",
+									"version":        "2.0.x",
 								},
 							},
 						},
@@ -569,10 +568,10 @@ func testBuild(t *testing.T, context spec.G, it spec.S) {
 					Plan: packit.BuildpackPlan{
 						Entries: []packit.BuildpackPlanEntry{
 							{
-								Name:    "bundler",
-								Version: "2.0.x",
+								Name: "bundler",
 								Metadata: map[string]interface{}{
 									"version-source": "buildpack.yml",
+									"version":        "2.0.x",
 								},
 							},
 						},
@@ -598,10 +597,10 @@ func testBuild(t *testing.T, context spec.G, it spec.S) {
 					Plan: packit.BuildpackPlan{
 						Entries: []packit.BuildpackPlanEntry{
 							{
-								Name:    "bundler",
-								Version: "2.0.x",
+								Name: "bundler",
 								Metadata: map[string]interface{}{
 									"version-source": "buildpack.yml",
+									"version":        "2.0.x",
 								},
 							},
 						},
@@ -631,10 +630,10 @@ func testBuild(t *testing.T, context spec.G, it spec.S) {
 					Plan: packit.BuildpackPlan{
 						Entries: []packit.BuildpackPlanEntry{
 							{
-								Name:    "bundler",
-								Version: "2.0.x",
+								Name: "bundler",
 								Metadata: map[string]interface{}{
 									"version-source": "buildpack.yml",
+									"version":        "2.0.x",
 								},
 							},
 						},
@@ -656,10 +655,10 @@ func testBuild(t *testing.T, context spec.G, it spec.S) {
 					Plan: packit.BuildpackPlan{
 						Entries: []packit.BuildpackPlanEntry{
 							{
-								Name:    "bundler",
-								Version: "2.0.x",
+								Name: "bundler",
 								Metadata: map[string]interface{}{
 									"version-source": "buildpack.yml",
+									"version":        "2.0.x",
 								},
 							},
 						},

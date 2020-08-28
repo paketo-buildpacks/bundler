@@ -29,7 +29,9 @@ func testLogEmitter(t *testing.T, context spec.G, it spec.S) {
 	context("SelectedDependency", func() {
 		it("prints details about the selected dependency", func() {
 			entry := packit.BuildpackPlanEntry{
-				Metadata: map[string]interface{}{"version-source": "some-source"},
+				Metadata: map[string]interface{}{
+					"version-source": "some-source",
+				},
 			}
 			dependency := postal.Dependency{
 				Name:    "Bundler",
@@ -123,21 +125,23 @@ func testLogEmitter(t *testing.T, context spec.G, it spec.S) {
 		it("prints a formatted map of version source inputs", func() {
 			emitter.Candidates([]packit.BuildpackPlanEntry{
 				{
-					Name:    "bundler",
-					Version: "package-json-version",
+					Name: "bundler",
 					Metadata: map[string]interface{}{
 						"version-source": "package.json",
+						"version":        "package-json-version",
 					},
 				},
 				{
-					Name:    "bundler",
-					Version: "other-version",
+					Name: "bundler",
+					Metadata: map[string]interface{}{
+						"version": "other-version",
+					},
 				},
 				{
-					Name:    "bundler",
-					Version: "buildpack-yml-version",
+					Name: "bundler",
 					Metadata: map[string]interface{}{
 						"version-source": "buildpack.yml",
+						"version":        "buildpack-yml-version",
 					},
 				},
 				{
