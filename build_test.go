@@ -9,11 +9,11 @@ import (
 	"testing"
 	"time"
 
+	"github.com/paketo-buildpacks/bundler"
+	"github.com/paketo-buildpacks/bundler/fakes"
 	"github.com/paketo-buildpacks/packit"
 	"github.com/paketo-buildpacks/packit/chronos"
 	"github.com/paketo-buildpacks/packit/postal"
-	"github.com/paketo-community/bundler"
-	"github.com/paketo-community/bundler/fakes"
 	"github.com/sclevine/spec"
 
 	. "github.com/onsi/gomega"

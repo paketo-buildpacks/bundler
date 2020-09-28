@@ -3,8 +3,8 @@ package bundler_test
 import (
 	"testing"
 
+	"github.com/paketo-buildpacks/bundler"
 	"github.com/paketo-buildpacks/packit/postal"
-	"github.com/paketo-community/bundler"
 	"github.com/sclevine/spec"
 
 	. "github.com/onsi/gomega"
