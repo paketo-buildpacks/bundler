@@ -1,4 +1,4 @@
-module github.com/paketo-community/bundler
+module github.com/paketo-buildpacks/bundler
 
 require (
 	github.com/BurntSushi/toml v0.3.1

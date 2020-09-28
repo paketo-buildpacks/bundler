@@ -86,8 +86,6 @@ func testReusingLayerRebuild(t *testing.T, context spec.G, it spec.S) {
 
 			Expect(firstImage.Buildpacks).To(HaveLen(3))
 
-			Expect(firstImage.Buildpacks[0].Key).To(Equal("paketo-community/mri"))
-			Expect(firstImage.Buildpacks[0].Layers).To(HaveKey("mri"))
 			Expect(firstImage.Buildpacks[1].Key).To(Equal(settings.Buildpack.ID))
 			Expect(firstImage.Buildpacks[1].Layers).To(HaveKey("bundler"))
 
@@ -122,8 +120,6 @@ func testReusingLayerRebuild(t *testing.T, context spec.G, it spec.S) {
 
 			Expect(secondImage.Buildpacks).To(HaveLen(3))
 
-			Expect(secondImage.Buildpacks[0].Key).To(Equal("paketo-community/mri"))
-			Expect(secondImage.Buildpacks[0].Layers).To(HaveKey("mri"))
 			Expect(secondImage.Buildpacks[1].Key).To(Equal(settings.Buildpack.ID))
 			Expect(secondImage.Buildpacks[1].Layers).To(HaveKey("bundler"))
 
@@ -154,9 +150,6 @@ func testReusingLayerRebuild(t *testing.T, context spec.G, it spec.S) {
 
 			Expect(string(content)).To(ContainSubstring(fmt.Sprintf("/layers/%s/bundler/bin/bundler", strings.ReplaceAll(settings.Buildpack.ID, "/", "_"))))
 			Expect(string(content)).To(MatchRegexp(`Bundler version 2\.1\.\d+`))
-
-			Expect(string(content)).To(ContainSubstring("/layers/paketo-community_mri/mri/bin/ruby"))
-			Expect(string(content)).To(MatchRegexp(`ruby 2\.6\.\d+`))
 
 			Expect(secondImage.Buildpacks[1].Layers["bundler"].Metadata["built_at"]).To(Equal(firstImage.Buildpacks[1].Layers["bundler"].Metadata["built_at"]))
 		})
@@ -191,8 +184,6 @@ func testReusingLayerRebuild(t *testing.T, context spec.G, it spec.S) {
 			imageIDs[firstImage.ID] = struct{}{}
 
 			Expect(firstImage.Buildpacks).To(HaveLen(3))
-			Expect(firstImage.Buildpacks[0].Key).To(Equal("paketo-community/mri"))
-			Expect(firstImage.Buildpacks[0].Layers).To(HaveKey("mri"))
 			Expect(firstImage.Buildpacks[1].Key).To(Equal(settings.Buildpack.ID))
 			Expect(firstImage.Buildpacks[1].Layers).To(HaveKey("bundler"))
 
@@ -234,8 +225,6 @@ func testReusingLayerRebuild(t *testing.T, context spec.G, it spec.S) {
 			imageIDs[secondImage.ID] = struct{}{}
 
 			Expect(secondImage.Buildpacks).To(HaveLen(3))
-			Expect(secondImage.Buildpacks[0].Key).To(Equal("paketo-community/mri"))
-			Expect(secondImage.Buildpacks[0].Layers).To(HaveKey("mri"))
 			Expect(secondImage.Buildpacks[1].Key).To(Equal(settings.Buildpack.ID))
 			Expect(secondImage.Buildpacks[1].Layers).To(HaveKey("bundler"))
 

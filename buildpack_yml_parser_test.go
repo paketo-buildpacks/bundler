@@ -5,7 +5,7 @@ import (
 	"os"
 	"testing"
 
-	"github.com/paketo-community/bundler"
+	"github.com/paketo-buildpacks/bundler"
 	"github.com/sclevine/spec"
 
 	. "github.com/onsi/gomega"
