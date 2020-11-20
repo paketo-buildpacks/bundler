@@ -25,9 +25,9 @@ file that looks like the following:
   # is not specified, the buildpack will provide the default version, which can
   # be seen in the buildpack.toml file.
   # If you wish to request a specific version, the buildpack supports
-  # specifying a semver constraint in the form of "1.*", "1.17.*", or even
-  # "1.17.1".
-  version = "1.17.1"
+  # specifying a semver constraint in the form of "2.*", "2.1.*", or even
+  # "2.1.4".
+  version = "2.1.4"
 
   # The Bundler buildpack supports some non-required metadata options.
   [requires.metadata]
