@@ -83,7 +83,7 @@ func testOffline(t *testing.T, context spec.G, it spec.S) {
 			Expect(err).NotTo(HaveOccurred())
 
 			Expect(string(content)).To(ContainSubstring(fmt.Sprintf("/layers/%s/bundler/bin/bundler", strings.ReplaceAll(settings.Buildpack.ID, "/", "_"))))
-			Expect(string(content)).To(MatchRegexp(`Bundler version 2\.1\.\d+`))
+			Expect(string(content)).To(MatchRegexp(`Bundler version 2\.\d+\.\d+`))
 		})
 	})
 }

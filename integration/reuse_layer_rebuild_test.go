@@ -95,10 +95,10 @@ func testReusingLayerRebuild(t *testing.T, context spec.G, it spec.S) {
 				"    Candidate version sources (in priority order):",
 				"      <unknown> -> \"*\"",
 				"",
-				MatchRegexp(`    Selected Bundler version \(using <unknown>\): 2\.1\.\d+`),
+				MatchRegexp(`    Selected Bundler version \(using <unknown>\): 2\.\d+\.\d+`),
 				"",
 				"  Executing build process",
-				MatchRegexp(`    Installing Bundler 2\.1\.\d+`),
+				MatchRegexp(`    Installing Bundler 2\.\d+\.\d+`),
 				MatchRegexp(`      Completed in \d+\.?\d*`),
 				"",
 				"  Configuring environment",
@@ -129,7 +129,7 @@ func testReusingLayerRebuild(t *testing.T, context spec.G, it spec.S) {
 				"    Candidate version sources (in priority order):",
 				"      <unknown> -> \"*\"",
 				"",
-				MatchRegexp(`    Selected Bundler version \(using <unknown>\): 2\.1\.\d+`),
+				MatchRegexp(`    Selected Bundler version \(using <unknown>\): 2\.\d+\.\d+`),
 				"",
 				MatchRegexp(fmt.Sprintf("  Reusing cached layer /layers/%s/bundler", strings.ReplaceAll(settings.Buildpack.ID, "/", "_"))),
 			))
@@ -149,7 +149,7 @@ func testReusingLayerRebuild(t *testing.T, context spec.G, it spec.S) {
 			Expect(err).NotTo(HaveOccurred())
 
 			Expect(string(content)).To(ContainSubstring(fmt.Sprintf("/layers/%s/bundler/bin/bundler", strings.ReplaceAll(settings.Buildpack.ID, "/", "_"))))
-			Expect(string(content)).To(MatchRegexp(`Bundler version 2\.1\.\d+`))
+			Expect(string(content)).To(MatchRegexp(`Bundler version 2\.\d+\.\d+`))
 
 			Expect(secondImage.Buildpacks[1].Layers["bundler"].Metadata["built_at"]).To(Equal(firstImage.Buildpacks[1].Layers["bundler"].Metadata["built_at"]))
 		})
