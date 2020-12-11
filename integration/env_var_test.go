@@ -16,7 +16,7 @@ import (
 	. "github.com/paketo-buildpacks/occam/matchers"
 )
 
-func testBuildpackYML(t *testing.T, context spec.G, it spec.S) {
+func testRunWithEnvVar(t *testing.T, context spec.G, it spec.S) {
 	var (
 		Expect     = NewWithT(t).Expect
 		Eventually = NewWithT(t).Eventually
@@ -30,7 +30,7 @@ func testBuildpackYML(t *testing.T, context spec.G, it spec.S) {
 		docker = occam.NewDocker()
 	})
 
-	context("when the source code contains a buildpack.yml", func() {
+	context("when the buildpack is run with pack build and specifies env var $BP_BUNDLER_VERSION", func() {
 		var (
 			image     occam.Image
 			container occam.Container
@@ -52,7 +52,7 @@ func testBuildpackYML(t *testing.T, context spec.G, it spec.S) {
 			Expect(os.RemoveAll(source)).To(Succeed())
 		})
 
-		it("installs the version specified therein", func() {
+		it("builds app successfully with the version specified in $BP_BUNDLER_VERSION", func() {
 			var err error
 			source, err = occam.Source(filepath.Join("testdata", "buildpack_yml_version"))
 			Expect(err).NotTo(HaveOccurred())
@@ -65,6 +65,7 @@ func testBuildpackYML(t *testing.T, context spec.G, it spec.S) {
 					settings.Buildpacks.Bundler.Online,
 					settings.Buildpacks.BuildPlan.Online,
 				).
+				WithEnv(map[string]string{"BP_BUNDLER_VERSION": "2.1.*"}).
 				Execute(name, source)
 			Expect(err).ToNot(HaveOccurred(), logs.String)
 
@@ -82,22 +83,20 @@ func testBuildpackYML(t *testing.T, context spec.G, it spec.S) {
 			Expect(err).NotTo(HaveOccurred())
 
 			Expect(string(content)).To(ContainSubstring(fmt.Sprintf("/layers/%s/bundler/bin/bundler", strings.ReplaceAll(settings.Buildpack.ID, "/", "_"))))
-			Expect(string(content)).To(MatchRegexp(`Bundler version 1\.17\.\d+`))
+			Expect(string(content)).To(MatchRegexp(`Bundler version 2\.1\.\d+`))
 
 			Expect(logs).To(ContainLines(
 				MatchRegexp(fmt.Sprintf(`%s \d+\.\d+\.\d+`, settings.Buildpack.Name)),
 				"  Resolving Bundler version",
 				"    Candidate version sources (in priority order):",
-				"      buildpack.yml -> \"1.17.x\"",
-				"      <unknown>     -> \"*\"",
+				"      BP_BUNDLER_VERSION -> \"2.1.*\"",
+				"      buildpack.yml      -> \"1.17.x\"",
+				"      <unknown>          -> \"*\"",
 				"",
-				MatchRegexp(`    Selected Bundler version \(using buildpack\.yml\): 1\.17\.\d+`),
-				"",
-				"    WARNING: Setting the Bundler version through buildpack.yml will be deprecated soon in Bundler Buildpack v1.0.0.",
-				"    Please specify the version through the $BP_BUNDLER_VERSION environment variable instead. See README.md for more information.",
+				MatchRegexp(`    Selected Bundler version \(using BP_BUNDLER_VERSION\): 2\.1\.\d+`),
 				"",
 				"  Executing build process",
-				MatchRegexp(`    Installing Bundler 1\.17\.\d+`),
+				MatchRegexp(`    Installing Bundler 2\.1\.\d+`),
 				MatchRegexp(`      Completed in \d+\.?\d*`),
 				"",
 				"  Configuring environment",

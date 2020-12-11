@@ -2,6 +2,7 @@ package bundler_test
 
 import (
 	"errors"
+	"os"
 	"testing"
 
 	"github.com/paketo-buildpacks/bundler"
@@ -38,6 +39,46 @@ func testDetect(t *testing.T, context spec.G, it spec.S) {
 				{Name: bundler.Bundler},
 			},
 		}))
+	})
+
+	context("when $BP_BUNDLER_VERSION is set and a buildpack.yml is present", func() {
+		it.Before(func() {
+			os.Setenv("BP_BUNDLER_VERSION", "1.2.3")
+			buildpackYMLParser.ParseVersionCall.Returns.Version = "1.17.3"
+		})
+
+		it.After(func() {
+			os.Unsetenv("BP_BUNDLER_VERSION")
+		})
+
+		it("returns a plan that provides and requires that version of bundler", func() {
+			result, err := detect(packit.DetectContext{
+				WorkingDir: "/working-dir",
+			})
+			Expect(err).NotTo(HaveOccurred())
+			Expect(result.Plan).To(Equal(packit.BuildPlan{
+				Provides: []packit.BuildPlanProvision{
+					{Name: bundler.Bundler},
+				},
+				Requires: []packit.BuildPlanRequirement{
+					{
+						Name: bundler.Bundler,
+						Metadata: bundler.BuildPlanMetadata{
+							VersionSource: "BP_BUNDLER_VERSION",
+							Version:       "1.2.3",
+						},
+					},
+					{
+						Name: bundler.Bundler,
+						Metadata: bundler.BuildPlanMetadata{
+							VersionSource: "buildpack.yml",
+							Version:       "1.17.3",
+						},
+					},
+				},
+			}))
+			Expect(buildpackYMLParser.ParseVersionCall.Receives.Path).To(Equal("/working-dir/buildpack.yml"))
+		})
 	})
 
 	context("when the source code contains a buildpack.yml file", func() {

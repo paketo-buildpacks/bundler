@@ -219,6 +219,8 @@ func testBuild(t *testing.T, context spec.G, it spec.S) {
 		Expect(buffer.String()).To(ContainSubstring("Some Buildpack some-version"))
 		Expect(buffer.String()).To(ContainSubstring("Resolving Bundler version"))
 		Expect(buffer.String()).To(ContainSubstring("Selected Bundler version (using buildpack.yml): "))
+		Expect(buffer.String()).To(ContainSubstring("WARNING: Setting the Bundler version through buildpack.yml will be deprecated soon in Bundler Buildpack v1.0.0."))
+		Expect(buffer.String()).To(ContainSubstring("Please specify the version through the $BP_BUNDLER_VERSION environment variable instead. See README.md for more information."))
 		Expect(buffer.String()).To(ContainSubstring("Executing build process"))
 		Expect(buffer.String()).To(ContainSubstring("Configuring environment"))
 	})
@@ -526,9 +528,148 @@ func testBuild(t *testing.T, context spec.G, it spec.S) {
 			Expect(buffer.String()).To(ContainSubstring("Some Buildpack some-version"))
 			Expect(buffer.String()).To(ContainSubstring("Resolving Bundler version"))
 			Expect(buffer.String()).To(ContainSubstring("Selected Bundler version (using buildpack.yml): "))
+			Expect(buffer.String()).To(ContainSubstring("WARNING: Setting the Bundler version through buildpack.yml will be deprecated soon in Bundler Buildpack v1.0.0."))
+			Expect(buffer.String()).To(ContainSubstring("Please specify the version through the $BP_BUNDLER_VERSION environment variable instead. See README.md for more information."))
 			Expect(buffer.String()).To(ContainSubstring("Reusing cached layer"))
 			Expect(buffer.String()).ToNot(ContainSubstring("Executing build process"))
 		})
+	})
+
+	context("when the build plan entry version source is from $BP_BUNDLER_VERSION", func() {
+		it.Before(func() {
+			entryResolver.ResolveCall.Returns.BuildpackPlanEntry = packit.BuildpackPlanEntry{
+				Name: "bundler",
+				Metadata: map[string]interface{}{
+					"version-source": "BP_BUNDLER_VERSION",
+					"version":        "1.17.x",
+					"launch":         true,
+					"build":          true,
+				},
+			}
+
+			dependencyManager.ResolveCall.Returns.Dependency = postal.Dependency{
+				Name:    "Bundler",
+				Version: "1.17.x",
+			}
+
+			planRefinery.BillOfMaterialCall.Returns.BuildpackPlan = packit.BuildpackPlan{
+				Entries: []packit.BuildpackPlanEntry{
+					{
+						Name: "bundler",
+						Metadata: map[string]interface{}{
+							"version-source": "BP_BUNDLER_VERSION",
+							"version":        "1.17.x",
+							"launch":         true,
+							"build":          true,
+						},
+					},
+				},
+			}
+		})
+
+		it("returns a result that installs bundler with $BP_BUNDLER_VERSION", func() {
+			result, err := build(packit.BuildContext{
+				CNBPath: cnbDir,
+				Stack:   "some-stack",
+				BuildpackInfo: packit.BuildpackInfo{
+					Name:    "Some Buildpack",
+					Version: "some-version",
+				},
+				Plan: packit.BuildpackPlan{
+					Entries: []packit.BuildpackPlanEntry{
+						{
+							Name: "bundler",
+							Metadata: map[string]interface{}{
+								"version-source": "BP_BUNDLER_VERSION",
+								"version":        "1.17.x",
+								"launch":         true,
+								"build":          true,
+							},
+						},
+					},
+				},
+				Layers: packit.Layers{Path: layersDir},
+			})
+			Expect(err).NotTo(HaveOccurred())
+			Expect(result).To(Equal(packit.BuildResult{
+				Plan: packit.BuildpackPlan{
+					Entries: []packit.BuildpackPlanEntry{
+						{
+							Name: "bundler",
+							Metadata: map[string]interface{}{
+								"version-source": "BP_BUNDLER_VERSION",
+								"version":        "1.17.x",
+								"launch":         true,
+								"build":          true,
+							},
+						},
+					},
+				},
+				Layers: []packit.Layer{
+					{
+						Name: "bundler",
+						Path: filepath.Join(layersDir, "bundler"),
+						SharedEnv: packit.Environment{
+							"GEM_PATH.append": filepath.Join(layersDir, "bundler"),
+							"GEM_PATH.delim":  ":",
+						},
+						BuildEnv:  packit.Environment{},
+						LaunchEnv: packit.Environment{},
+						Build:     true,
+						Launch:    true,
+						Cache:     true,
+						Metadata: map[string]interface{}{
+							bundler.DepKey: "",
+							"built_at":     timeStamp.Format(time.RFC3339Nano),
+						},
+					},
+				},
+			}))
+
+			Expect(filepath.Join(layersDir, "bundler")).To(BeADirectory())
+
+			Expect(entryResolver.ResolveCall.Receives.BuildpackPlanEntrySlice).To(Equal([]packit.BuildpackPlanEntry{
+				{
+					Name: "bundler",
+					Metadata: map[string]interface{}{
+						"version-source": "BP_BUNDLER_VERSION",
+						"version":        "1.17.x",
+						"launch":         true,
+						"build":          true,
+					},
+				},
+			}))
+
+			Expect(dependencyManager.ResolveCall.Receives.Path).To(Equal(filepath.Join(cnbDir, "buildpack.toml")))
+			Expect(dependencyManager.ResolveCall.Receives.Id).To(Equal("bundler"))
+			Expect(dependencyManager.ResolveCall.Receives.Version).To(Equal("1.17.x"))
+			Expect(dependencyManager.ResolveCall.Receives.Stack).To(Equal("some-stack"))
+
+			Expect(planRefinery.BillOfMaterialCall.CallCount).To(Equal(1))
+			Expect(planRefinery.BillOfMaterialCall.Receives.Dependency).To(Equal(postal.Dependency{
+				Name:    "Bundler",
+				Version: "1.17.x",
+			}))
+
+			Expect(dependencyManager.InstallCall.Receives.Dependency).To(Equal(postal.Dependency{
+				Name:    "Bundler",
+				Version: "1.17.x",
+			}))
+			Expect(dependencyManager.InstallCall.Receives.CnbPath).To(Equal(cnbDir))
+			Expect(dependencyManager.InstallCall.Receives.LayerPath).To(Equal(filepath.Join(layersDir, "bundler")))
+
+			Expect(versionShimmer.ShimCall.Receives.Path).To(Equal(filepath.Join(layersDir, "bundler", "bin")))
+			Expect(versionShimmer.ShimCall.Receives.Version).To(Equal("1.17.x"))
+
+			Expect(buffer.String()).To(ContainSubstring("Some Buildpack some-version"))
+			Expect(buffer.String()).To(ContainSubstring("Resolving Bundler version"))
+			Expect(buffer.String()).To(ContainSubstring("Selected Bundler version (using BP_BUNDLER_VERSION): "))
+			Expect(buffer.String()).NotTo(ContainSubstring("WARNING: Setting the Bundler version through buildpack.yml will be deprecated soon in Bundler Buildpack v1.0.0."))
+			Expect(buffer.String()).NotTo(ContainSubstring("Please specify the version through the $BP_BUNDLER_VERSION environment variable instead. See README.md for more information."))
+			Expect(buffer.String()).To(ContainSubstring("Executing build process"))
+			Expect(buffer.String()).To(ContainSubstring("Configuring environment"))
+		})
+
 	})
 
 	context("failure cases", func() {

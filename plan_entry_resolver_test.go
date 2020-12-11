@@ -24,6 +24,45 @@ func testPlanEntryResolver(t *testing.T, context spec.G, it spec.S) {
 		resolver = bundler.NewPlanEntryResolver(bundler.NewLogEmitter(buffer))
 	})
 
+	context("when a buildpack.yml entry and BP_BUNDLER_VERSION are included", func() {
+		it("resolves the best plan entry", func() {
+			entry := resolver.Resolve([]packit.BuildpackPlanEntry{
+				{
+					Name: "bundler",
+					Metadata: map[string]interface{}{
+						"version": "other-version",
+					},
+				},
+				{
+					Name: "bundler",
+					Metadata: map[string]interface{}{
+						"version-source": "buildpack.yml",
+						"version":        "buildpack-yml-version",
+					},
+				},
+				{
+					Name: "bundler",
+					Metadata: map[string]interface{}{
+						"version-source": "BP_BUNDLER_VERSION",
+						"version":        "env-var-version",
+					},
+				},
+			})
+			Expect(entry).To(Equal(packit.BuildpackPlanEntry{
+				Name: "bundler",
+				Metadata: map[string]interface{}{
+					"version-source": "BP_BUNDLER_VERSION",
+					"version":        "env-var-version",
+				},
+			}))
+
+			Expect(buffer.String()).To(ContainSubstring("    Candidate version sources (in priority order):"))
+			Expect(buffer.String()).To(ContainSubstring("      BP_BUNDLER_VERSION -> \"env-var-version\""))
+			Expect(buffer.String()).To(ContainSubstring("      buildpack.yml      -> \"buildpack-yml-version\""))
+			Expect(buffer.String()).To(ContainSubstring("      <unknown>          -> \"other-version\""))
+		})
+	})
+
 	context("when a buildpack.yml entry is included", func() {
 		it("resolves the best plan entry", func() {
 			entry := resolver.Resolve([]packit.BuildpackPlanEntry{
