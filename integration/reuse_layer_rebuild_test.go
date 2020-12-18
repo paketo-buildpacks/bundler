@@ -201,10 +201,10 @@ func testReusingLayerRebuild(t *testing.T, context spec.G, it spec.S) {
 				MatchRegexp(fmt.Sprintf(`%s \d+\.\d+\.\d+`, settings.Buildpack.Name)),
 				"  Resolving Bundler version",
 				"    Candidate version sources (in priority order):",
-				"      Gemfile.lock -> \"1.17.3\"",
+				MatchRegexp(`    Gemfile.lock -> \"1\.17\.\d+\"`),
 				"      <unknown>    -> \"*\"",
 				"",
-				"    Selected Bundler version (using Gemfile.lock): 1.17.3",
+				MatchRegexp(`    Selected Bundler version \(using Gemfile\.lock\): 1\.17\.\d+`),
 				"",
 				"  Executing build process",
 				MatchRegexp(`    Installing Bundler 1\.17\.\d+`),
@@ -230,7 +230,7 @@ func testReusingLayerRebuild(t *testing.T, context spec.G, it spec.S) {
 			Expect(err).NotTo(HaveOccurred())
 
 			re := regexp.MustCompile(`BUNDLED WITH\s+\d+\.\d+\.\d+`)
-			err = ioutil.WriteFile(filepath.Join(source, "Gemfile.lock"), re.ReplaceAll(contents, []byte("BUNDLED WITH\n   2.1.4")), 0644)
+			err = ioutil.WriteFile(filepath.Join(source, "Gemfile.lock"), re.ReplaceAll(contents, []byte("BUNDLED WITH\n   2.*")), 0644)
 			Expect(err).NotTo(HaveOccurred())
 
 			// Second pack build
@@ -247,13 +247,13 @@ func testReusingLayerRebuild(t *testing.T, context spec.G, it spec.S) {
 				MatchRegexp(fmt.Sprintf(`%s \d+\.\d+\.\d+`, settings.Buildpack.Name)),
 				"  Resolving Bundler version",
 				"    Candidate version sources (in priority order):",
-				"      Gemfile.lock -> \"2.1.4\"",
+				"      Gemfile.lock -> \"2.*\"",
 				"      <unknown>    -> \"*\"",
 				"",
-				"    Selected Bundler version (using Gemfile.lock): 2.1.4",
+				MatchRegexp(`    Selected Bundler version \(using Gemfile\.lock\): 2\.\d+\.\d+`),
 				"",
 				"  Executing build process",
-				MatchRegexp(`    Installing Bundler 2\.1\.\d+`),
+				MatchRegexp(`    Installing Bundler 2\.\d+\.\d+`),
 				MatchRegexp(`      Completed in \d+\.?\d*`),
 				"",
 				"  Configuring environment",
@@ -281,7 +281,7 @@ func testReusingLayerRebuild(t *testing.T, context spec.G, it spec.S) {
 			Expect(err).NotTo(HaveOccurred())
 
 			Expect(string(content)).To(ContainSubstring(fmt.Sprintf("/layers/%s/bundler/bin/bundler", strings.ReplaceAll(settings.Buildpack.ID, "/", "_"))))
-			Expect(string(content)).To(MatchRegexp(`Bundler version 2\.1\.\d+`))
+			Expect(string(content)).To(MatchRegexp(`Bundler version 2\.\d+\.\d+`))
 
 			Expect(secondImage.Buildpacks[1].Layers["bundler"].Metadata["built_at"]).NotTo(Equal(firstImage.Buildpacks[1].Layers["bundler"].Metadata["built_at"]))
 		})
