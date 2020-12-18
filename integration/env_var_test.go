@@ -65,7 +65,7 @@ func testRunWithEnvVar(t *testing.T, context spec.G, it spec.S) {
 					settings.Buildpacks.Bundler.Online,
 					settings.Buildpacks.BuildPlan.Online,
 				).
-				WithEnv(map[string]string{"BP_BUNDLER_VERSION": "2.1.*"}).
+				WithEnv(map[string]string{"BP_BUNDLER_VERSION": "2.*"}).
 				Execute(name, source)
 			Expect(err).ToNot(HaveOccurred(), logs.String)
 
@@ -87,20 +87,20 @@ func testRunWithEnvVar(t *testing.T, context spec.G, it spec.S) {
 			Expect(err).NotTo(HaveOccurred())
 
 			Expect(string(content)).To(ContainSubstring(fmt.Sprintf("/layers/%s/bundler/bin/bundler", strings.ReplaceAll(settings.Buildpack.ID, "/", "_"))))
-			Expect(string(content)).To(MatchRegexp(`Bundler version 2\.1\.\d+`))
+			Expect(string(content)).To(MatchRegexp(`Bundler version 2\.\d+\.\d+`))
 
 			Expect(logs).To(ContainLines(
 				MatchRegexp(fmt.Sprintf(`%s \d+\.\d+\.\d+`, settings.Buildpack.Name)),
 				"  Resolving Bundler version",
 				"    Candidate version sources (in priority order):",
-				"      BP_BUNDLER_VERSION -> \"2.1.*\"",
+				"      BP_BUNDLER_VERSION -> \"2.*\"",
 				"      buildpack.yml      -> \"1.17.x\"",
 				"      <unknown>          -> \"*\"",
 				"",
-				MatchRegexp(`    Selected Bundler version \(using BP_BUNDLER_VERSION\): 2\.1\.\d+`),
+				MatchRegexp(`    Selected Bundler version \(using BP_BUNDLER_VERSION\): 2\.\d+\.\d+`),
 				"",
 				"  Executing build process",
-				MatchRegexp(`    Installing Bundler 2\.1\.\d+`),
+				MatchRegexp(`    Installing Bundler 2\.\d+\.\d+`),
 				MatchRegexp(`      Completed in \d+\.?\d*`),
 				"",
 				"  Configuring environment",
