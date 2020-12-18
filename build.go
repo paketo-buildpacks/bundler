@@ -63,10 +63,6 @@ func Build(
 			return packit.BuildResult{}, err
 		}
 
-		bundlerLayer.Launch = entry.Metadata["launch"] == true
-		bundlerLayer.Build = entry.Metadata["build"] == true
-		bundlerLayer.Cache = entry.Metadata["build"] == true
-
 		bom := planRefinery.BillOfMaterial(postal.Dependency{
 			ID:      dependency.ID,
 			Name:    dependency.Name,
@@ -89,10 +85,14 @@ func Build(
 
 		logger.Process("Executing build process")
 
-		err = bundlerLayer.Reset()
+		bundlerLayer, err = bundlerLayer.Reset()
 		if err != nil {
 			return packit.BuildResult{}, err
 		}
+
+		bundlerLayer.Launch = entry.Metadata["launch"] == true
+		bundlerLayer.Build = entry.Metadata["build"] == true
+		bundlerLayer.Cache = entry.Metadata["build"] == true
 
 		logger.Subprocess("Installing Bundler %s", dependency.Version)
 		duration, err := clock.Measure(func() error {
