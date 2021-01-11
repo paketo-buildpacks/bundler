@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"os"
 	"strings"
+
+	"github.com/Masterminds/semver"
 )
 
 type GemfileLockParser struct{}
@@ -27,7 +29,12 @@ func (p GemfileLockParser) ParseVersion(path string) (string, error) {
 	for scanner.Scan() {
 		if strings.TrimSpace(scanner.Text()) == "BUNDLED WITH" {
 			if scanner.Scan() {
-				return strings.TrimSpace(scanner.Text()), nil
+				version, err := semver.NewVersion(strings.TrimSpace(scanner.Text()))
+				if err != nil {
+					return "", fmt.Errorf("failed to parse Gemfile.lock: %w", err)
+				}
+
+				return fmt.Sprintf("%d.*.*", version.Major()), nil
 			}
 		}
 	}

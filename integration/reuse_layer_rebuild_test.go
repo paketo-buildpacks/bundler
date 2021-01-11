@@ -201,7 +201,7 @@ func testReusingLayerRebuild(t *testing.T, context spec.G, it spec.S) {
 				MatchRegexp(fmt.Sprintf(`%s \d+\.\d+\.\d+`, settings.Buildpack.Name)),
 				"  Resolving Bundler version",
 				"    Candidate version sources (in priority order):",
-				MatchRegexp(`    Gemfile.lock -> \"1\.17\.\d+\"`),
+				"      Gemfile.lock -> \"1.*.*\"",
 				"      <unknown>    -> \"*\"",
 				"",
 				MatchRegexp(`    Selected Bundler version \(using Gemfile\.lock\): 1\.17\.\d+`),
@@ -230,7 +230,7 @@ func testReusingLayerRebuild(t *testing.T, context spec.G, it spec.S) {
 			Expect(err).NotTo(HaveOccurred())
 
 			re := regexp.MustCompile(`BUNDLED WITH\s+\d+\.\d+\.\d+`)
-			err = ioutil.WriteFile(filepath.Join(source, "Gemfile.lock"), re.ReplaceAll(contents, []byte("BUNDLED WITH\n   2.*")), 0644)
+			err = ioutil.WriteFile(filepath.Join(source, "Gemfile.lock"), re.ReplaceAll(contents, []byte("BUNDLED WITH\n   2.1.4")), 0644)
 			Expect(err).NotTo(HaveOccurred())
 
 			// Second pack build
@@ -247,7 +247,7 @@ func testReusingLayerRebuild(t *testing.T, context spec.G, it spec.S) {
 				MatchRegexp(fmt.Sprintf(`%s \d+\.\d+\.\d+`, settings.Buildpack.Name)),
 				"  Resolving Bundler version",
 				"    Candidate version sources (in priority order):",
-				"      Gemfile.lock -> \"2.*\"",
+				"      Gemfile.lock -> \"2.*.*\"",
 				"      <unknown>    -> \"*\"",
 				"",
 				MatchRegexp(`    Selected Bundler version \(using Gemfile\.lock\): 2\.\d+\.\d+`),
