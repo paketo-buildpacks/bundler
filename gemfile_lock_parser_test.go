@@ -50,10 +50,10 @@ BUNDLED WITH
 	})
 
 	context("ParseVersion", func() {
-		it("parses the bundler version from a Gemfile.lock file", func() {
+		it("parses the bundler major version from a Gemfile.lock file", func() {
 			version, err := parser.ParseVersion(path)
 			Expect(err).NotTo(HaveOccurred())
-			Expect(version).To(Equal("1.2.3"))
+			Expect(version).To(Equal("1.*.*"))
 		})
 
 		context("when the Gemfile.lock file does not exist", func() {
@@ -78,6 +78,32 @@ BUNDLED WITH
 					_, err := parser.ParseVersion(path)
 					Expect(err).To(MatchError(ContainSubstring("failed to parse Gemfile.lock:")))
 					Expect(err).To(MatchError(ContainSubstring("permission denied")))
+				})
+			})
+
+			context("when the bundler version is not valid semver", func() {
+				it.Before(func() {
+					err := ioutil.WriteFile(path, []byte(`GEM
+  remote: https://rubygems.org/
+  specs:
+
+PLATFORMS
+  ruby
+
+DEPENDENCIES
+
+RUBY VERSION
+   ruby 2.6.3p62
+
+BUNDLED WITH
+	 not semver`), 0600)
+					Expect(err).NotTo(HaveOccurred())
+				})
+
+				it("returns an error", func() {
+					_, err := parser.ParseVersion(path)
+					Expect(err).To(MatchError(ContainSubstring("failed to parse Gemfile.lock:")))
+					Expect(err).To(MatchError(ContainSubstring("Invalid Semantic Version")))
 				})
 			})
 		})
