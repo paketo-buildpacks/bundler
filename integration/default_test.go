@@ -2,8 +2,6 @@ package integration
 
 import (
 	"fmt"
-	"io/ioutil"
-	"net/http"
 	"os"
 	"path/filepath"
 	"strings"
@@ -77,22 +75,14 @@ func testDefault(t *testing.T, context spec.G, it spec.S) {
 
 			Eventually(container).Should(BeAvailable())
 
-			response, err := http.Get(fmt.Sprintf("http://localhost:%s", container.HostPort("8080")))
-			Expect(err).NotTo(HaveOccurred())
-			defer response.Body.Close()
-			Expect(response.StatusCode).To(Equal(http.StatusOK))
-
-			content, err := ioutil.ReadAll(response.Body)
-			Expect(err).NotTo(HaveOccurred())
-
-			Expect(string(content)).To(ContainSubstring(fmt.Sprintf("/layers/%s/bundler/bin/bundler", strings.ReplaceAll(settings.Buildpack.ID, "/", "_"))))
-			Expect(string(content)).To(MatchRegexp(`Bundler version 2\.\d+\.\d+`))
+			Eventually(container).Should(Serve(ContainSubstring(fmt.Sprintf("/layers/%s/bundler/bin/bundler", strings.ReplaceAll(settings.Buildpack.ID, "/", "_")))).OnPort(8080))
+			Eventually(container).Should(Serve(MatchRegexp(`Bundler version 2\.\d+\.\d+`)).OnPort(8080))
 
 			Expect(logs).To(ContainLines(
 				MatchRegexp(fmt.Sprintf(`%s \d+\.\d+\.\d+`, settings.Buildpack.Name)),
 				"  Resolving Bundler version",
 				"    Candidate version sources (in priority order):",
-				"      <unknown> -> \"*\"",
+				"      <unknown> -> \"\"",
 				"",
 				MatchRegexp(`    Selected Bundler version \(using <unknown>\): 2\.\d+\.\d+`),
 				"",

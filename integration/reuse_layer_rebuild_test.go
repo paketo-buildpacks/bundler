@@ -93,7 +93,7 @@ func testReusingLayerRebuild(t *testing.T, context spec.G, it spec.S) {
 				MatchRegexp(fmt.Sprintf(`%s \d+\.\d+\.\d+`, settings.Buildpack.Name)),
 				"  Resolving Bundler version",
 				"    Candidate version sources (in priority order):",
-				"      <unknown> -> \"*\"",
+				"      <unknown> -> \"\"",
 				"",
 				MatchRegexp(`    Selected Bundler version \(using <unknown>\): 2\.\d+\.\d+`),
 				"",
@@ -132,7 +132,7 @@ func testReusingLayerRebuild(t *testing.T, context spec.G, it spec.S) {
 				MatchRegexp(fmt.Sprintf(`%s \d+\.\d+\.\d+`, settings.Buildpack.Name)),
 				"  Resolving Bundler version",
 				"    Candidate version sources (in priority order):",
-				"      <unknown> -> \"*\"",
+				"      <unknown> -> \"\"",
 				"",
 				MatchRegexp(`    Selected Bundler version \(using <unknown>\): 2\.\d+\.\d+`),
 				"",
@@ -202,7 +202,7 @@ func testReusingLayerRebuild(t *testing.T, context spec.G, it spec.S) {
 				"  Resolving Bundler version",
 				"    Candidate version sources (in priority order):",
 				"      Gemfile.lock -> \"1.*.*\"",
-				"      <unknown>    -> \"*\"",
+				"      <unknown>    -> \"\"",
 				"",
 				MatchRegexp(`    Selected Bundler version \(using Gemfile\.lock\): 1\.17\.\d+`),
 				"",
@@ -248,7 +248,7 @@ func testReusingLayerRebuild(t *testing.T, context spec.G, it spec.S) {
 				"  Resolving Bundler version",
 				"    Candidate version sources (in priority order):",
 				"      Gemfile.lock -> \"2.*.*\"",
-				"      <unknown>    -> \"*\"",
+				"      <unknown>    -> \"\"",
 				"",
 				MatchRegexp(`    Selected Bundler version \(using Gemfile\.lock\): 2\.\d+\.\d+`),
 				"",
@@ -271,17 +271,8 @@ func testReusingLayerRebuild(t *testing.T, context spec.G, it spec.S) {
 			containerIDs[secondContainer.ID] = struct{}{}
 
 			Eventually(secondContainer).Should(BeAvailable())
-
-			response, err := http.Get(fmt.Sprintf("http://localhost:%s", secondContainer.HostPort("8080")))
-			Expect(err).NotTo(HaveOccurred())
-			defer response.Body.Close()
-			Expect(response.StatusCode).To(Equal(http.StatusOK))
-
-			content, err := ioutil.ReadAll(response.Body)
-			Expect(err).NotTo(HaveOccurred())
-
-			Expect(string(content)).To(ContainSubstring(fmt.Sprintf("/layers/%s/bundler/bin/bundler", strings.ReplaceAll(settings.Buildpack.ID, "/", "_"))))
-			Expect(string(content)).To(MatchRegexp(`Bundler version 2\.\d+\.\d+`))
+			Eventually(secondContainer).Should(Serve(ContainSubstring(fmt.Sprintf("/layers/%s/bundler/bin/bundler", strings.ReplaceAll(settings.Buildpack.ID, "/", "_")))).OnPort(8080))
+			Eventually(secondContainer).Should(Serve(MatchRegexp(`Bundler version 2\.\d+\.\d+`)).OnPort(8080))
 
 			Expect(secondImage.Buildpacks[1].Layers["bundler"].Metadata["built_at"]).NotTo(Equal(firstImage.Buildpacks[1].Layers["bundler"].Metadata["built_at"]))
 		})

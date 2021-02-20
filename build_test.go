@@ -75,6 +75,9 @@ func testBuild(t *testing.T, context spec.G, it spec.S) {
 			},
 		}
 
+		entryResolver.MergeLayerTypesCall.Returns.Launch = true
+		entryResolver.MergeLayerTypesCall.Returns.Build = true
+
 		dependencyManager = &fakes.DependencyManager{}
 		dependencyManager.ResolveCall.Returns.Dependency = postal.Dependency{
 			Name:    "Bundler",
@@ -194,6 +197,19 @@ func testBuild(t *testing.T, context spec.G, it spec.S) {
 				},
 			},
 		}))
+		Expect(entryResolver.MergeLayerTypesCall.Receives.String).To(Equal("bundler"))
+		Expect(entryResolver.MergeLayerTypesCall.Receives.BuildpackPlanEntrySlice).To(Equal(
+			[]packit.BuildpackPlanEntry{
+				{
+					Name: "bundler",
+					Metadata: map[string]interface{}{
+						"version-source": "buildpack.yml",
+						"version":        "2.0.x",
+						"launch":         true,
+						"build":          true,
+					},
+				},
+			}))
 
 		Expect(dependencyManager.ResolveCall.Receives.Path).To(Equal(filepath.Join(cnbDir, "buildpack.toml")))
 		Expect(dependencyManager.ResolveCall.Receives.Id).To(Equal("bundler"))
@@ -242,6 +258,8 @@ func testBuild(t *testing.T, context spec.G, it spec.S) {
 					"build":          true,
 				},
 			}
+			entryResolver.MergeLayerTypesCall.Returns.Launch = false
+			entryResolver.MergeLayerTypesCall.Returns.Build = true
 
 			planRefinery.BillOfMaterialCall.Returns.BuildpackPlan = packit.BuildpackPlan{
 				Entries: []packit.BuildpackPlanEntry{
@@ -333,6 +351,8 @@ func testBuild(t *testing.T, context spec.G, it spec.S) {
 					"launch":         true,
 				},
 			}
+			entryResolver.MergeLayerTypesCall.Returns.Launch = true
+			entryResolver.MergeLayerTypesCall.Returns.Build = false
 
 			planRefinery.BillOfMaterialCall.Returns.BuildpackPlan = packit.BuildpackPlan{
 				Entries: []packit.BuildpackPlanEntry{
@@ -639,6 +659,19 @@ func testBuild(t *testing.T, context spec.G, it spec.S) {
 					},
 				},
 			}))
+			Expect(entryResolver.MergeLayerTypesCall.Receives.String).To(Equal("bundler"))
+			Expect(entryResolver.MergeLayerTypesCall.Receives.BuildpackPlanEntrySlice).To(Equal(
+				[]packit.BuildpackPlanEntry{
+					{
+						Name: "bundler",
+						Metadata: map[string]interface{}{
+							"version-source": "BP_BUNDLER_VERSION",
+							"version":        "1.17.x",
+							"launch":         true,
+							"build":          true,
+						},
+					},
+				}))
 
 			Expect(dependencyManager.ResolveCall.Receives.Path).To(Equal(filepath.Join(cnbDir, "buildpack.toml")))
 			Expect(dependencyManager.ResolveCall.Receives.Id).To(Equal("bundler"))
