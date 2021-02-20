@@ -61,14 +61,14 @@ func testBuild(t *testing.T, context spec.G, it spec.S) {
     stacks = ["some-stack"]
     uri = "some-uri"
     version = "some-dep-version"
-`), 0644)
+`), 0600)
 		Expect(err).NotTo(HaveOccurred())
 
 		entryResolver = &fakes.EntryResolver{}
 		entryResolver.ResolveCall.Returns.BuildpackPlanEntry = packit.BuildpackPlanEntry{
 			Name: "bundler",
 			Metadata: map[string]interface{}{
-				"version-source": "buildpack.yml",
+				"version-source": "BP_BUNDLER_VERSION",
 				"version":        "2.0.x",
 				"launch":         true,
 				"build":          true,
@@ -93,7 +93,7 @@ func testBuild(t *testing.T, context spec.G, it spec.S) {
 				{
 					Name: "bundler",
 					Metadata: map[string]interface{}{
-						"version-source": "buildpack.yml",
+						"version-source": "BP_BUNDLER_VERSION",
 						"version":        "2.0.x",
 						"launch":         true,
 						"build":          true,
@@ -124,18 +124,18 @@ func testBuild(t *testing.T, context spec.G, it spec.S) {
 
 	it("returns a result that installs bundler", func() {
 		result, err := build(packit.BuildContext{
-			CNBPath: cnbDir,
-			Stack:   "some-stack",
 			BuildpackInfo: packit.BuildpackInfo{
 				Name:    "Some Buildpack",
 				Version: "some-version",
 			},
+			CNBPath: cnbDir,
+			Stack:   "some-stack",
 			Plan: packit.BuildpackPlan{
 				Entries: []packit.BuildpackPlanEntry{
 					{
 						Name: "bundler",
 						Metadata: map[string]interface{}{
-							"version-source": "buildpack.yml",
+							"version-source": "BP_BUNDLER_VERSION",
 							"version":        "2.0.x",
 							"launch":         true,
 							"build":          true,
@@ -152,7 +152,7 @@ func testBuild(t *testing.T, context spec.G, it spec.S) {
 					{
 						Name: "bundler",
 						Metadata: map[string]interface{}{
-							"version-source": "buildpack.yml",
+							"version-source": "BP_BUNDLER_VERSION",
 							"version":        "2.0.x",
 							"launch":         true,
 							"build":          true,
@@ -187,7 +187,7 @@ func testBuild(t *testing.T, context spec.G, it spec.S) {
 			{
 				Name: "bundler",
 				Metadata: map[string]interface{}{
-					"version-source": "buildpack.yml",
+					"version-source": "BP_BUNDLER_VERSION",
 					"version":        "2.0.x",
 					"launch":         true,
 					"build":          true,
@@ -218,9 +218,9 @@ func testBuild(t *testing.T, context spec.G, it spec.S) {
 
 		Expect(buffer.String()).To(ContainSubstring("Some Buildpack some-version"))
 		Expect(buffer.String()).To(ContainSubstring("Resolving Bundler version"))
-		Expect(buffer.String()).To(ContainSubstring("Selected Bundler version (using buildpack.yml): "))
-		Expect(buffer.String()).To(ContainSubstring("WARNING: Setting the Bundler version through buildpack.yml will be deprecated soon in Bundler Buildpack v1.0.0."))
-		Expect(buffer.String()).To(ContainSubstring("Please specify the version through the $BP_BUNDLER_VERSION environment variable instead. See README.md for more information."))
+		Expect(buffer.String()).To(ContainSubstring("Selected Bundler version (using BP_BUNDLER_VERSION): "))
+		Expect(buffer.String()).NotTo(ContainSubstring("WARNING: Setting the Bundler version through buildpack.yml will be deprecated soon in Bundler Buildpack v2.0.0."))
+		Expect(buffer.String()).NotTo(ContainSubstring("Please specify the version through the $BP_BUNDLER_VERSION environment variable instead. See README.md for more information."))
 		Expect(buffer.String()).To(ContainSubstring("Executing build process"))
 		Expect(buffer.String()).To(ContainSubstring("Configuring environment"))
 	})
@@ -237,7 +237,7 @@ func testBuild(t *testing.T, context spec.G, it spec.S) {
 				Name: "bundler",
 
 				Metadata: map[string]interface{}{
-					"version-source": "buildpack.yml",
+					"version-source": "BP_BUNDLER_VERSION",
 					"version":        "2.0.x",
 					"build":          true,
 				},
@@ -248,7 +248,7 @@ func testBuild(t *testing.T, context spec.G, it spec.S) {
 					{
 						Name: "bundler",
 						Metadata: map[string]interface{}{
-							"version-source": "buildpack.yml",
+							"version-source": "BP_BUNDLER_VERSION",
 							"version":        "2.0.x",
 							"build":          true,
 						},
@@ -271,7 +271,7 @@ func testBuild(t *testing.T, context spec.G, it spec.S) {
 						{
 							Name: "bundler",
 							Metadata: map[string]interface{}{
-								"version-source": "buildpack.yml",
+								"version-source": "BP_BUNDLER_VERSION",
 								"version":        "2.0.x",
 								"build":          true,
 							},
@@ -287,7 +287,7 @@ func testBuild(t *testing.T, context spec.G, it spec.S) {
 						{
 							Name: "bundler",
 							Metadata: map[string]interface{}{
-								"version-source": "buildpack.yml",
+								"version-source": "BP_BUNDLER_VERSION",
 								"version":        "2.0.x",
 								"build":          true,
 							},
@@ -328,7 +328,7 @@ func testBuild(t *testing.T, context spec.G, it spec.S) {
 			entryResolver.ResolveCall.Returns.BuildpackPlanEntry = packit.BuildpackPlanEntry{
 				Name: "bundler",
 				Metadata: map[string]interface{}{
-					"version-source": "buildpack.yml",
+					"version-source": "BP_BUNDLER_VERSION",
 					"version":        "2.0.x",
 					"launch":         true,
 				},
@@ -339,7 +339,7 @@ func testBuild(t *testing.T, context spec.G, it spec.S) {
 					{
 						Name: "bundler",
 						Metadata: map[string]interface{}{
-							"version-source": "buildpack.yml",
+							"version-source": "BP_BUNDLER_VERSION",
 							"version":        "2.0.x",
 							"launch":         true,
 						},
@@ -362,7 +362,7 @@ func testBuild(t *testing.T, context spec.G, it spec.S) {
 						{
 							Name: "bundler",
 							Metadata: map[string]interface{}{
-								"version-source": "buildpack.yml",
+								"version-source": "BP_BUNDLER_VERSION",
 								"version":        "2.0.x",
 								"launch":         true,
 							},
@@ -378,7 +378,7 @@ func testBuild(t *testing.T, context spec.G, it spec.S) {
 						{
 							Name: "bundler",
 							Metadata: map[string]interface{}{
-								"version-source": "buildpack.yml",
+								"version-source": "BP_BUNDLER_VERSION",
 								"version":        "2.0.x",
 								"launch":         true,
 							},
@@ -434,7 +434,7 @@ func testBuild(t *testing.T, context spec.G, it spec.S) {
 						{
 							Name: "bundler",
 							Metadata: map[string]interface{}{
-								"version-source": "buildpack.yml",
+								"version-source": "BP_BUNDLER_VERSION",
 								"version":        "2.0.x",
 								"build":          true,
 								"launch":         true,
@@ -485,7 +485,7 @@ func testBuild(t *testing.T, context spec.G, it spec.S) {
 
 	context("when there is a dependency cache match", func() {
 		it.Before(func() {
-			err := ioutil.WriteFile(filepath.Join(layersDir, "bundler.toml"), []byte("[metadata]\ndependency-sha = \"some-sha\"\n"), 0644)
+			err := ioutil.WriteFile(filepath.Join(layersDir, "bundler.toml"), []byte("[metadata]\ndependency-sha = \"some-sha\"\n"), 0600)
 			Expect(err).NotTo(HaveOccurred())
 
 			dependencyManager.ResolveCall.Returns.Dependency = postal.Dependency{
@@ -496,18 +496,18 @@ func testBuild(t *testing.T, context spec.G, it spec.S) {
 
 		it("exits build process early", func() {
 			_, err := build(packit.BuildContext{
-				CNBPath: cnbDir,
-				Stack:   "some-stack",
 				BuildpackInfo: packit.BuildpackInfo{
 					Name:    "Some Buildpack",
 					Version: "some-version",
 				},
+				CNBPath: cnbDir,
+				Stack:   "some-stack",
 				Plan: packit.BuildpackPlan{
 					Entries: []packit.BuildpackPlanEntry{
 						{
 							Name: "bundler",
 							Metadata: map[string]interface{}{
-								"version-source": "buildpack.yml",
+								"version-source": "BP_BUNDLER_VERSION",
 								"version":        "2.0.x",
 							},
 						},
@@ -527,20 +527,18 @@ func testBuild(t *testing.T, context spec.G, it spec.S) {
 
 			Expect(buffer.String()).To(ContainSubstring("Some Buildpack some-version"))
 			Expect(buffer.String()).To(ContainSubstring("Resolving Bundler version"))
-			Expect(buffer.String()).To(ContainSubstring("Selected Bundler version (using buildpack.yml): "))
-			Expect(buffer.String()).To(ContainSubstring("WARNING: Setting the Bundler version through buildpack.yml will be deprecated soon in Bundler Buildpack v1.0.0."))
-			Expect(buffer.String()).To(ContainSubstring("Please specify the version through the $BP_BUNDLER_VERSION environment variable instead. See README.md for more information."))
+			Expect(buffer.String()).To(ContainSubstring("Selected Bundler version (using BP_BUNDLER_VERSION): "))
 			Expect(buffer.String()).To(ContainSubstring("Reusing cached layer"))
 			Expect(buffer.String()).ToNot(ContainSubstring("Executing build process"))
 		})
 	})
 
-	context("when the build plan entry version source is from $BP_BUNDLER_VERSION", func() {
+	context("when the build plan entry version source is from buildpack.yml", func() {
 		it.Before(func() {
 			entryResolver.ResolveCall.Returns.BuildpackPlanEntry = packit.BuildpackPlanEntry{
 				Name: "bundler",
 				Metadata: map[string]interface{}{
-					"version-source": "BP_BUNDLER_VERSION",
+					"version-source": "buildpack.yml",
 					"version":        "1.17.x",
 					"launch":         true,
 					"build":          true,
@@ -557,7 +555,7 @@ func testBuild(t *testing.T, context spec.G, it spec.S) {
 					{
 						Name: "bundler",
 						Metadata: map[string]interface{}{
-							"version-source": "BP_BUNDLER_VERSION",
+							"version-source": "buildpack.yml",
 							"version":        "1.17.x",
 							"launch":         true,
 							"build":          true,
@@ -567,20 +565,20 @@ func testBuild(t *testing.T, context spec.G, it spec.S) {
 			}
 		})
 
-		it("returns a result that installs bundler with $BP_BUNDLER_VERSION", func() {
+		it("returns a result that installs bundler with buildpack.yml", func() {
 			result, err := build(packit.BuildContext{
-				CNBPath: cnbDir,
-				Stack:   "some-stack",
 				BuildpackInfo: packit.BuildpackInfo{
 					Name:    "Some Buildpack",
-					Version: "some-version",
+					Version: "1.2.3",
 				},
+				CNBPath: cnbDir,
+				Stack:   "some-stack",
 				Plan: packit.BuildpackPlan{
 					Entries: []packit.BuildpackPlanEntry{
 						{
 							Name: "bundler",
 							Metadata: map[string]interface{}{
-								"version-source": "BP_BUNDLER_VERSION",
+								"version-source": "buildpack.yml",
 								"version":        "1.17.x",
 								"launch":         true,
 								"build":          true,
@@ -597,7 +595,7 @@ func testBuild(t *testing.T, context spec.G, it spec.S) {
 						{
 							Name: "bundler",
 							Metadata: map[string]interface{}{
-								"version-source": "BP_BUNDLER_VERSION",
+								"version-source": "buildpack.yml",
 								"version":        "1.17.x",
 								"launch":         true,
 								"build":          true,
@@ -632,7 +630,7 @@ func testBuild(t *testing.T, context spec.G, it spec.S) {
 				{
 					Name: "bundler",
 					Metadata: map[string]interface{}{
-						"version-source": "BP_BUNDLER_VERSION",
+						"version-source": "buildpack.yml",
 						"version":        "1.17.x",
 						"launch":         true,
 						"build":          true,
@@ -661,11 +659,11 @@ func testBuild(t *testing.T, context spec.G, it spec.S) {
 			Expect(versionShimmer.ShimCall.Receives.Path).To(Equal(filepath.Join(layersDir, "bundler", "bin")))
 			Expect(versionShimmer.ShimCall.Receives.Version).To(Equal("1.17.x"))
 
-			Expect(buffer.String()).To(ContainSubstring("Some Buildpack some-version"))
+			Expect(buffer.String()).To(ContainSubstring("Some Buildpack 1.2.3"))
 			Expect(buffer.String()).To(ContainSubstring("Resolving Bundler version"))
-			Expect(buffer.String()).To(ContainSubstring("Selected Bundler version (using BP_BUNDLER_VERSION): "))
-			Expect(buffer.String()).NotTo(ContainSubstring("WARNING: Setting the Bundler version through buildpack.yml will be deprecated soon in Bundler Buildpack v1.0.0."))
-			Expect(buffer.String()).NotTo(ContainSubstring("Please specify the version through the $BP_BUNDLER_VERSION environment variable instead. See README.md for more information."))
+			Expect(buffer.String()).To(ContainSubstring("Selected Bundler version (using buildpack.yml): "))
+			Expect(buffer.String()).To(ContainSubstring("WARNING: Setting the Bundler version through buildpack.yml will be deprecated soon in Bundler Buildpack v2.0.0."))
+			Expect(buffer.String()).To(ContainSubstring("Please specify the version through the $BP_BUNDLER_VERSION environment variable instead. See README.md for more information."))
 			Expect(buffer.String()).To(ContainSubstring("Executing build process"))
 			Expect(buffer.String()).To(ContainSubstring("Configuring environment"))
 		})
@@ -686,7 +684,7 @@ func testBuild(t *testing.T, context spec.G, it spec.S) {
 							{
 								Name: "bundler",
 								Metadata: map[string]interface{}{
-									"version-source": "buildpack.yml",
+									"version-source": "BP_BUNDLER_VERSION",
 									"version":        "2.0.x",
 								},
 							},
@@ -711,7 +709,7 @@ func testBuild(t *testing.T, context spec.G, it spec.S) {
 							{
 								Name: "bundler",
 								Metadata: map[string]interface{}{
-									"version-source": "buildpack.yml",
+									"version-source": "BP_BUNDLER_VERSION",
 									"version":        "2.0.x",
 								},
 							},
@@ -740,7 +738,7 @@ func testBuild(t *testing.T, context spec.G, it spec.S) {
 							{
 								Name: "bundler",
 								Metadata: map[string]interface{}{
-									"version-source": "buildpack.yml",
+									"version-source": "BP_BUNDLER_VERSION",
 									"version":        "2.0.x",
 								},
 							},
@@ -773,7 +771,7 @@ func testBuild(t *testing.T, context spec.G, it spec.S) {
 							{
 								Name: "bundler",
 								Metadata: map[string]interface{}{
-									"version-source": "buildpack.yml",
+									"version-source": "BP_BUNDLER_VERSION",
 									"version":        "2.0.x",
 								},
 							},
@@ -798,7 +796,7 @@ func testBuild(t *testing.T, context spec.G, it spec.S) {
 							{
 								Name: "bundler",
 								Metadata: map[string]interface{}{
-									"version-source": "buildpack.yml",
+									"version-source": "BP_BUNDLER_VERSION",
 									"version":        "2.0.x",
 								},
 							},
