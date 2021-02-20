@@ -12,7 +12,8 @@ import (
 
 //go:generate faux --interface EntryResolver --output fakes/entry_resolver.go
 type EntryResolver interface {
-	Resolve([]packit.BuildpackPlanEntry) packit.BuildpackPlanEntry
+	Resolve(string, []packit.BuildpackPlanEntry, []interface{}) (packit.BuildpackPlanEntry, []packit.BuildpackPlanEntry)
+	MergeLayerTypes(string, []packit.BuildpackPlanEntry) (launch, build bool)
 }
 
 //go:generate faux --interface DependencyManager --output fakes/dependency_manager.go
@@ -43,7 +44,9 @@ func Build(
 		logger.Title("%s %s", context.BuildpackInfo.Name, context.BuildpackInfo.Version)
 		logger.Process("Resolving Bundler version")
 
-		entry := entries.Resolve(context.Plan.Entries)
+		entry, allEntries := entries.Resolve("bundler", context.Plan.Entries, []interface{}{"BP_BUNDLER_VERSION", "buildpack.yml", "Gemfile.lock", ""})
+		logger.Candidates(allEntries)
+
 		version, _ := entry.Metadata["version"].(string)
 		dependency, err := dependencies.Resolve(filepath.Join(context.CNBPath, "buildpack.toml"), entry.Name, version, context.Stack)
 		if err != nil {
@@ -92,9 +95,8 @@ func Build(
 			return packit.BuildResult{}, err
 		}
 
-		bundlerLayer.Launch = entry.Metadata["launch"] == true
-		bundlerLayer.Build = entry.Metadata["build"] == true
-		bundlerLayer.Cache = entry.Metadata["build"] == true
+		bundlerLayer.Launch, bundlerLayer.Build = entries.MergeLayerTypes("bundler", context.Plan.Entries)
+		bundlerLayer.Cache = bundlerLayer.Build
 
 		logger.Subprocess("Installing Bundler %s", dependency.Version)
 		duration, err := clock.Measure(func() error {

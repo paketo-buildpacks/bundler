@@ -66,7 +66,7 @@ func testLogging(t *testing.T, context spec.G, it spec.S) {
 				MatchRegexp(fmt.Sprintf(`%s \d+\.\d+\.\d+`, settings.Buildpack.Name)),
 				"  Resolving Bundler version",
 				"    Candidate version sources (in priority order):",
-				"      <unknown> -> \"*\"",
+				"      <unknown> -> \"\"",
 				"",
 				MatchRegexp(`    Selected Bundler version \(using <unknown>\): 2\.\d+\.\d+`),
 				"",

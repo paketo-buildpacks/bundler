@@ -7,6 +7,7 @@ import (
 	"github.com/paketo-buildpacks/packit"
 	"github.com/paketo-buildpacks/packit/cargo"
 	"github.com/paketo-buildpacks/packit/chronos"
+	"github.com/paketo-buildpacks/packit/draft"
 	"github.com/paketo-buildpacks/packit/postal"
 )
 
@@ -14,7 +15,7 @@ func main() {
 	buildpackYMLParser := bundler.NewBuildpackYMLParser()
 	gemfileLockParser := bundler.NewGemfileLockParser()
 	logEmitter := bundler.NewLogEmitter(os.Stdout)
-	entryResolver := bundler.NewPlanEntryResolver(logEmitter)
+	entryResolver := draft.NewPlanner()
 	dependencyManager := postal.NewService(cargo.NewTransport())
 	planRefinery := bundler.NewPlanRefinery()
 	versionShimmer := bundler.NewVersionShimmer()
