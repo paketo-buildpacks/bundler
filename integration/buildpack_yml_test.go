@@ -97,7 +97,7 @@ func testBuildpackYML(t *testing.T, context spec.G, it spec.S) {
 				"",
 				MatchRegexp(`    Selected Bundler version \(using buildpack\.yml\): 1\.17\.\d+`),
 				"",
-				"    WARNING: Setting the Bundler version through buildpack.yml will be deprecated soon in Bundler Buildpack v1.0.0.",
+				"    WARNING: Setting the Bundler version through buildpack.yml will be deprecated soon in Bundler Buildpack v2.0.0.",
 				"    Please specify the version through the $BP_BUNDLER_VERSION environment variable instead. See README.md for more information.",
 				"",
 				"  Executing build process",
