@@ -203,7 +203,7 @@ func testBuild(t *testing.T, context spec.G, it spec.S) {
 				{
 					Name: "bundler",
 					Metadata: map[string]interface{}{
-						"version-source": "buildpack.yml",
+						"version-source": "BP_BUNDLER_VERSION",
 						"version":        "2.0.x",
 						"launch":         true,
 						"build":          true,
@@ -663,7 +663,7 @@ func testBuild(t *testing.T, context spec.G, it spec.S) {
 					{
 						Name: "bundler",
 						Metadata: map[string]interface{}{
-							"version-source": "BP_BUNDLER_VERSION",
+							"version-source": "buildpack.yml",
 							"version":        "1.17.x",
 							"launch":         true,
 							"build":          true,
