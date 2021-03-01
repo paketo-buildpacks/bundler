@@ -24,22 +24,22 @@ api = "0.2"
   [[metadata.dependencies]]
     id = "bundler"
     name = "Bundler"
-    sha256 = "2b65381f382a63b15597f8a3783a37441c5d8a599c9f4655a4f0235e489f043a"
-    source = "https://github.com/rubygems/rubygems/tree/v2.2.10"
-    source_sha256 = "5fb16a2f6fad0bcd8fb593a592bfdde083a7901afb440ffac46a1983b09bad93"
-    stacks = ["io.buildpacks.stacks.bionic", "org.cloudfoundry.stacks.cflinuxfs3"]
-    uri = "https://buildpacks.cloudfoundry.org/dependencies/bundler/bundler_2.2.10_linux_noarch_any-stack_2b65381f.tgz"
-    version = "2.2.10"
-
-  [[metadata.dependencies]]
-    id = "bundler"
-    name = "Bundler"
     sha256 = "d7ab9a93b8972236d18e7a0b49172ac8f1ddcea1dc55f2e96e247e144b75bb79"
     source = "https://github.com/rubygems/rubygems/tree/v2.2.11"
     source_sha256 = "4ea2e025ced4c8487ab5e25a80978e3973b870f9e1bfaffab2d5d4263537fdc7"
     stacks = ["io.buildpacks.stacks.bionic", "org.cloudfoundry.stacks.cflinuxfs3"]
     uri = "https://buildpacks.cloudfoundry.org/dependencies/bundler/bundler_2.2.11_linux_noarch_any-stack_d7ab9a93.tgz"
     version = "2.2.11"
+
+  [[metadata.dependencies]]
+    id = "bundler"
+    name = "Bundler"
+    sha256 = "b8859685cbaa65da27d06a7851c208e820094fe51bf0dfc279c885a7721158a0"
+    source = "https://github.com/rubygems/rubygems/tree/v2.2.12"
+    source_sha256 = "4e5c2a2e8acd916fdbfb008ad2d6afe44b2e9dc6789fb96447656ee0b4970488"
+    stacks = ["io.buildpacks.stacks.bionic", "org.cloudfoundry.stacks.cflinuxfs3"]
+    uri = "https://buildpacks.cloudfoundry.org/dependencies/bundler/bundler_2.2.12_linux_noarch_any-stack_b8859685.tgz"
+    version = "2.2.12"
 
 [[stacks]]
   id = "io.buildpacks.stacks.bionic"
