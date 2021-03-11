@@ -171,11 +171,12 @@ func testBuild(t *testing.T, context spec.G, it spec.S) {
 						"GEM_PATH.append": filepath.Join(layersDir, "bundler"),
 						"GEM_PATH.delim":  ":",
 					},
-					BuildEnv:  packit.Environment{},
-					LaunchEnv: packit.Environment{},
-					Build:     true,
-					Launch:    true,
-					Cache:     true,
+					BuildEnv:         packit.Environment{},
+					LaunchEnv:        packit.Environment{},
+					ProcessLaunchEnv: map[string]packit.Environment{},
+					Build:            true,
+					Launch:           true,
+					Cache:            true,
 					Metadata: map[string]interface{}{
 						bundler.DepKey: "",
 						"built_at":     timeStamp.Format(time.RFC3339Nano),
@@ -320,11 +321,12 @@ func testBuild(t *testing.T, context spec.G, it spec.S) {
 							"GEM_PATH.append": filepath.Join(layersDir, "bundler"),
 							"GEM_PATH.delim":  ":",
 						},
-						BuildEnv:  packit.Environment{},
-						LaunchEnv: packit.Environment{},
-						Build:     true,
-						Launch:    false,
-						Cache:     true,
+						BuildEnv:         packit.Environment{},
+						LaunchEnv:        packit.Environment{},
+						ProcessLaunchEnv: map[string]packit.Environment{},
+						Build:            true,
+						Launch:           false,
+						Cache:            true,
 						Metadata: map[string]interface{}{
 							bundler.DepKey: "",
 							"built_at":     timeStamp.Format(time.RFC3339Nano),
@@ -413,11 +415,12 @@ func testBuild(t *testing.T, context spec.G, it spec.S) {
 							"GEM_PATH.append": filepath.Join(layersDir, "bundler"),
 							"GEM_PATH.delim":  ":",
 						},
-						BuildEnv:  packit.Environment{},
-						LaunchEnv: packit.Environment{},
-						Build:     false,
-						Launch:    true,
-						Cache:     false,
+						BuildEnv:         packit.Environment{},
+						LaunchEnv:        packit.Environment{},
+						ProcessLaunchEnv: map[string]packit.Environment{},
+						Build:            false,
+						Launch:           true,
+						Cache:            false,
 						Metadata: map[string]interface{}{
 							bundler.DepKey: "",
 							"built_at":     timeStamp.Format(time.RFC3339Nano),
@@ -488,11 +491,12 @@ func testBuild(t *testing.T, context spec.G, it spec.S) {
 							"GEM_PATH.append": filepath.Join(layersDir, "bundler"),
 							"GEM_PATH.delim":  ":",
 						},
-						BuildEnv:  packit.Environment{},
-						LaunchEnv: packit.Environment{},
-						Build:     true,
-						Launch:    true,
-						Cache:     true,
+						BuildEnv:         packit.Environment{},
+						LaunchEnv:        packit.Environment{},
+						ProcessLaunchEnv: map[string]packit.Environment{},
+						Build:            true,
+						Launch:           true,
+						Cache:            true,
 						Metadata: map[string]interface{}{
 							bundler.DepKey: "",
 							"built_at":     timeStamp.Format(time.RFC3339Nano),
@@ -631,11 +635,12 @@ func testBuild(t *testing.T, context spec.G, it spec.S) {
 							"GEM_PATH.append": filepath.Join(layersDir, "bundler"),
 							"GEM_PATH.delim":  ":",
 						},
-						BuildEnv:  packit.Environment{},
-						LaunchEnv: packit.Environment{},
-						Build:     true,
-						Launch:    true,
-						Cache:     true,
+						BuildEnv:         packit.Environment{},
+						LaunchEnv:        packit.Environment{},
+						ProcessLaunchEnv: map[string]packit.Environment{},
+						Build:            true,
+						Launch:           true,
+						Cache:            true,
 						Metadata: map[string]interface{}{
 							bundler.DepKey: "",
 							"built_at":     timeStamp.Format(time.RFC3339Nano),
@@ -780,6 +785,36 @@ func testBuild(t *testing.T, context spec.G, it spec.S) {
 					Layers: packit.Layers{Path: layersDir},
 				})
 				Expect(err).To(MatchError(ContainSubstring("permission denied")))
+			})
+		})
+
+		context("when the Bundler layer cannot be reset", func() {
+			it.Before(func() {
+				Expect(os.MkdirAll(filepath.Join(layersDir, "bundler", "something"), os.ModePerm)).To(Succeed())
+				Expect(os.Chmod(filepath.Join(layersDir, "bundler"), 0500)).To(Succeed())
+			})
+
+			it.After(func() {
+				Expect(os.Chmod(filepath.Join(layersDir, "bundler"), os.ModePerm)).To(Succeed())
+			})
+
+			it("returns an error", func() {
+				_, err := build(packit.BuildContext{
+					CNBPath: cnbDir,
+					Plan: packit.BuildpackPlan{
+						Entries: []packit.BuildpackPlanEntry{
+							{
+								Name: "bundler",
+								Metadata: map[string]interface{}{
+									"version-source": "BP_BUNDLER_VERSION",
+									"version":        "2.0.x",
+								},
+							},
+						},
+					},
+					Layers: packit.Layers{Path: layersDir},
+				})
+				Expect(err).To(MatchError(ContainSubstring("could not remove file")))
 			})
 		})
 
