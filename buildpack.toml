@@ -1,9 +1,9 @@
 api = "0.2"
 
 [buildpack]
-  homepage = "https://github.com/paketo-buildpacks/bundler"
   id = "paketo-buildpacks/bundler"
   name = "Paketo Bundler Buildpack"
+  homepage = "https://github.com/paketo-buildpacks/bundler"
 
 [metadata]
   include-files = ["bin/build", "bin/detect", "bin/run", "buildpack.toml"]
@@ -24,22 +24,22 @@ api = "0.2"
   [[metadata.dependencies]]
     id = "bundler"
     name = "Bundler"
-    sha256 = "88744670e80eec3283ce7b887989c5b29cac69018366eccf17256c1f95f22ac2"
-    source = "https://github.com/rubygems/rubygems/tree/v2.2.25"
-    source_sha256 = "422237ffbbf2ceb05e696df7abb1bd1a82b5b1823eb2aeb6193312a60c319d8d"
-    stacks = ["io.buildpacks.stacks.bionic", "org.cloudfoundry.stacks.cflinuxfs3"]
-    uri = "https://buildpacks.cloudfoundry.org/dependencies/bundler/bundler_2.2.25_linux_noarch_any-stack_88744670.tgz"
-    version = "2.2.25"
-
-  [[metadata.dependencies]]
-    id = "bundler"
-    name = "Bundler"
     sha256 = "de9f44167d53ee877ed6de71651427e39cb516e487ee181af43808e0be46c51c"
     source = "https://github.com/rubygems/rubygems/tree/v2.2.26"
     source_sha256 = "62d173a626d64cb516785a5cba13da4800dc50ceac19c30ad5267dea27f7f35d"
     stacks = ["io.buildpacks.stacks.bionic", "org.cloudfoundry.stacks.cflinuxfs3"]
     uri = "https://buildpacks.cloudfoundry.org/dependencies/bundler/bundler_2.2.26_linux_noarch_any-stack_de9f4416.tgz"
     version = "2.2.26"
+
+  [[metadata.dependencies]]
+    id = "bundler"
+    name = "Bundler"
+    sha256 = "8de3083c8ff4d1d6877be9affe0997a7393815490c8b8029c21e3a1955a74ec7"
+    source = "https://github.com/rubygems/rubygems/tree/v2.2.27"
+    source_sha256 = "21d85c47937496b08b021df716b4eaa81e2223a04e8eba92ee9e767b9e1b3ed8"
+    stacks = ["io.buildpacks.stacks.bionic", "org.cloudfoundry.stacks.cflinuxfs3"]
+    uri = "https://buildpacks.cloudfoundry.org/dependencies/bundler/bundler_2.2.27_linux_noarch_any-stack_8de3083c.tgz"
+    version = "2.2.27"
 
 [[stacks]]
   id = "io.buildpacks.stacks.bionic"
