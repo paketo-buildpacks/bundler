@@ -14,7 +14,6 @@ func TestUnitBundler(t *testing.T) {
 	suite("Detect", testDetect)
 	suite("GemfileLockParser", testGemfileLockParser)
 	suite("LogEmitter", testLogEmitter)
-	suite("PlanRefinery", testPlanRefinery)
 	suite("VersionShimmer", testVersionShimmer)
 	suite.Run(t)
 }
