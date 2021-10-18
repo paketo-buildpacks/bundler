@@ -23,14 +23,14 @@ func testBuild(t *testing.T, context spec.G, it spec.S) {
 	var (
 		Expect = NewWithT(t).Expect
 
-		layersDir         string
-		cnbDir            string
+		layersDir string
+		cnbDir    string
+
 		entryResolver     *fakes.EntryResolver
 		dependencyManager *fakes.DependencyManager
+		versionShimmer    *fakes.Shimmer
 		clock             chronos.Clock
 		timeStamp         time.Time
-		planRefinery      *fakes.BuildPlanRefinery
-		versionShimmer    *fakes.Shimmer
 		buffer            *bytes.Buffer
 
 		build packit.BuildFunc
@@ -83,27 +83,24 @@ func testBuild(t *testing.T, context spec.G, it spec.S) {
 			Name:    "Bundler",
 			Version: "2.0.1",
 		}
-
-		planRefinery = &fakes.BuildPlanRefinery{}
+		dependencyManager.GenerateBillOfMaterialsCall.Returns.BOMEntrySlice = []packit.BOMEntry{
+			{
+				Name: "bundler",
+				Metadata: packit.BOMMetadata{
+					Version: "bundler-dependency-version",
+					Checksum: packit.BOMChecksum{
+						Algorithm: packit.SHA256,
+						Hash:      "bundler-dependency-sha",
+					},
+					URI: "bundler-dependency-uri",
+				},
+			},
+		}
 
 		timeStamp = time.Now()
 		clock = chronos.NewClock(func() time.Time {
 			return timeStamp
 		})
-
-		planRefinery.BillOfMaterialCall.Returns.BuildpackPlan = packit.BuildpackPlan{
-			Entries: []packit.BuildpackPlanEntry{
-				{
-					Name: "bundler",
-					Metadata: map[string]interface{}{
-						"version-source": "BP_BUNDLER_VERSION",
-						"version":        "2.0.x",
-						"launch":         true,
-						"build":          true,
-					},
-				},
-			},
-		}
 
 		buffer = bytes.NewBuffer(nil)
 		logEmitter := bundler.NewLogEmitter(buffer)
@@ -113,7 +110,6 @@ func testBuild(t *testing.T, context spec.G, it spec.S) {
 		build = bundler.Build(
 			entryResolver,
 			dependencyManager,
-			planRefinery,
 			logEmitter,
 			clock,
 			versionShimmer,
@@ -150,19 +146,6 @@ func testBuild(t *testing.T, context spec.G, it spec.S) {
 		})
 		Expect(err).NotTo(HaveOccurred())
 		Expect(result).To(Equal(packit.BuildResult{
-			Plan: packit.BuildpackPlan{
-				Entries: []packit.BuildpackPlanEntry{
-					{
-						Name: "bundler",
-						Metadata: map[string]interface{}{
-							"version-source": "BP_BUNDLER_VERSION",
-							"version":        "2.0.x",
-							"launch":         true,
-							"build":          true,
-						},
-					},
-				},
-			},
 			Layers: []packit.Layer{
 				{
 					Name: "bundler",
@@ -180,6 +163,36 @@ func testBuild(t *testing.T, context spec.G, it spec.S) {
 					Metadata: map[string]interface{}{
 						bundler.DepKey: "",
 						"built_at":     timeStamp.Format(time.RFC3339Nano),
+					},
+				},
+			},
+			Build: packit.BuildMetadata{
+				BOM: []packit.BOMEntry{
+					{
+						Name: "bundler",
+						Metadata: packit.BOMMetadata{
+							Version: "bundler-dependency-version",
+							Checksum: packit.BOMChecksum{
+								Algorithm: packit.SHA256,
+								Hash:      "bundler-dependency-sha",
+							},
+							URI: "bundler-dependency-uri",
+						},
+					},
+				},
+			},
+			Launch: packit.LaunchMetadata{
+				BOM: []packit.BOMEntry{
+					{
+						Name: "bundler",
+						Metadata: packit.BOMMetadata{
+							Version: "bundler-dependency-version",
+							Checksum: packit.BOMChecksum{
+								Algorithm: packit.SHA256,
+								Hash:      "bundler-dependency-sha",
+							},
+							URI: "bundler-dependency-uri",
+						},
 					},
 				},
 			},
@@ -217,10 +230,11 @@ func testBuild(t *testing.T, context spec.G, it spec.S) {
 		Expect(dependencyManager.ResolveCall.Receives.Version).To(Equal("2.0.x"))
 		Expect(dependencyManager.ResolveCall.Receives.Stack).To(Equal("some-stack"))
 
-		Expect(planRefinery.BillOfMaterialCall.CallCount).To(Equal(1))
-		Expect(planRefinery.BillOfMaterialCall.Receives.Dependency).To(Equal(postal.Dependency{
-			Name:    "Bundler",
-			Version: "2.0.1",
+		Expect(dependencyManager.GenerateBillOfMaterialsCall.Receives.Dependencies).To(Equal([]postal.Dependency{
+			{
+				Name:    "Bundler",
+				Version: "2.0.1",
+			},
 		}))
 
 		Expect(dependencyManager.InstallCall.Receives.Dependency).To(Equal(postal.Dependency{
@@ -261,19 +275,6 @@ func testBuild(t *testing.T, context spec.G, it spec.S) {
 			}
 			entryResolver.MergeLayerTypesCall.Returns.Launch = false
 			entryResolver.MergeLayerTypesCall.Returns.Build = true
-
-			planRefinery.BillOfMaterialCall.Returns.BuildpackPlan = packit.BuildpackPlan{
-				Entries: []packit.BuildpackPlanEntry{
-					{
-						Name: "bundler",
-						Metadata: map[string]interface{}{
-							"version-source": "BP_BUNDLER_VERSION",
-							"version":        "2.0.x",
-							"build":          true,
-						},
-					},
-				},
-			}
 		})
 
 		it.After(func() {
@@ -301,18 +302,6 @@ func testBuild(t *testing.T, context spec.G, it spec.S) {
 			})
 			Expect(err).NotTo(HaveOccurred())
 			Expect(result).To(Equal(packit.BuildResult{
-				Plan: packit.BuildpackPlan{
-					Entries: []packit.BuildpackPlanEntry{
-						{
-							Name: "bundler",
-							Metadata: map[string]interface{}{
-								"version-source": "BP_BUNDLER_VERSION",
-								"version":        "2.0.x",
-								"build":          true,
-							},
-						},
-					},
-				},
 				Layers: []packit.Layer{
 					{
 						Name: "bundler",
@@ -330,6 +319,21 @@ func testBuild(t *testing.T, context spec.G, it spec.S) {
 						Metadata: map[string]interface{}{
 							bundler.DepKey: "",
 							"built_at":     timeStamp.Format(time.RFC3339Nano),
+						},
+					},
+				},
+				Build: packit.BuildMetadata{
+					BOM: []packit.BOMEntry{
+						{
+							Name: "bundler",
+							Metadata: packit.BOMMetadata{
+								Version: "bundler-dependency-version",
+								Checksum: packit.BOMChecksum{
+									Algorithm: packit.SHA256,
+									Hash:      "bundler-dependency-sha",
+								},
+								URI: "bundler-dependency-uri",
+							},
 						},
 					},
 				},
@@ -355,19 +359,6 @@ func testBuild(t *testing.T, context spec.G, it spec.S) {
 			}
 			entryResolver.MergeLayerTypesCall.Returns.Launch = true
 			entryResolver.MergeLayerTypesCall.Returns.Build = false
-
-			planRefinery.BillOfMaterialCall.Returns.BuildpackPlan = packit.BuildpackPlan{
-				Entries: []packit.BuildpackPlanEntry{
-					{
-						Name: "bundler",
-						Metadata: map[string]interface{}{
-							"version-source": "BP_BUNDLER_VERSION",
-							"version":        "2.0.x",
-							"launch":         true,
-						},
-					},
-				},
-			}
 		})
 
 		it.After(func() {
@@ -395,18 +386,6 @@ func testBuild(t *testing.T, context spec.G, it spec.S) {
 			})
 			Expect(err).NotTo(HaveOccurred())
 			Expect(result).To(Equal(packit.BuildResult{
-				Plan: packit.BuildpackPlan{
-					Entries: []packit.BuildpackPlanEntry{
-						{
-							Name: "bundler",
-							Metadata: map[string]interface{}{
-								"version-source": "BP_BUNDLER_VERSION",
-								"version":        "2.0.x",
-								"launch":         true,
-							},
-						},
-					},
-				},
 				Layers: []packit.Layer{
 					{
 						Name: "bundler",
@@ -427,79 +406,18 @@ func testBuild(t *testing.T, context spec.G, it spec.S) {
 						},
 					},
 				},
-			}))
-		})
-	})
-
-	context("when we refine the buildpack plan", func() {
-		it.Before(func() {
-			planRefinery.BillOfMaterialCall.Returns.BuildpackPlan = packit.BuildpackPlan{
-				Entries: []packit.BuildpackPlanEntry{
-					{
-						Name: "new-dep",
-						Metadata: map[string]interface{}{
-							"some-extra-field": "an-extra-value",
-							"version":          "2.0.x",
-							"build":            true,
-							"launch":           true,
-						},
-					},
-				},
-			}
-		})
-
-		it("refines the BuildpackPlan", func() {
-			result, err := build(packit.BuildContext{
-				CNBPath: cnbDir,
-				Stack:   "some-stack",
-				Plan: packit.BuildpackPlan{
-					Entries: []packit.BuildpackPlanEntry{
+				Launch: packit.LaunchMetadata{
+					BOM: []packit.BOMEntry{
 						{
 							Name: "bundler",
-							Metadata: map[string]interface{}{
-								"version-source": "BP_BUNDLER_VERSION",
-								"version":        "2.0.x",
-								"build":          true,
-								"launch":         true,
+							Metadata: packit.BOMMetadata{
+								Version: "bundler-dependency-version",
+								Checksum: packit.BOMChecksum{
+									Algorithm: packit.SHA256,
+									Hash:      "bundler-dependency-sha",
+								},
+								URI: "bundler-dependency-uri",
 							},
-						},
-					},
-				},
-				Layers: packit.Layers{Path: layersDir},
-			})
-			Expect(err).NotTo(HaveOccurred())
-
-			Expect(result).To(Equal(packit.BuildResult{
-				Plan: packit.BuildpackPlan{
-					Entries: []packit.BuildpackPlanEntry{
-						{
-							Name: "new-dep",
-							Metadata: map[string]interface{}{
-								"some-extra-field": "an-extra-value",
-								"version":          "2.0.x",
-								"build":            true,
-								"launch":           true,
-							},
-						},
-					},
-				},
-				Layers: []packit.Layer{
-					{
-						Name: "bundler",
-						Path: filepath.Join(layersDir, "bundler"),
-						SharedEnv: packit.Environment{
-							"GEM_PATH.append": filepath.Join(layersDir, "bundler"),
-							"GEM_PATH.delim":  ":",
-						},
-						BuildEnv:         packit.Environment{},
-						LaunchEnv:        packit.Environment{},
-						ProcessLaunchEnv: map[string]packit.Environment{},
-						Build:            true,
-						Launch:           true,
-						Cache:            true,
-						Metadata: map[string]interface{}{
-							bundler.DepKey: "",
-							"built_at":     timeStamp.Format(time.RFC3339Nano),
 						},
 					},
 				},
@@ -541,10 +459,11 @@ func testBuild(t *testing.T, context spec.G, it spec.S) {
 			})
 			Expect(err).NotTo(HaveOccurred())
 
-			Expect(planRefinery.BillOfMaterialCall.CallCount).To(Equal(1))
-			Expect(planRefinery.BillOfMaterialCall.Receives.Dependency).To(Equal(postal.Dependency{
-				Name:   "Bundler",
-				SHA256: "some-sha",
+			Expect(dependencyManager.GenerateBillOfMaterialsCall.Receives.Dependencies).To(Equal([]postal.Dependency{
+				{
+					Name:   "Bundler",
+					SHA256: "some-sha",
+				},
 			}))
 
 			Expect(dependencyManager.InstallCall.CallCount).To(Equal(0))
@@ -573,20 +492,6 @@ func testBuild(t *testing.T, context spec.G, it spec.S) {
 				Name:    "Bundler",
 				Version: "1.17.x",
 			}
-
-			planRefinery.BillOfMaterialCall.Returns.BuildpackPlan = packit.BuildpackPlan{
-				Entries: []packit.BuildpackPlanEntry{
-					{
-						Name: "bundler",
-						Metadata: map[string]interface{}{
-							"version-source": "buildpack.yml",
-							"version":        "1.17.x",
-							"launch":         true,
-							"build":          true,
-						},
-					},
-				},
-			}
 		})
 
 		it("returns a result that installs bundler with buildpack.yml", func() {
@@ -614,19 +519,6 @@ func testBuild(t *testing.T, context spec.G, it spec.S) {
 			})
 			Expect(err).NotTo(HaveOccurred())
 			Expect(result).To(Equal(packit.BuildResult{
-				Plan: packit.BuildpackPlan{
-					Entries: []packit.BuildpackPlanEntry{
-						{
-							Name: "bundler",
-							Metadata: map[string]interface{}{
-								"version-source": "buildpack.yml",
-								"version":        "1.17.x",
-								"launch":         true,
-								"build":          true,
-							},
-						},
-					},
-				},
 				Layers: []packit.Layer{
 					{
 						Name: "bundler",
@@ -644,6 +536,36 @@ func testBuild(t *testing.T, context spec.G, it spec.S) {
 						Metadata: map[string]interface{}{
 							bundler.DepKey: "",
 							"built_at":     timeStamp.Format(time.RFC3339Nano),
+						},
+					},
+				},
+				Build: packit.BuildMetadata{
+					BOM: []packit.BOMEntry{
+						{
+							Name: "bundler",
+							Metadata: packit.BOMMetadata{
+								Version: "bundler-dependency-version",
+								Checksum: packit.BOMChecksum{
+									Algorithm: packit.SHA256,
+									Hash:      "bundler-dependency-sha",
+								},
+								URI: "bundler-dependency-uri",
+							},
+						},
+					},
+				},
+				Launch: packit.LaunchMetadata{
+					BOM: []packit.BOMEntry{
+						{
+							Name: "bundler",
+							Metadata: packit.BOMMetadata{
+								Version: "bundler-dependency-version",
+								Checksum: packit.BOMChecksum{
+									Algorithm: packit.SHA256,
+									Hash:      "bundler-dependency-sha",
+								},
+								URI: "bundler-dependency-uri",
+							},
 						},
 					},
 				},
@@ -681,10 +603,11 @@ func testBuild(t *testing.T, context spec.G, it spec.S) {
 			Expect(dependencyManager.ResolveCall.Receives.Version).To(Equal("1.17.x"))
 			Expect(dependencyManager.ResolveCall.Receives.Stack).To(Equal("some-stack"))
 
-			Expect(planRefinery.BillOfMaterialCall.CallCount).To(Equal(1))
-			Expect(planRefinery.BillOfMaterialCall.Receives.Dependency).To(Equal(postal.Dependency{
-				Name:    "Bundler",
-				Version: "1.17.x",
+			Expect(dependencyManager.GenerateBillOfMaterialsCall.Receives.Dependencies).To(Equal([]postal.Dependency{
+				{
+					Name:    "Bundler",
+					Version: "1.17.x",
+				},
 			}))
 
 			Expect(dependencyManager.InstallCall.Receives.Dependency).To(Equal(postal.Dependency{

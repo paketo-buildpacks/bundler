@@ -4,7 +4,7 @@ import "sync"
 
 type Shimmer struct {
 	ShimCall struct {
-		sync.Mutex
+		mutex     sync.Mutex
 		CallCount int
 		Receives  struct {
 			Path    string
@@ -18,8 +18,8 @@ type Shimmer struct {
 }
 
 func (f *Shimmer) Shim(param1 string, param2 string) error {
-	f.ShimCall.Lock()
-	defer f.ShimCall.Unlock()
+	f.ShimCall.mutex.Lock()
+	defer f.ShimCall.mutex.Unlock()
 	f.ShimCall.CallCount++
 	f.ShimCall.Receives.Path = param1
 	f.ShimCall.Receives.Version = param2

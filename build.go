@@ -20,11 +20,7 @@ type EntryResolver interface {
 type DependencyManager interface {
 	Resolve(path, id, version, stack string) (postal.Dependency, error)
 	Install(dependency postal.Dependency, cnbPath, layerPath string) error
-}
-
-//go:generate faux --interface BuildPlanRefinery --output fakes/build_plan_refinery.go
-type BuildPlanRefinery interface {
-	BillOfMaterial(dependency postal.Dependency) packit.BuildpackPlan
+	GenerateBillOfMaterials(dependencies ...postal.Dependency) []packit.BOMEntry
 }
 
 //go:generate faux --interface Shimmer --output fakes/shimmer.go
@@ -35,7 +31,6 @@ type Shimmer interface {
 func Build(
 	entries EntryResolver,
 	dependencies DependencyManager,
-	planRefinery BuildPlanRefinery,
 	logger LogEmitter,
 	clock chronos.Clock,
 	versionShimmer Shimmer,
@@ -63,19 +58,23 @@ func Build(
 			logger.Break()
 		}
 
+		bom := dependencies.GenerateBillOfMaterials(dependency)
+		launch, build := entries.MergeLayerTypes("bundler", context.Plan.Entries)
+
+		var buildMetadata packit.BuildMetadata
+		if build {
+			buildMetadata.BOM = bom
+		}
+
+		var launchMetadata packit.LaunchMetadata
+		if launch {
+			launchMetadata.BOM = bom
+		}
+
 		bundlerLayer, err := context.Layers.Get(Bundler)
 		if err != nil {
 			return packit.BuildResult{}, err
 		}
-
-		bom := planRefinery.BillOfMaterial(postal.Dependency{
-			ID:      dependency.ID,
-			Name:    dependency.Name,
-			SHA256:  dependency.SHA256,
-			Stacks:  dependency.Stacks,
-			URI:     dependency.URI,
-			Version: dependency.Version,
-		})
 
 		cachedSHA, ok := bundlerLayer.Metadata[DepKey].(string)
 		if ok && cachedSHA == dependency.SHA256 {
@@ -83,8 +82,9 @@ func Build(
 			logger.Break()
 
 			return packit.BuildResult{
-				Plan:   bom,
 				Layers: []packit.Layer{bundlerLayer},
+				Build:  buildMetadata,
+				Launch: launchMetadata,
 			}, nil
 		}
 
@@ -95,8 +95,7 @@ func Build(
 			return packit.BuildResult{}, err
 		}
 
-		bundlerLayer.Launch, bundlerLayer.Build = entries.MergeLayerTypes("bundler", context.Plan.Entries)
-		bundlerLayer.Cache = bundlerLayer.Build
+		bundlerLayer.Launch, bundlerLayer.Build, bundlerLayer.Cache = launch, build, build
 
 		logger.Subprocess("Installing Bundler %s", dependency.Version)
 		duration, err := clock.Measure(func() error {
@@ -124,8 +123,9 @@ func Build(
 		logger.Environment(bundlerLayer.SharedEnv)
 
 		return packit.BuildResult{
-			Plan:   bom,
 			Layers: []packit.Layer{bundlerLayer},
+			Build:  buildMetadata,
+			Launch: launchMetadata,
 		}, nil
 	}
 }

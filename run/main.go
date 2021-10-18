@@ -17,7 +17,6 @@ func main() {
 	logEmitter := bundler.NewLogEmitter(os.Stdout)
 	entryResolver := draft.NewPlanner()
 	dependencyManager := postal.NewService(cargo.NewTransport())
-	planRefinery := bundler.NewPlanRefinery()
 	versionShimmer := bundler.NewVersionShimmer()
 
 	packit.Run(
@@ -28,7 +27,6 @@ func main() {
 		bundler.Build(
 			entryResolver,
 			dependencyManager,
-			planRefinery,
 			logEmitter,
 			chronos.DefaultClock,
 			versionShimmer,
