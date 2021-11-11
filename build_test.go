@@ -427,6 +427,9 @@ func testBuild(t *testing.T, context spec.G, it spec.S) {
 
 	context("when there is a dependency cache match", func() {
 		it.Before(func() {
+			entryResolver.MergeLayerTypesCall.Returns.Launch = false
+			entryResolver.MergeLayerTypesCall.Returns.Build = true
+
 			err := ioutil.WriteFile(filepath.Join(layersDir, "bundler.toml"), []byte("[metadata]\ndependency-sha = \"some-sha\"\n"), 0600)
 			Expect(err).NotTo(HaveOccurred())
 
@@ -437,7 +440,7 @@ func testBuild(t *testing.T, context spec.G, it spec.S) {
 		})
 
 		it("exits build process early", func() {
-			_, err := build(packit.BuildContext{
+			result, err := build(packit.BuildContext{
 				BuildpackInfo: packit.BuildpackInfo{
 					Name:    "Some Buildpack",
 					Version: "some-version",
@@ -451,6 +454,7 @@ func testBuild(t *testing.T, context spec.G, it spec.S) {
 							Metadata: map[string]interface{}{
 								"version-source": "BP_BUNDLER_VERSION",
 								"version":        "2.0.x",
+								"build":          true,
 							},
 						},
 					},
@@ -458,6 +462,39 @@ func testBuild(t *testing.T, context spec.G, it spec.S) {
 				Layers: packit.Layers{Path: layersDir},
 			})
 			Expect(err).NotTo(HaveOccurred())
+			Expect(result).To(Equal(packit.BuildResult{
+				Layers: []packit.Layer{
+					{
+						Name:             "bundler",
+						Path:             filepath.Join(layersDir, "bundler"),
+						SharedEnv:        packit.Environment{},
+						BuildEnv:         packit.Environment{},
+						LaunchEnv:        packit.Environment{},
+						ProcessLaunchEnv: map[string]packit.Environment{},
+						Build:            true,
+						Launch:           false,
+						Cache:            true,
+						Metadata: map[string]interface{}{
+							"dependency-sha": "some-sha",
+						},
+					},
+				},
+				Build: packit.BuildMetadata{
+					BOM: []packit.BOMEntry{
+						{
+							Name: "bundler",
+							Metadata: packit.BOMMetadata{
+								Version: "bundler-dependency-version",
+								Checksum: packit.BOMChecksum{
+									Algorithm: packit.SHA256,
+									Hash:      "bundler-dependency-sha",
+								},
+								URI: "bundler-dependency-uri",
+							},
+						},
+					},
+				},
+			}))
 
 			Expect(dependencyManager.GenerateBillOfMaterialsCall.Receives.Dependencies).To(Equal([]postal.Dependency{
 				{

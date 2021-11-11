@@ -81,6 +81,7 @@ func Build(
 			logger.Process("Reusing cached layer %s", bundlerLayer.Path)
 			logger.Break()
 
+			bundlerLayer.Launch, bundlerLayer.Build, bundlerLayer.Cache = launch, build, build
 			return packit.BuildResult{
 				Layers: []packit.Layer{bundlerLayer},
 				Build:  buildMetadata,
