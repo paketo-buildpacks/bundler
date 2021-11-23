@@ -25,19 +25,6 @@ api = "0.6"
     version = "1.17.3"
 
   [[metadata.dependencies]]
-    cpe = "cpe:2.3:a:bundler:bundler:2.2.30:*:*:*:*:ruby:*:*"
-    id = "bundler"
-    licenses = ["MIT", "MIT-0"]
-    name = "Bundler"
-    purl = "pkg:generic/bundler@2.2.30?checksum=65d0c1668a9a4679bd7038e03e1ee97ca6a1474e8da0e1ed8fb0e199933e3f75&download_url=https://rubygems.org/downloads/bundler-2.2.30.gem"
-    sha256 = "b442bfa1d6078d4b3680097f221be13cfa95d1712f019cc86d8282805c4aaa2e"
-    source = "https://rubygems.org/downloads/bundler-2.2.30.gem"
-    source_sha256 = "65d0c1668a9a4679bd7038e03e1ee97ca6a1474e8da0e1ed8fb0e199933e3f75"
-    stacks = ["io.buildpacks.stacks.bionic"]
-    uri = "https://deps.paketo.io/bundler/bundler_2.2.30_linux_noarch_bionic_b442bfa1.tgz"
-    version = "2.2.30"
-
-  [[metadata.dependencies]]
     cpe = "cpe:2.3:a:bundler:bundler:2.2.31:*:*:*:*:ruby:*:*"
     id = "bundler"
     licenses = ["MIT", "MIT-0"]
@@ -49,6 +36,19 @@ api = "0.6"
     stacks = ["io.buildpacks.stacks.bionic"]
     uri = "https://deps.paketo.io/bundler/bundler_2.2.31_linux_noarch_bionic_48eb8fa2.tgz"
     version = "2.2.31"
+
+  [[metadata.dependencies]]
+    cpe = "cpe:2.3:a:bundler:bundler:2.2.32:*:*:*:*:ruby:*:*"
+    id = "bundler"
+    licenses = ["MIT", "MIT-0"]
+    name = "Bundler"
+    purl = "pkg:generic/bundler@2.2.32?checksum=a5fc106134ce2048fd46b68c10c8d1c296a9006a0ee473da7c5116def4a7fb6a&download_url=https://rubygems.org/downloads/bundler-2.2.32.gem"
+    sha256 = "dd2127e706c26eec7d2adad658fb8a13835ed5feb195f2d2c81feb264a8b79ed"
+    source = "https://rubygems.org/downloads/bundler-2.2.32.gem"
+    source_sha256 = "a5fc106134ce2048fd46b68c10c8d1c296a9006a0ee473da7c5116def4a7fb6a"
+    stacks = ["io.buildpacks.stacks.bionic"]
+    uri = "https://deps.paketo.io/bundler/bundler_2.2.32_linux_noarch_bionic_dd2127e7.tgz"
+    version = "2.2.32"
 
   [[metadata.dependency-constraints]]
     constraint = "1.*.*"
