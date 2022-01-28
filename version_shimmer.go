@@ -6,7 +6,7 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/paketo-buildpacks/packit/fs"
+	"github.com/paketo-buildpacks/packit/v2/fs"
 )
 
 // Bundler has an "auto-upgrade" feature that means that when simply invoking
