@@ -74,9 +74,60 @@ func testLogging(t *testing.T, context spec.G, it spec.S) {
 				MatchRegexp(`    Installing Bundler 2\.\d+\.\d+`),
 				MatchRegexp(`      Completed in \d+\.?\d*`),
 				"",
-				"  Configuring environment",
+				"  Configuring build environment",
+				MatchRegexp(fmt.Sprintf(`    GEM_PATH -> "\$GEM_PATH:/layers/%s/bundler"`, strings.ReplaceAll(settings.Buildpack.ID, "/", "_"))),
+				"",
+				"  Configuring launch environment",
 				MatchRegexp(fmt.Sprintf(`    GEM_PATH -> "\$GEM_PATH:/layers/%s/bundler"`, strings.ReplaceAll(settings.Buildpack.ID, "/", "_"))),
 			))
+		})
+
+		context("when the BP_LOG_LEVEL env var is set to DEBUG", func() {
+			it("logs useful information for the user", func() {
+				var err error
+				source, err = occam.Source(filepath.Join("testdata", "default_app"))
+				Expect(err).ToNot(HaveOccurred())
+
+				var logs fmt.Stringer
+				image, logs, err = pack.WithNoColor().Build.
+					WithPullPolicy("never").
+					WithBuildpacks(
+						settings.Buildpacks.MRI.Online,
+						settings.Buildpacks.Bundler.Online,
+						settings.Buildpacks.BuildPlan.Online,
+					).
+					WithEnv(map[string]string{
+						"BP_LOG_LEVEL": "DEBUG",
+					}).
+					Execute(name, source)
+				Expect(err).ToNot(HaveOccurred(), logs.String)
+
+				Expect(logs).To(ContainLines(
+					MatchRegexp(fmt.Sprintf(`%s \d+\.\d+\.\d+`, settings.Buildpack.Name)),
+					"  Resolving Bundler version",
+					"    Candidate version sources (in priority order):",
+					"      <unknown> -> \"\"",
+					"",
+					MatchRegexp(`    Selected Bundler version \(using <unknown>\): 2\.\d+\.\d+`),
+					"",
+					"  Generating the SBOM",
+					"",
+					"  Getting the layer associated with Bundler:",
+					"    /layers/paketo-buildpacks_bundler/bundler",
+					"",
+					"  Executing build process",
+					MatchRegexp(`    Installing Bundler 2\.\d+\.\d+`),
+					"    Installation path: /layers/paketo-buildpacks_bundler/bundler",
+					MatchRegexp(`    Source URI\: https\:\/\/deps\.paketo\.io\/bundler\/bundler_2\.\d+\.\d+_linux_noarch_bionic_.*\.tgz`),
+					MatchRegexp(`      Completed in \d+\.?\d*`),
+					"",
+					"  Configuring build environment",
+					MatchRegexp(fmt.Sprintf(`    GEM_PATH -> "\$GEM_PATH:/layers/%s/bundler"`, strings.ReplaceAll(settings.Buildpack.ID, "/", "_"))),
+					"",
+					"  Configuring launch environment",
+					MatchRegexp(fmt.Sprintf(`    GEM_PATH -> "\$GEM_PATH:/layers/%s/bundler"`, strings.ReplaceAll(settings.Buildpack.ID, "/", "_"))),
+				))
+			})
 		})
 	})
 }

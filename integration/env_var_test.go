@@ -92,7 +92,10 @@ func testRunWithEnvVar(t *testing.T, context spec.G, it spec.S) {
 				MatchRegexp(`    Installing Bundler 2\.\d+\.\d+`),
 				MatchRegexp(`      Completed in \d+\.?\d*`),
 				"",
-				"  Configuring environment",
+				"  Configuring build environment",
+				MatchRegexp(fmt.Sprintf(`    GEM_PATH -> "\$GEM_PATH:/layers/%s/bundler"`, strings.ReplaceAll(settings.Buildpack.ID, "/", "_"))),
+				"",
+				"  Configuring launch environment",
 				MatchRegexp(fmt.Sprintf(`    GEM_PATH -> "\$GEM_PATH:/layers/%s/bundler"`, strings.ReplaceAll(settings.Buildpack.ID, "/", "_"))),
 			))
 		})
