@@ -11,9 +11,12 @@ import (
 
 	"github.com/paketo-buildpacks/bundler"
 	"github.com/paketo-buildpacks/bundler/fakes"
-	"github.com/paketo-buildpacks/packit"
-	"github.com/paketo-buildpacks/packit/chronos"
-	"github.com/paketo-buildpacks/packit/postal"
+	"github.com/paketo-buildpacks/packit/v2"
+	"github.com/paketo-buildpacks/packit/v2/chronos"
+	"github.com/paketo-buildpacks/packit/v2/postal"
+
+	//nolint Ignore SA1019, informed usage of deprecated package
+	"github.com/paketo-buildpacks/packit/v2/paketosbom"
 	"github.com/sclevine/spec"
 
 	. "github.com/onsi/gomega"
@@ -86,10 +89,10 @@ func testBuild(t *testing.T, context spec.G, it spec.S) {
 		dependencyManager.GenerateBillOfMaterialsCall.Returns.BOMEntrySlice = []packit.BOMEntry{
 			{
 				Name: "bundler",
-				Metadata: packit.BOMMetadata{
+				Metadata: paketosbom.BOMMetadata{
 					Version: "bundler-dependency-version",
-					Checksum: packit.BOMChecksum{
-						Algorithm: packit.SHA256,
+					Checksum: paketosbom.BOMChecksum{
+						Algorithm: paketosbom.SHA256,
 						Hash:      "bundler-dependency-sha",
 					},
 					URI: "bundler-dependency-uri",
@@ -142,7 +145,8 @@ func testBuild(t *testing.T, context spec.G, it spec.S) {
 					},
 				},
 			},
-			Layers: packit.Layers{Path: layersDir},
+			Platform: packit.Platform{Path: "platform"},
+			Layers:   packit.Layers{Path: layersDir},
 		})
 		Expect(err).NotTo(HaveOccurred())
 		Expect(result).To(Equal(packit.BuildResult{
@@ -170,10 +174,10 @@ func testBuild(t *testing.T, context spec.G, it spec.S) {
 				BOM: []packit.BOMEntry{
 					{
 						Name: "bundler",
-						Metadata: packit.BOMMetadata{
+						Metadata: paketosbom.BOMMetadata{
 							Version: "bundler-dependency-version",
-							Checksum: packit.BOMChecksum{
-								Algorithm: packit.SHA256,
+							Checksum: paketosbom.BOMChecksum{
+								Algorithm: paketosbom.SHA256,
 								Hash:      "bundler-dependency-sha",
 							},
 							URI: "bundler-dependency-uri",
@@ -185,10 +189,10 @@ func testBuild(t *testing.T, context spec.G, it spec.S) {
 				BOM: []packit.BOMEntry{
 					{
 						Name: "bundler",
-						Metadata: packit.BOMMetadata{
+						Metadata: paketosbom.BOMMetadata{
 							Version: "bundler-dependency-version",
-							Checksum: packit.BOMChecksum{
-								Algorithm: packit.SHA256,
+							Checksum: paketosbom.BOMChecksum{
+								Algorithm: paketosbom.SHA256,
 								Hash:      "bundler-dependency-sha",
 							},
 							URI: "bundler-dependency-uri",
@@ -237,12 +241,13 @@ func testBuild(t *testing.T, context spec.G, it spec.S) {
 			},
 		}))
 
-		Expect(dependencyManager.InstallCall.Receives.Dependency).To(Equal(postal.Dependency{
+		Expect(dependencyManager.DeliverCall.Receives.Dependency).To(Equal(postal.Dependency{
 			Name:    "Bundler",
 			Version: "2.0.1",
 		}))
-		Expect(dependencyManager.InstallCall.Receives.CnbPath).To(Equal(cnbDir))
-		Expect(dependencyManager.InstallCall.Receives.LayerPath).To(Equal(filepath.Join(layersDir, "bundler")))
+		Expect(dependencyManager.DeliverCall.Receives.CnbPath).To(Equal(cnbDir))
+		Expect(dependencyManager.DeliverCall.Receives.LayerPath).To(Equal(filepath.Join(layersDir, "bundler")))
+		Expect(dependencyManager.DeliverCall.Receives.PlatformPath).To(Equal("platform"))
 
 		Expect(versionShimmer.ShimCall.Receives.Path).To(Equal(filepath.Join(layersDir, "bundler", "bin")))
 		Expect(versionShimmer.ShimCall.Receives.Version).To(Equal("2.0.1"))
@@ -326,10 +331,10 @@ func testBuild(t *testing.T, context spec.G, it spec.S) {
 					BOM: []packit.BOMEntry{
 						{
 							Name: "bundler",
-							Metadata: packit.BOMMetadata{
+							Metadata: paketosbom.BOMMetadata{
 								Version: "bundler-dependency-version",
-								Checksum: packit.BOMChecksum{
-									Algorithm: packit.SHA256,
+								Checksum: paketosbom.BOMChecksum{
+									Algorithm: paketosbom.SHA256,
 									Hash:      "bundler-dependency-sha",
 								},
 								URI: "bundler-dependency-uri",
@@ -410,10 +415,10 @@ func testBuild(t *testing.T, context spec.G, it spec.S) {
 					BOM: []packit.BOMEntry{
 						{
 							Name: "bundler",
-							Metadata: packit.BOMMetadata{
+							Metadata: paketosbom.BOMMetadata{
 								Version: "bundler-dependency-version",
-								Checksum: packit.BOMChecksum{
-									Algorithm: packit.SHA256,
+								Checksum: paketosbom.BOMChecksum{
+									Algorithm: paketosbom.SHA256,
 									Hash:      "bundler-dependency-sha",
 								},
 								URI: "bundler-dependency-uri",
@@ -483,10 +488,10 @@ func testBuild(t *testing.T, context spec.G, it spec.S) {
 					BOM: []packit.BOMEntry{
 						{
 							Name: "bundler",
-							Metadata: packit.BOMMetadata{
+							Metadata: paketosbom.BOMMetadata{
 								Version: "bundler-dependency-version",
-								Checksum: packit.BOMChecksum{
-									Algorithm: packit.SHA256,
+								Checksum: paketosbom.BOMChecksum{
+									Algorithm: paketosbom.SHA256,
 									Hash:      "bundler-dependency-sha",
 								},
 								URI: "bundler-dependency-uri",
@@ -503,7 +508,7 @@ func testBuild(t *testing.T, context spec.G, it spec.S) {
 				},
 			}))
 
-			Expect(dependencyManager.InstallCall.CallCount).To(Equal(0))
+			Expect(dependencyManager.DeliverCall.CallCount).To(Equal(0))
 
 			Expect(buffer.String()).To(ContainSubstring("Some Buildpack some-version"))
 			Expect(buffer.String()).To(ContainSubstring("Resolving Bundler version"))
@@ -552,7 +557,8 @@ func testBuild(t *testing.T, context spec.G, it spec.S) {
 						},
 					},
 				},
-				Layers: packit.Layers{Path: layersDir},
+				Platform: packit.Platform{Path: "platform"},
+				Layers:   packit.Layers{Path: layersDir},
 			})
 			Expect(err).NotTo(HaveOccurred())
 			Expect(result).To(Equal(packit.BuildResult{
@@ -580,10 +586,10 @@ func testBuild(t *testing.T, context spec.G, it spec.S) {
 					BOM: []packit.BOMEntry{
 						{
 							Name: "bundler",
-							Metadata: packit.BOMMetadata{
+							Metadata: paketosbom.BOMMetadata{
 								Version: "bundler-dependency-version",
-								Checksum: packit.BOMChecksum{
-									Algorithm: packit.SHA256,
+								Checksum: paketosbom.BOMChecksum{
+									Algorithm: paketosbom.SHA256,
 									Hash:      "bundler-dependency-sha",
 								},
 								URI: "bundler-dependency-uri",
@@ -595,10 +601,10 @@ func testBuild(t *testing.T, context spec.G, it spec.S) {
 					BOM: []packit.BOMEntry{
 						{
 							Name: "bundler",
-							Metadata: packit.BOMMetadata{
+							Metadata: paketosbom.BOMMetadata{
 								Version: "bundler-dependency-version",
-								Checksum: packit.BOMChecksum{
-									Algorithm: packit.SHA256,
+								Checksum: paketosbom.BOMChecksum{
+									Algorithm: paketosbom.SHA256,
 									Hash:      "bundler-dependency-sha",
 								},
 								URI: "bundler-dependency-uri",
@@ -647,12 +653,13 @@ func testBuild(t *testing.T, context spec.G, it spec.S) {
 				},
 			}))
 
-			Expect(dependencyManager.InstallCall.Receives.Dependency).To(Equal(postal.Dependency{
+			Expect(dependencyManager.DeliverCall.Receives.Dependency).To(Equal(postal.Dependency{
 				Name:    "Bundler",
 				Version: "1.17.x",
 			}))
-			Expect(dependencyManager.InstallCall.Receives.CnbPath).To(Equal(cnbDir))
-			Expect(dependencyManager.InstallCall.Receives.LayerPath).To(Equal(filepath.Join(layersDir, "bundler")))
+			Expect(dependencyManager.DeliverCall.Receives.CnbPath).To(Equal(cnbDir))
+			Expect(dependencyManager.DeliverCall.Receives.LayerPath).To(Equal(filepath.Join(layersDir, "bundler")))
+			Expect(dependencyManager.DeliverCall.Receives.PlatformPath).To(Equal("platform"))
 
 			Expect(versionShimmer.ShimCall.Receives.Path).To(Equal(filepath.Join(layersDir, "bundler", "bin")))
 			Expect(versionShimmer.ShimCall.Receives.Version).To(Equal("1.17.x"))
@@ -696,7 +703,7 @@ func testBuild(t *testing.T, context spec.G, it spec.S) {
 
 		context("when a dependency cannot be installed", func() {
 			it.Before(func() {
-				dependencyManager.InstallCall.Returns.Error = errors.New("failed to install dependency")
+				dependencyManager.DeliverCall.Returns.Error = errors.New("failed to install dependency")
 			})
 
 			it("returns an error", func() {
