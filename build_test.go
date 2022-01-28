@@ -14,6 +14,7 @@ import (
 	"github.com/paketo-buildpacks/packit/v2"
 	"github.com/paketo-buildpacks/packit/v2/chronos"
 	"github.com/paketo-buildpacks/packit/v2/postal"
+	"github.com/paketo-buildpacks/packit/v2/scribe"
 
 	//nolint Ignore SA1019, informed usage of deprecated package
 	"github.com/paketo-buildpacks/packit/v2/paketosbom"
@@ -106,7 +107,7 @@ func testBuild(t *testing.T, context spec.G, it spec.S) {
 		})
 
 		buffer = bytes.NewBuffer(nil)
-		logEmitter := bundler.NewLogEmitter(buffer)
+		logEmitter := scribe.NewEmitter(buffer)
 
 		versionShimmer = &fakes.Shimmer{}
 
@@ -258,7 +259,8 @@ func testBuild(t *testing.T, context spec.G, it spec.S) {
 		Expect(buffer.String()).NotTo(ContainSubstring("WARNING: Setting the Bundler version through buildpack.yml will be deprecated soon in Bundler Buildpack v2.0.0."))
 		Expect(buffer.String()).NotTo(ContainSubstring("Please specify the version through the $BP_BUNDLER_VERSION environment variable instead. See README.md for more information."))
 		Expect(buffer.String()).To(ContainSubstring("Executing build process"))
-		Expect(buffer.String()).To(ContainSubstring("Configuring environment"))
+		Expect(buffer.String()).To(ContainSubstring("Configuring build environment"))
+		Expect(buffer.String()).To(ContainSubstring("Configuring launch environment"))
 	})
 
 	context("when the build plan entry includes the build flag", func() {
@@ -670,7 +672,8 @@ func testBuild(t *testing.T, context spec.G, it spec.S) {
 			Expect(buffer.String()).To(ContainSubstring("WARNING: Setting the Bundler version through buildpack.yml will be deprecated soon in Bundler Buildpack v2.0.0."))
 			Expect(buffer.String()).To(ContainSubstring("Please specify the version through the $BP_BUNDLER_VERSION environment variable instead. See README.md for more information."))
 			Expect(buffer.String()).To(ContainSubstring("Executing build process"))
-			Expect(buffer.String()).To(ContainSubstring("Configuring environment"))
+			Expect(buffer.String()).To(ContainSubstring("Configuring build environment"))
+			Expect(buffer.String()).To(ContainSubstring("Configuring launch environment"))
 		})
 
 	})

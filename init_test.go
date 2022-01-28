@@ -13,7 +13,6 @@ func TestUnitBundler(t *testing.T) {
 	suite("BuildpackYMLParser", testBuildpackYMLParser)
 	suite("Detect", testDetect)
 	suite("GemfileLockParser", testGemfileLockParser)
-	suite("LogEmitter", testLogEmitter)
 	suite("VersionShimmer", testVersionShimmer)
 	suite.Run(t)
 }

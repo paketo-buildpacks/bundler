@@ -8,6 +8,7 @@ import (
 	"github.com/paketo-buildpacks/packit/v2"
 	"github.com/paketo-buildpacks/packit/v2/chronos"
 	"github.com/paketo-buildpacks/packit/v2/postal"
+	"github.com/paketo-buildpacks/packit/v2/scribe"
 )
 
 //go:generate faux --interface EntryResolver --output fakes/entry_resolver.go
@@ -31,7 +32,7 @@ type Shimmer interface {
 func Build(
 	entries EntryResolver,
 	dependencies DependencyManager,
-	logger LogEmitter,
+	logger scribe.Emitter,
 	clock chronos.Clock,
 	versionShimmer Shimmer,
 ) packit.BuildFunc {
@@ -58,6 +59,8 @@ func Build(
 			logger.Break()
 		}
 
+		logger.Debug.Process("Generating the SBOM")
+		logger.Debug.Break()
 		bom := dependencies.GenerateBillOfMaterials(dependency)
 		launch, build := entries.MergeLayerTypes("bundler", context.Plan.Entries)
 
@@ -71,10 +74,13 @@ func Build(
 			launchMetadata.BOM = bom
 		}
 
+		logger.Debug.Process("Getting the layer associated with Bundler:")
 		bundlerLayer, err := context.Layers.Get(Bundler)
 		if err != nil {
 			return packit.BuildResult{}, err
 		}
+		logger.Debug.Subprocess(bundlerLayer.Path)
+		logger.Debug.Break()
 
 		cachedSHA, ok := bundlerLayer.Metadata[DepKey].(string)
 		if ok && cachedSHA == dependency.SHA256 {
@@ -100,6 +106,8 @@ func Build(
 
 		logger.Subprocess("Installing Bundler %s", dependency.Version)
 		duration, err := clock.Measure(func() error {
+			logger.Debug.Subprocess("Installation path: %s", bundlerLayer.Path)
+			logger.Debug.Subprocess("Source URI: %s", dependency.URI)
 			err := dependencies.Deliver(dependency, context.CNBPath, bundlerLayer.Path, context.Platform.Path)
 			if err != nil {
 				return err
@@ -120,8 +128,7 @@ func Build(
 		}
 
 		bundlerLayer.SharedEnv.Append("GEM_PATH", bundlerLayer.Path, ":")
-
-		logger.Environment(bundlerLayer.SharedEnv)
+		logger.EnvironmentVariables(bundlerLayer)
 
 		return packit.BuildResult{
 			Layers: []packit.Layer{bundlerLayer},

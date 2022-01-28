@@ -9,12 +9,13 @@ import (
 	"github.com/paketo-buildpacks/packit/v2/chronos"
 	"github.com/paketo-buildpacks/packit/v2/draft"
 	"github.com/paketo-buildpacks/packit/v2/postal"
+	"github.com/paketo-buildpacks/packit/v2/scribe"
 )
 
 func main() {
 	buildpackYMLParser := bundler.NewBuildpackYMLParser()
 	gemfileLockParser := bundler.NewGemfileLockParser()
-	logEmitter := bundler.NewLogEmitter(os.Stdout)
+	logger := scribe.NewEmitter(os.Stdout).WithLevel(os.Getenv("BP_LOG_LEVEL"))
 	entryResolver := draft.NewPlanner()
 	dependencyManager := postal.NewService(cargo.NewTransport())
 	versionShimmer := bundler.NewVersionShimmer()
@@ -27,7 +28,7 @@ func main() {
 		bundler.Build(
 			entryResolver,
 			dependencyManager,
-			logEmitter,
+			logger,
 			chronos.DefaultClock,
 			versionShimmer,
 		),
