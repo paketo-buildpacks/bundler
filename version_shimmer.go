@@ -2,7 +2,6 @@ package bundler
 
 import (
 	"fmt"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 
@@ -50,7 +49,7 @@ func (s VersionShimmer) Shim(dir, version string) error {
 
 		content := fmt.Sprintf(VersionShimTemplate, original, version)
 
-		err = ioutil.WriteFile(file, []byte(content), 0755)
+		err = os.WriteFile(file, []byte(content), 0755)
 		if err != nil {
 			return fmt.Errorf("failed to rewrite bundler executables: %w", err)
 		}

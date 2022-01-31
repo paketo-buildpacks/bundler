@@ -2,8 +2,6 @@ package integration_test
 
 import (
 	"fmt"
-	"io/ioutil"
-	"net/http"
 	"os"
 	"path/filepath"
 	"regexp"
@@ -153,16 +151,8 @@ func testReusingLayerRebuild(t *testing.T, context spec.G, it spec.S) {
 			containerIDs[secondContainer.ID] = struct{}{}
 
 			Eventually(secondContainer).Should(BeAvailable())
-
-			response, err := http.Get(fmt.Sprintf("http://localhost:%s", secondContainer.HostPort("8080")))
-			Expect(err).NotTo(HaveOccurred())
-			Expect(response.StatusCode).To(Equal(http.StatusOK))
-
-			content, err := ioutil.ReadAll(response.Body)
-			Expect(err).NotTo(HaveOccurred())
-
-			Expect(string(content)).To(ContainSubstring(fmt.Sprintf("/layers/%s/bundler/bin/bundler", strings.ReplaceAll(settings.Buildpack.ID, "/", "_"))))
-			Expect(string(content)).To(MatchRegexp(`Bundler version 2\.\d+\.\d+`))
+			Eventually(secondContainer).Should(Serve(ContainSubstring(fmt.Sprintf("/layers/%s/bundler/bin/bundler", strings.ReplaceAll(settings.Buildpack.ID, "/", "_")))).OnPort(8080))
+			Eventually(secondContainer).Should(Serve(MatchRegexp(`Bundler version 2\.\d+\.\d+`)))
 
 			Expect(secondImage.Buildpacks[1].Layers["bundler"].Metadata["built_at"]).To(Equal(firstImage.Buildpacks[1].Layers["bundler"].Metadata["built_at"]))
 		})
@@ -232,11 +222,11 @@ func testReusingLayerRebuild(t *testing.T, context spec.G, it spec.S) {
 
 			Eventually(firstContainer).Should(BeAvailable())
 
-			contents, err := ioutil.ReadFile(filepath.Join(source, "Gemfile.lock"))
+			contents, err := os.ReadFile(filepath.Join(source, "Gemfile.lock"))
 			Expect(err).NotTo(HaveOccurred())
 
 			re := regexp.MustCompile(`BUNDLED WITH\s+\d+\.\d+\.\d+`)
-			err = ioutil.WriteFile(filepath.Join(source, "Gemfile.lock"), re.ReplaceAll(contents, []byte("BUNDLED WITH\n   2.1.4")), 0644)
+			err = os.WriteFile(filepath.Join(source, "Gemfile.lock"), re.ReplaceAll(contents, []byte("BUNDLED WITH\n   2.1.4")), 0644)
 			Expect(err).NotTo(HaveOccurred())
 
 			// Second pack build
@@ -279,7 +269,6 @@ func testReusingLayerRebuild(t *testing.T, context spec.G, it spec.S) {
 
 			containerIDs[secondContainer.ID] = struct{}{}
 
-			Eventually(secondContainer).Should(BeAvailable())
 			Eventually(secondContainer).Should(Serve(ContainSubstring(fmt.Sprintf("/layers/%s/bundler/bin/bundler", strings.ReplaceAll(settings.Buildpack.ID, "/", "_")))).OnPort(8080))
 			Eventually(secondContainer).Should(Serve(MatchRegexp(`Bundler version 2\.\d+\.\d+`)).OnPort(8080))
 
