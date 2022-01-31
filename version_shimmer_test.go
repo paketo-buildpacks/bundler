@@ -2,7 +2,6 @@ package bundler_test
 
 import (
 	"fmt"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"testing"
@@ -23,16 +22,16 @@ func testVersionShimmer(t *testing.T, context spec.G, it spec.S) {
 
 	it.Before(func() {
 		var err error
-		dir, err = ioutil.TempDir("", "bin")
+		dir, err = os.MkdirTemp("", "bin")
 		Expect(err).NotTo(HaveOccurred())
 
-		err = ioutil.WriteFile(filepath.Join(dir, "first"), []byte("first"), 0755)
+		err = os.WriteFile(filepath.Join(dir, "first"), []byte("first"), 0755)
 		Expect(err).NotTo(HaveOccurred())
 
-		err = ioutil.WriteFile(filepath.Join(dir, "second"), []byte("second"), 0755)
+		err = os.WriteFile(filepath.Join(dir, "second"), []byte("second"), 0755)
 		Expect(err).NotTo(HaveOccurred())
 
-		err = ioutil.WriteFile(filepath.Join(dir, "third"), []byte("third"), 0644)
+		err = os.WriteFile(filepath.Join(dir, "third"), []byte("third"), 0644)
 		Expect(err).NotTo(HaveOccurred())
 
 		err = os.Mkdir(filepath.Join(dir, "fourth"), os.ModePerm)
@@ -66,7 +65,7 @@ func testVersionShimmer(t *testing.T, context spec.G, it spec.S) {
 			Expect(err).NotTo(HaveOccurred())
 			defer first.Close()
 
-			content, err := ioutil.ReadAll(first)
+			content, err := os.ReadFile(first.Name())
 			Expect(err).NotTo(HaveOccurred())
 			Expect(string(content)).To(Equal("first"))
 
@@ -78,7 +77,7 @@ func testVersionShimmer(t *testing.T, context spec.G, it spec.S) {
 			Expect(err).NotTo(HaveOccurred())
 			defer firstShim.Close()
 
-			content, err = ioutil.ReadAll(firstShim)
+			content, err = os.ReadFile(firstShim.Name())
 			Expect(err).NotTo(HaveOccurred())
 			Expect(string(content)).To(Equal(fmt.Sprintf("#!/usr/bin/env sh\nexec %s _some-version_ ${@:-}", filepath.Join(dir, "_first"))))
 
@@ -90,7 +89,7 @@ func testVersionShimmer(t *testing.T, context spec.G, it spec.S) {
 			Expect(err).NotTo(HaveOccurred())
 			defer second.Close()
 
-			content, err = ioutil.ReadAll(second)
+			content, err = os.ReadFile(second.Name())
 			Expect(err).NotTo(HaveOccurred())
 			Expect(string(content)).To(Equal("second"))
 
@@ -102,7 +101,7 @@ func testVersionShimmer(t *testing.T, context spec.G, it spec.S) {
 			Expect(err).NotTo(HaveOccurred())
 			defer secondShim.Close()
 
-			content, err = ioutil.ReadAll(secondShim)
+			content, err = os.ReadFile(secondShim.Name())
 			Expect(err).NotTo(HaveOccurred())
 			Expect(string(content)).To(Equal(fmt.Sprintf("#!/usr/bin/env sh\nexec %s _some-version_ ${@:-}", filepath.Join(dir, "_second"))))
 
@@ -114,7 +113,7 @@ func testVersionShimmer(t *testing.T, context spec.G, it spec.S) {
 			Expect(err).NotTo(HaveOccurred())
 			defer third.Close()
 
-			content, err = ioutil.ReadAll(third)
+			content, err = os.ReadFile(third.Name())
 			Expect(err).NotTo(HaveOccurred())
 			Expect(string(content)).To(Equal("third"))
 
