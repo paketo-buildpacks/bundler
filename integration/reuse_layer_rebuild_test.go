@@ -92,16 +92,20 @@ func testReusingLayerRebuild(t *testing.T, context spec.G, it spec.S) {
 				"  Resolving Bundler version",
 				"    Candidate version sources (in priority order):",
 				"      <unknown> -> \"\"",
-				"",
+			))
+			Expect(logs).To(ContainLines(
 				MatchRegexp(`    Selected Bundler version \(using <unknown>\): 2\.\d+\.\d+`),
-				"",
+			))
+			Expect(logs).To(ContainLines(
 				"  Executing build process",
 				MatchRegexp(`    Installing Bundler 2\.\d+\.\d+`),
 				MatchRegexp(`      Completed in \d+\.?\d*`),
-				"",
+			))
+			Expect(logs).To(ContainLines(
 				"  Configuring build environment",
 				MatchRegexp(fmt.Sprintf(`    GEM_PATH -> "\$GEM_PATH:/layers/%s/bundler"`, strings.ReplaceAll(settings.Buildpack.ID, "/", "_"))),
-				"",
+			))
+			Expect(logs).To(ContainLines(
 				"  Configuring launch environment",
 				MatchRegexp(fmt.Sprintf(`    GEM_PATH -> "\$GEM_PATH:/layers/%s/bundler"`, strings.ReplaceAll(settings.Buildpack.ID, "/", "_"))),
 			))
@@ -134,9 +138,11 @@ func testReusingLayerRebuild(t *testing.T, context spec.G, it spec.S) {
 				"  Resolving Bundler version",
 				"    Candidate version sources (in priority order):",
 				"      <unknown> -> \"\"",
-				"",
+			))
+			Expect(logs).To(ContainLines(
 				MatchRegexp(`    Selected Bundler version \(using <unknown>\): 2\.\d+\.\d+`),
-				"",
+			))
+			Expect(logs).To(ContainLines(
 				MatchRegexp(fmt.Sprintf("  Reusing cached layer /layers/%s/bundler", strings.ReplaceAll(settings.Buildpack.ID, "/", "_"))),
 			))
 
@@ -154,7 +160,7 @@ func testReusingLayerRebuild(t *testing.T, context spec.G, it spec.S) {
 			Eventually(secondContainer).Should(Serve(ContainSubstring(fmt.Sprintf("/layers/%s/bundler/bin/bundler", strings.ReplaceAll(settings.Buildpack.ID, "/", "_")))).OnPort(8080))
 			Eventually(secondContainer).Should(Serve(MatchRegexp(`Bundler version 2\.\d+\.\d+`)))
 
-			Expect(secondImage.Buildpacks[1].Layers["bundler"].Metadata["built_at"]).To(Equal(firstImage.Buildpacks[1].Layers["bundler"].Metadata["built_at"]))
+			Expect(secondImage.Buildpacks[1].Layers["bundler"].SHA).To(Equal(firstImage.Buildpacks[1].Layers["bundler"].SHA))
 		})
 	})
 
@@ -196,16 +202,20 @@ func testReusingLayerRebuild(t *testing.T, context spec.G, it spec.S) {
 				"    Candidate version sources (in priority order):",
 				"      Gemfile.lock -> \"1.*.*\"",
 				"      <unknown>    -> \"\"",
-				"",
+			))
+			Expect(logs).To(ContainLines(
 				MatchRegexp(`    Selected Bundler version \(using Gemfile\.lock\): 1\.17\.\d+`),
-				"",
+			))
+			Expect(logs).To(ContainLines(
 				"  Executing build process",
 				MatchRegexp(`    Installing Bundler 1\.17\.\d+`),
 				MatchRegexp(`      Completed in \d+\.?\d*`),
-				"",
+			))
+			Expect(logs).To(ContainLines(
 				"  Configuring build environment",
 				MatchRegexp(fmt.Sprintf(`    GEM_PATH -> "\$GEM_PATH:/layers/%s/bundler"`, strings.ReplaceAll(settings.Buildpack.ID, "/", "_"))),
-				"",
+			))
+			Expect(logs).To(ContainLines(
 				"  Configuring launch environment",
 				MatchRegexp(fmt.Sprintf(`    GEM_PATH -> "\$GEM_PATH:/layers/%s/bundler"`, strings.ReplaceAll(settings.Buildpack.ID, "/", "_"))),
 			))
@@ -245,16 +255,20 @@ func testReusingLayerRebuild(t *testing.T, context spec.G, it spec.S) {
 				"    Candidate version sources (in priority order):",
 				"      Gemfile.lock -> \"2.*.*\"",
 				"      <unknown>    -> \"\"",
-				"",
+			))
+			Expect(logs).To(ContainLines(
 				MatchRegexp(`    Selected Bundler version \(using Gemfile\.lock\): 2\.\d+\.\d+`),
-				"",
+			))
+			Expect(logs).To(ContainLines(
 				"  Executing build process",
 				MatchRegexp(`    Installing Bundler 2\.\d+\.\d+`),
 				MatchRegexp(`      Completed in \d+\.?\d*`),
-				"",
+			))
+			Expect(logs).To(ContainLines(
 				"  Configuring build environment",
 				MatchRegexp(fmt.Sprintf(`    GEM_PATH -> "\$GEM_PATH:/layers/%s/bundler"`, strings.ReplaceAll(settings.Buildpack.ID, "/", "_"))),
-				"",
+			))
+			Expect(logs).To(ContainLines(
 				"  Configuring launch environment",
 				MatchRegexp(fmt.Sprintf(`    GEM_PATH -> "\$GEM_PATH:/layers/%s/bundler"`, strings.ReplaceAll(settings.Buildpack.ID, "/", "_"))),
 			))
@@ -272,7 +286,7 @@ func testReusingLayerRebuild(t *testing.T, context spec.G, it spec.S) {
 			Eventually(secondContainer).Should(Serve(ContainSubstring(fmt.Sprintf("/layers/%s/bundler/bin/bundler", strings.ReplaceAll(settings.Buildpack.ID, "/", "_")))).OnPort(8080))
 			Eventually(secondContainer).Should(Serve(MatchRegexp(`Bundler version 2\.\d+\.\d+`)).OnPort(8080))
 
-			Expect(secondImage.Buildpacks[1].Layers["bundler"].Metadata["built_at"]).NotTo(Equal(firstImage.Buildpacks[1].Layers["bundler"].Metadata["built_at"]))
+			Expect(secondImage.Buildpacks[1].Layers["bundler"].SHA).NotTo(Equal(firstImage.Buildpacks[1].Layers["bundler"].SHA))
 		})
 	})
 }
