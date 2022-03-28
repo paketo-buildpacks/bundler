@@ -123,8 +123,7 @@ func Build(
 		logger.Break()
 
 		bundlerLayer.Metadata = map[string]interface{}{
-			DepKey:     dependency.SHA256,
-			"built_at": clock.Now().Format(time.RFC3339Nano),
+			DepKey: dependency.SHA256,
 		}
 
 		bundlerLayer.SharedEnv.Append("GEM_PATH", bundlerLayer.Path, ":")
