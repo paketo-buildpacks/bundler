@@ -83,19 +83,24 @@ func testBuildpackYML(t *testing.T, context spec.G, it spec.S) {
 				"    Candidate version sources (in priority order):",
 				"      buildpack.yml -> \"1.17.x\"",
 				"      <unknown>     -> \"\"",
-				"",
+			))
+			Expect(logs).To(ContainLines(
 				MatchRegexp(`    Selected Bundler version \(using buildpack\.yml\): 1\.17\.\d+`),
-				"",
+			))
+			Expect(logs).To(ContainLines(
 				"    WARNING: Setting the Bundler version through buildpack.yml will be deprecated soon in Bundler Buildpack v2.0.0.",
 				"    Please specify the version through the $BP_BUNDLER_VERSION environment variable instead. See README.md for more information.",
-				"",
+			))
+			Expect(logs).To(ContainLines(
 				"  Executing build process",
 				MatchRegexp(`    Installing Bundler 1\.17\.\d+`),
 				MatchRegexp(`      Completed in \d+\.?\d*`),
-				"",
+			))
+			Expect(logs).To(ContainLines(
 				"  Configuring build environment",
 				MatchRegexp(fmt.Sprintf(`    GEM_PATH -> "\$GEM_PATH:/layers/%s/bundler"`, strings.ReplaceAll(settings.Buildpack.ID, "/", "_"))),
-				"",
+			))
+			Expect(logs).To(ContainLines(
 				"  Configuring launch environment",
 				MatchRegexp(fmt.Sprintf(`    GEM_PATH -> "\$GEM_PATH:/layers/%s/bundler"`, strings.ReplaceAll(settings.Buildpack.ID, "/", "_"))),
 			))

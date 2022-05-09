@@ -67,16 +67,20 @@ func testLogging(t *testing.T, context spec.G, it spec.S) {
 				"  Resolving Bundler version",
 				"    Candidate version sources (in priority order):",
 				"      <unknown> -> \"\"",
-				"",
+			))
+			Expect(logs).To(ContainLines(
 				MatchRegexp(`    Selected Bundler version \(using <unknown>\): 2\.\d+\.\d+`),
-				"",
+			))
+			Expect(logs).To(ContainLines(
 				"  Executing build process",
 				MatchRegexp(`    Installing Bundler 2\.\d+\.\d+`),
 				MatchRegexp(`      Completed in \d+\.?\d*`),
-				"",
+			))
+			Expect(logs).To(ContainLines(
 				"  Configuring build environment",
 				MatchRegexp(fmt.Sprintf(`    GEM_PATH -> "\$GEM_PATH:/layers/%s/bundler"`, strings.ReplaceAll(settings.Buildpack.ID, "/", "_"))),
-				"",
+			))
+			Expect(logs).To(ContainLines(
 				"  Configuring launch environment",
 				MatchRegexp(fmt.Sprintf(`    GEM_PATH -> "\$GEM_PATH:/layers/%s/bundler"`, strings.ReplaceAll(settings.Buildpack.ID, "/", "_"))),
 			))
@@ -107,23 +111,26 @@ func testLogging(t *testing.T, context spec.G, it spec.S) {
 					"  Resolving Bundler version",
 					"    Candidate version sources (in priority order):",
 					"      <unknown> -> \"\"",
-					"",
+				))
+				Expect(logs).To(ContainLines(
 					MatchRegexp(`    Selected Bundler version \(using <unknown>\): 2\.\d+\.\d+`),
-					"",
-					"  Generating the SBOM",
-					"",
+				))
+				Expect(logs).To(ContainLines(
 					"  Getting the layer associated with Bundler:",
 					"    /layers/paketo-buildpacks_bundler/bundler",
-					"",
+				))
+				Expect(logs).To(ContainLines(
 					"  Executing build process",
 					MatchRegexp(`    Installing Bundler 2\.\d+\.\d+`),
 					"    Installation path: /layers/paketo-buildpacks_bundler/bundler",
 					MatchRegexp(`    Source URI\: https\:\/\/deps\.paketo\.io\/bundler\/bundler_2\.\d+\.\d+_linux_noarch_bionic_.*\.tgz`),
 					MatchRegexp(`      Completed in \d+\.?\d*`),
-					"",
+				))
+				Expect(logs).To(ContainLines(
 					"  Configuring build environment",
 					MatchRegexp(fmt.Sprintf(`    GEM_PATH -> "\$GEM_PATH:/layers/%s/bundler"`, strings.ReplaceAll(settings.Buildpack.ID, "/", "_"))),
-					"",
+				))
+				Expect(logs).To(ContainLines(
 					"  Configuring launch environment",
 					MatchRegexp(fmt.Sprintf(`    GEM_PATH -> "\$GEM_PATH:/layers/%s/bundler"`, strings.ReplaceAll(settings.Buildpack.ID, "/", "_"))),
 				))

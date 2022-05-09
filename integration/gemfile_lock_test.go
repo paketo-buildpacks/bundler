@@ -83,16 +83,20 @@ func testGemfileLock(t *testing.T, context spec.G, it spec.S) {
 				"    Candidate version sources (in priority order):",
 				"      Gemfile.lock -> \"1.*.*\"",
 				"      <unknown>    -> \"\"",
-				"",
+			))
+			Expect(logs).To(ContainLines(
 				MatchRegexp(`    Selected Bundler version \(using Gemfile\.lock\): 1\.17\.\d+`),
-				"",
+			))
+			Expect(logs).To(ContainLines(
 				"  Executing build process",
 				MatchRegexp(`    Installing Bundler 1\.17\.\d+`),
 				MatchRegexp(`      Completed in \d+\.?\d*`),
-				"",
+			))
+			Expect(logs).To(ContainLines(
 				"  Configuring build environment",
 				MatchRegexp(fmt.Sprintf(`    GEM_PATH -> "\$GEM_PATH:/layers/%s/bundler"`, strings.ReplaceAll(settings.Buildpack.ID, "/", "_"))),
-				"",
+			))
+			Expect(logs).To(ContainLines(
 				"  Configuring launch environment",
 				MatchRegexp(fmt.Sprintf(`    GEM_PATH -> "\$GEM_PATH:/layers/%s/bundler"`, strings.ReplaceAll(settings.Buildpack.ID, "/", "_"))),
 			))

@@ -8,33 +8,41 @@ import (
 	"github.com/paketo-buildpacks/packit/v2"
 	"github.com/paketo-buildpacks/packit/v2/chronos"
 	"github.com/paketo-buildpacks/packit/v2/postal"
+	"github.com/paketo-buildpacks/packit/v2/sbom"
 	"github.com/paketo-buildpacks/packit/v2/scribe"
 )
 
 //go:generate faux --interface EntryResolver --output fakes/entry_resolver.go
+//go:generate faux --interface DependencyManager --output fakes/dependency_manager.go
+//go:generate faux --interface Shimmer --output fakes/shimmer.go
+//go:generate faux --interface SBOMGenerator --output fakes/sbom_generator.go
+
 type EntryResolver interface {
 	Resolve(string, []packit.BuildpackPlanEntry, []interface{}) (packit.BuildpackPlanEntry, []packit.BuildpackPlanEntry)
 	MergeLayerTypes(string, []packit.BuildpackPlanEntry) (launch, build bool)
 }
 
-//go:generate faux --interface DependencyManager --output fakes/dependency_manager.go
 type DependencyManager interface {
 	Resolve(path, id, version, stack string) (postal.Dependency, error)
 	Deliver(dependency postal.Dependency, cnbPath, layerPath, platformPath string) error
 	GenerateBillOfMaterials(dependencies ...postal.Dependency) []packit.BOMEntry
 }
 
-//go:generate faux --interface Shimmer --output fakes/shimmer.go
 type Shimmer interface {
 	Shim(path, version string) error
+}
+
+type SBOMGenerator interface {
+	GenerateFromDependency(dependency postal.Dependency, dir string) (sbom.SBOM, error)
 }
 
 func Build(
 	entries EntryResolver,
 	dependencies DependencyManager,
+	versionShimmer Shimmer,
+	sbomGenerator SBOMGenerator,
 	logger scribe.Emitter,
 	clock chronos.Clock,
-	versionShimmer Shimmer,
 ) packit.BuildFunc {
 	return func(context packit.BuildContext) (packit.BuildResult, error) {
 		logger.Title("%s %s", context.BuildpackInfo.Name, context.BuildpackInfo.Version)
@@ -59,19 +67,17 @@ func Build(
 			logger.Break()
 		}
 
-		logger.Debug.Process("Generating the SBOM")
-		logger.Debug.Break()
-		bom := dependencies.GenerateBillOfMaterials(dependency)
+		legacySBOM := dependencies.GenerateBillOfMaterials(dependency)
 		launch, build := entries.MergeLayerTypes("bundler", context.Plan.Entries)
 
 		var buildMetadata packit.BuildMetadata
 		if build {
-			buildMetadata.BOM = bom
+			buildMetadata.BOM = legacySBOM
 		}
 
 		var launchMetadata packit.LaunchMetadata
 		if launch {
-			launchMetadata.BOM = bom
+			launchMetadata.BOM = legacySBOM
 		}
 
 		logger.Debug.Process("Getting the layer associated with Bundler:")
@@ -121,6 +127,25 @@ func Build(
 
 		logger.Action("Completed in %s", duration.Round(time.Millisecond))
 		logger.Break()
+
+		logger.GeneratingSBOM(bundlerLayer.Path)
+		var sbomContent sbom.SBOM
+		duration, err = clock.Measure(func() error {
+			sbomContent, err = sbomGenerator.GenerateFromDependency(dependency, bundlerLayer.Path)
+			return err
+		})
+		if err != nil {
+			return packit.BuildResult{}, err
+		}
+
+		logger.Action("Completed in %s", duration.Round(time.Millisecond))
+		logger.Break()
+
+		logger.FormattingSBOM(context.BuildpackInfo.SBOMFormats...)
+		bundlerLayer.SBOM, err = sbomContent.InFormats(context.BuildpackInfo.SBOMFormats...)
+		if err != nil {
+			return packit.BuildResult{}, err
+		}
 
 		bundlerLayer.Metadata = map[string]interface{}{
 			DepKey: dependency.SHA256,
