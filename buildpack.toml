@@ -1,4 +1,4 @@
-api = "0.6"
+api = "0.7"
 
 [buildpack]
   description = "A buildpack for installing the approriate Bundler version"
@@ -6,6 +6,7 @@ api = "0.6"
   id = "paketo-buildpacks/bundler"
   keywords = ["ruby", "bundler"]
   name = "Paketo Bundler Buildpack"
+  sbom-formats = ["application/vnd.cyclonedx+json", "application/spdx+json", "application/vnd.syft+json"]
 
   [[buildpack.licenses]]
     type = "Apache-2.0"

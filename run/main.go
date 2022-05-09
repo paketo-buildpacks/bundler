@@ -9,28 +9,31 @@ import (
 	"github.com/paketo-buildpacks/packit/v2/chronos"
 	"github.com/paketo-buildpacks/packit/v2/draft"
 	"github.com/paketo-buildpacks/packit/v2/postal"
+	"github.com/paketo-buildpacks/packit/v2/sbom"
 	"github.com/paketo-buildpacks/packit/v2/scribe"
 )
 
+type Generator struct{}
+
+func (f Generator) GenerateFromDependency(dependency postal.Dependency, path string) (sbom.SBOM, error) {
+	return sbom.GenerateFromDependency(dependency, path)
+}
+
 func main() {
-	buildpackYMLParser := bundler.NewBuildpackYMLParser()
-	gemfileLockParser := bundler.NewGemfileLockParser()
 	logger := scribe.NewEmitter(os.Stdout).WithLevel(os.Getenv("BP_LOG_LEVEL"))
-	entryResolver := draft.NewPlanner()
-	dependencyManager := postal.NewService(cargo.NewTransport())
-	versionShimmer := bundler.NewVersionShimmer()
 
 	packit.Run(
 		bundler.Detect(
-			buildpackYMLParser,
-			gemfileLockParser,
+			bundler.NewBuildpackYMLParser(),
+			bundler.NewGemfileLockParser(),
 		),
 		bundler.Build(
-			entryResolver,
-			dependencyManager,
+			draft.NewPlanner(),
+			postal.NewService(cargo.NewTransport()),
+			bundler.NewVersionShimmer(),
+			Generator{},
 			logger,
 			chronos.DefaultClock,
-			versionShimmer,
 		),
 	)
 }
