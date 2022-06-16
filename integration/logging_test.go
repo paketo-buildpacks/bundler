@@ -117,12 +117,12 @@ func testLogging(t *testing.T, context spec.G, it spec.S) {
 				))
 				Expect(logs).To(ContainLines(
 					"  Getting the layer associated with Bundler:",
-					"    /layers/paketo-buildpacks_bundler/bundler",
+					fmt.Sprintf("    /layers/%s/bundler", strings.ReplaceAll(settings.Buildpack.ID, "/", "_")),
 				))
 				Expect(logs).To(ContainLines(
 					"  Executing build process",
 					MatchRegexp(`    Installing Bundler 2\.\d+\.\d+`),
-					"    Installation path: /layers/paketo-buildpacks_bundler/bundler",
+					fmt.Sprintf("    Installation path: /layers/%s/bundler", strings.ReplaceAll(settings.Buildpack.ID, "/", "_")),
 					MatchRegexp(`    Source URI\: https\:\/\/deps\.paketo\.io\/bundler\/bundler_2\.\d+\.\d+_linux_noarch_bionic_.*\.tgz`),
 					MatchRegexp(`      Completed in \d+\.?\d*`),
 				))
