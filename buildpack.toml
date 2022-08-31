@@ -5,7 +5,7 @@ api = "0.7"
   homepage = "https://github.com/paketo-buildpacks/bundler"
   id = "paketo-buildpacks/bundler"
   keywords = ["ruby", "bundler"]
-  name = "Paketo Bundler Buildpack"
+  name = "Paketo Buildpack for Bundler"
   sbom-formats = ["application/vnd.cyclonedx+json", "application/spdx+json", "application/vnd.syft+json"]
 
   [[buildpack.licenses]]
