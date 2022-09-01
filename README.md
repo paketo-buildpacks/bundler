@@ -1,4 +1,4 @@
-# Bundler Cloud Native Buildpack
+# Paketo Buildpack for Bundler
 
 ## `gcr.io/paketo-buildpacks/bundler`
 
