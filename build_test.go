@@ -350,7 +350,7 @@ func testBuild(t *testing.T, context spec.G, it spec.S) {
 
 			dependencyManager.ResolveCall.Returns.Dependency = postal.Dependency{
 				Name:   "Bundler",
-				SHA256: "some-sha",
+				SHA256: "some-sha", //nolint:staticcheck
 			}
 		})
 
