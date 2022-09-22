@@ -89,7 +89,7 @@ func Build(
 		logger.Debug.Break()
 
 		cachedSHA, ok := bundlerLayer.Metadata[DepKey].(string)
-		if ok && cachedSHA == dependency.SHA256 {
+		if ok && cachedSHA == dependency.SHA256 { //nolint:staticcheck
 			logger.Process("Reusing cached layer %s", bundlerLayer.Path)
 			logger.Break()
 
@@ -148,7 +148,7 @@ func Build(
 		}
 
 		bundlerLayer.Metadata = map[string]interface{}{
-			DepKey: dependency.SHA256,
+			DepKey: dependency.SHA256, //nolint:staticcheck
 		}
 
 		bundlerLayer.SharedEnv.Append("GEM_PATH", bundlerLayer.Path, ":")
