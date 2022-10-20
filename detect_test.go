@@ -2,7 +2,6 @@ package bundler_test
 
 import (
 	"errors"
-	"os"
 	"testing"
 
 	"github.com/paketo-buildpacks/bundler"
@@ -43,12 +42,8 @@ func testDetect(t *testing.T, context spec.G, it spec.S) {
 
 	context("when $BP_BUNDLER_VERSION is set and a buildpack.yml is present", func() {
 		it.Before(func() {
-			os.Setenv("BP_BUNDLER_VERSION", "1.2.3")
+			t.Setenv("BP_BUNDLER_VERSION", "1.2.3")
 			buildpackYMLParser.ParseVersionCall.Returns.Version = "1.17.3"
-		})
-
-		it.After(func() {
-			os.Unsetenv("BP_BUNDLER_VERSION")
 		})
 
 		it("returns a plan that provides and requires that version of bundler", func() {
