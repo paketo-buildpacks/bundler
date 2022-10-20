@@ -29,7 +29,6 @@ func testBuild(t *testing.T, context spec.G, it spec.S) {
 		layersDir string
 		cnbDir    string
 
-		entryResolver     *fakes.EntryResolver
 		dependencyManager *fakes.DependencyManager
 		versionShimmer    *fakes.Shimmer
 		sbomGenerator     *fakes.SBOMGenerator
@@ -42,23 +41,8 @@ func testBuild(t *testing.T, context spec.G, it spec.S) {
 	)
 
 	it.Before(func() {
-		var err error
-		layersDir, err = os.MkdirTemp("", "layers")
-		Expect(err).NotTo(HaveOccurred())
-
-		cnbDir, err = os.MkdirTemp("", "cnb")
-		Expect(err).NotTo(HaveOccurred())
-
-		entryResolver = &fakes.EntryResolver{}
-		entryResolver.ResolveCall.Returns.BuildpackPlanEntry = packit.BuildpackPlanEntry{
-			Name: "bundler",
-			Metadata: map[string]interface{}{
-				"version-source": "BP_BUNDLER_VERSION",
-				"version":        "2.0.x",
-				"launch":         true,
-				"build":          true,
-			},
-		}
+		layersDir = t.TempDir()
+		cnbDir = t.TempDir()
 
 		// Legacy SBOM
 		dependencyManager = &fakes.DependencyManager{}
@@ -92,7 +76,6 @@ func testBuild(t *testing.T, context spec.G, it spec.S) {
 		versionShimmer = &fakes.Shimmer{}
 
 		build = bundler.Build(
-			entryResolver,
 			dependencyManager,
 			versionShimmer,
 			sbomGenerator,
@@ -115,8 +98,6 @@ func testBuild(t *testing.T, context spec.G, it spec.S) {
 						Metadata: map[string]interface{}{
 							"version-source": "BP_BUNDLER_VERSION",
 							"version":        "2.0.x",
-							"launch":         true,
-							"build":          true,
 						},
 					},
 				},
@@ -124,11 +105,6 @@ func testBuild(t *testing.T, context spec.G, it spec.S) {
 			Platform: packit.Platform{Path: "platform"},
 			Layers:   packit.Layers{Path: layersDir},
 		}
-	})
-
-	it.After(func() {
-		Expect(os.RemoveAll(layersDir)).To(Succeed())
-		Expect(os.RemoveAll(cnbDir)).To(Succeed())
 	})
 
 	it("returns a result that installs bundler", func() {
@@ -170,31 +146,6 @@ func testBuild(t *testing.T, context spec.G, it spec.S) {
 
 		Expect(filepath.Join(layersDir, "bundler")).To(BeADirectory())
 
-		Expect(entryResolver.ResolveCall.Receives.BuildpackPlanEntrySlice).To(Equal([]packit.BuildpackPlanEntry{
-			{
-				Name: "bundler",
-				Metadata: map[string]interface{}{
-					"version-source": "BP_BUNDLER_VERSION",
-					"version":        "2.0.x",
-					"launch":         true,
-					"build":          true,
-				},
-			},
-		}))
-		Expect(entryResolver.MergeLayerTypesCall.Receives.String).To(Equal("bundler"))
-		Expect(entryResolver.MergeLayerTypesCall.Receives.BuildpackPlanEntrySlice).To(Equal(
-			[]packit.BuildpackPlanEntry{
-				{
-					Name: "bundler",
-					Metadata: map[string]interface{}{
-						"version-source": "BP_BUNDLER_VERSION",
-						"version":        "2.0.x",
-						"launch":         true,
-						"build":          true,
-					},
-				},
-			}))
-
 		Expect(dependencyManager.ResolveCall.Receives.Path).To(Equal(filepath.Join(cnbDir, "buildpack.toml")))
 		Expect(dependencyManager.ResolveCall.Receives.Id).To(Equal("bundler"))
 		Expect(dependencyManager.ResolveCall.Receives.Version).To(Equal("2.0.x"))
@@ -235,27 +186,8 @@ func testBuild(t *testing.T, context spec.G, it spec.S) {
 	})
 
 	context("when the build plan entry includes the build flag", func() {
-		var workingDir string
-
 		it.Before(func() {
-			var err error
-			workingDir, err = os.MkdirTemp("", "working-dir")
-			Expect(err).NotTo(HaveOccurred())
-
-			entryResolver.ResolveCall.Returns.BuildpackPlanEntry = packit.BuildpackPlanEntry{
-				Name: "bundler",
-
-				Metadata: map[string]interface{}{
-					"version-source": "BP_BUNDLER_VERSION",
-					"version":        "2.0.x",
-					"build":          true,
-				},
-			}
-			entryResolver.MergeLayerTypesCall.Returns.Build = true
-		})
-
-		it.After(func() {
-			Expect(os.RemoveAll(workingDir)).To(Succeed())
+			buildContext.Plan.Entries[0].Metadata["build"] = true
 		})
 
 		it("marks the bundler layer as cached", func() {
@@ -290,26 +222,8 @@ func testBuild(t *testing.T, context spec.G, it spec.S) {
 	})
 
 	context("when the build plan entry includes the launch flag", func() {
-		var workingDir string
-
 		it.Before(func() {
-			var err error
-			workingDir, err = os.MkdirTemp("", "working-dir")
-			Expect(err).NotTo(HaveOccurred())
-
-			entryResolver.ResolveCall.Returns.BuildpackPlanEntry = packit.BuildpackPlanEntry{
-				Name: "bundler",
-				Metadata: map[string]interface{}{
-					"version-source": "BP_BUNDLER_VERSION",
-					"version":        "2.0.x",
-					"launch":         true,
-				},
-			}
-			entryResolver.MergeLayerTypesCall.Returns.Launch = true
-		})
-
-		it.After(func() {
-			Expect(os.RemoveAll(workingDir)).To(Succeed())
+			buildContext.Plan.Entries[0].Metadata["launch"] = true
 		})
 
 		it("marks the bundler layer as launch", func() {
@@ -375,27 +289,8 @@ func testBuild(t *testing.T, context spec.G, it spec.S) {
 
 	context("when the build plan entry version source is from buildpack.yml", func() {
 		it.Before(func() {
-			buildContext.Plan.Entries = append(
-				buildContext.Plan.Entries,
-				packit.BuildpackPlanEntry{
-					Name: "bundler",
-					Metadata: map[string]interface{}{
-						"version-source": "buildpack.yml",
-						"version":        "1.17.x",
-						"launch":         true,
-						"build":          true,
-					},
-				})
-
-			entryResolver.ResolveCall.Returns.BuildpackPlanEntry = packit.BuildpackPlanEntry{
-				Name: "bundler",
-				Metadata: map[string]interface{}{
-					"version-source": "buildpack.yml",
-					"version":        "1.17.x",
-					"launch":         true,
-					"build":          true,
-				},
-			}
+			buildContext.Plan.Entries[0].Metadata["version-source"] = "buildpack.yml"
+			buildContext.Plan.Entries[0].Metadata["version"] = "1.17.x"
 
 			dependencyManager.ResolveCall.Returns.Dependency = postal.Dependency{
 				Name:    "Bundler",
@@ -415,49 +310,6 @@ func testBuild(t *testing.T, context spec.G, it spec.S) {
 			Expect(layer.Name).To(Equal("bundler"))
 
 			Expect(filepath.Join(layersDir, "bundler")).To(BeADirectory())
-
-			Expect(entryResolver.ResolveCall.Receives.BuildpackPlanEntrySlice).To(Equal([]packit.BuildpackPlanEntry{
-				{
-					Name: "bundler",
-					Metadata: map[string]interface{}{
-						"version-source": "BP_BUNDLER_VERSION",
-						"version":        "2.0.x",
-						"launch":         true,
-						"build":          true,
-					},
-				},
-				{
-					Name: "bundler",
-					Metadata: map[string]interface{}{
-						"version-source": "buildpack.yml",
-						"version":        "1.17.x",
-						"launch":         true,
-						"build":          true,
-					},
-				},
-			}))
-			Expect(entryResolver.MergeLayerTypesCall.Receives.String).To(Equal("bundler"))
-			Expect(entryResolver.MergeLayerTypesCall.Receives.BuildpackPlanEntrySlice).To(Equal(
-				[]packit.BuildpackPlanEntry{
-					{
-						Name: "bundler",
-						Metadata: map[string]interface{}{
-							"version-source": "BP_BUNDLER_VERSION",
-							"version":        "2.0.x",
-							"launch":         true,
-							"build":          true,
-						},
-					},
-					{
-						Name: "bundler",
-						Metadata: map[string]interface{}{
-							"version-source": "buildpack.yml",
-							"version":        "1.17.x",
-							"launch":         true,
-							"build":          true,
-						},
-					},
-				}))
 
 			Expect(dependencyManager.ResolveCall.Receives.Path).To(Equal(filepath.Join(cnbDir, "buildpack.toml")))
 			Expect(dependencyManager.ResolveCall.Receives.Id).To(Equal("bundler"))

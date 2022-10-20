@@ -7,20 +7,15 @@ import (
 	"github.com/Masterminds/semver"
 	"github.com/paketo-buildpacks/packit/v2"
 	"github.com/paketo-buildpacks/packit/v2/chronos"
+	"github.com/paketo-buildpacks/packit/v2/draft"
 	"github.com/paketo-buildpacks/packit/v2/postal"
 	"github.com/paketo-buildpacks/packit/v2/sbom"
 	"github.com/paketo-buildpacks/packit/v2/scribe"
 )
 
-//go:generate faux --interface EntryResolver --output fakes/entry_resolver.go
 //go:generate faux --interface DependencyManager --output fakes/dependency_manager.go
 //go:generate faux --interface Shimmer --output fakes/shimmer.go
 //go:generate faux --interface SBOMGenerator --output fakes/sbom_generator.go
-
-type EntryResolver interface {
-	Resolve(string, []packit.BuildpackPlanEntry, []interface{}) (packit.BuildpackPlanEntry, []packit.BuildpackPlanEntry)
-	MergeLayerTypes(string, []packit.BuildpackPlanEntry) (launch, build bool)
-}
 
 type DependencyManager interface {
 	Resolve(path, id, version, stack string) (postal.Dependency, error)
@@ -37,7 +32,6 @@ type SBOMGenerator interface {
 }
 
 func Build(
-	entries EntryResolver,
 	dependencies DependencyManager,
 	versionShimmer Shimmer,
 	sbomGenerator SBOMGenerator,
@@ -48,7 +42,9 @@ func Build(
 		logger.Title("%s %s", context.BuildpackInfo.Name, context.BuildpackInfo.Version)
 		logger.Process("Resolving Bundler version")
 
-		entry, allEntries := entries.Resolve("bundler", context.Plan.Entries, []interface{}{"BP_BUNDLER_VERSION", "buildpack.yml", "Gemfile.lock"})
+		planner := draft.NewPlanner()
+
+		entry, allEntries := planner.Resolve("bundler", context.Plan.Entries, []interface{}{"BP_BUNDLER_VERSION", "buildpack.yml", "Gemfile.lock"})
 		logger.Candidates(allEntries)
 
 		version, _ := entry.Metadata["version"].(string)
@@ -68,7 +64,7 @@ func Build(
 		}
 
 		legacySBOM := dependencies.GenerateBillOfMaterials(dependency)
-		launch, build := entries.MergeLayerTypes("bundler", context.Plan.Entries)
+		launch, build := planner.MergeLayerTypes("bundler", context.Plan.Entries)
 
 		var buildMetadata packit.BuildMetadata
 		if build {

@@ -21,11 +21,9 @@ func testVersionShimmer(t *testing.T, context spec.G, it spec.S) {
 	)
 
 	it.Before(func() {
-		var err error
-		dir, err = os.MkdirTemp("", "bin")
-		Expect(err).NotTo(HaveOccurred())
+		dir = t.TempDir()
 
-		err = os.WriteFile(filepath.Join(dir, "first"), []byte("first"), 0755)
+		err := os.WriteFile(filepath.Join(dir, "first"), []byte("first"), 0755)
 		Expect(err).NotTo(HaveOccurred())
 
 		err = os.WriteFile(filepath.Join(dir, "second"), []byte("second"), 0755)
@@ -38,10 +36,6 @@ func testVersionShimmer(t *testing.T, context spec.G, it spec.S) {
 		Expect(err).NotTo(HaveOccurred())
 
 		versionShimmer = bundler.NewVersionShimmer()
-	})
-
-	it.After(func() {
-		Expect(os.RemoveAll(dir)).To(Succeed())
 	})
 
 	context("Shim", func() {
