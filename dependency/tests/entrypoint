@@ -59,11 +59,6 @@ function main() {
     exit 1
   fi
 
-  # if ! [[ ${artifact} =~ [0-9]+\.[0-9]+\.[0-9]+ ]]; then
-  #   echo "No semver version in artifact name"
-  #   exit 1
-  # fi
-
   # this is how the MRI buildpack sets the GEM_PATH; xargs just trims whitespace
   gem_path="$(gem env path | tr -d '[:space:]')"
 
@@ -94,7 +89,6 @@ function main() {
   os="$(grep '^VERSION=' /etc/os-release)"
   echo -e "${green}Tests succeeded for ${artifact} on ${os}!${reset}" >&2
   exit 0
-
 }
 
 function check_version() {

@@ -8,8 +8,7 @@ const depID string = "bundler"
 
 type ReleaseMetadata struct {
 	CPE string `json:"cpe"`
-	// TODO: decide whether to have DeprecationDate in the struct at all
-	// DeprecationDate string `json:"deprecation_date, omitempty"`
+	// DeprecationDate string // This information is not published anywhere
 	Licenses        []string `json:"licenses"`
 	Name            string   `json:"name"`
 	ID              string   `json:"id"`
@@ -53,10 +52,9 @@ func (m MetadataGenerator) Generate(r Release, stackIDs []string, target string)
 		StripComponents: 2,
 		SourceURI:       sourceURI,
 		SourceChecksum:  r.SHA256,
-		// DeprecationDate: "", // This information is not published anywhere
-		CPE:      fmt.Sprintf(cpePattern, r.Version),
-		PURL:     m.purlGenerator.Generate(m.name, r.Version, r.SHA256, sourceURI),
-		Licenses: r.Licenses,
-		Target:   target,
+		CPE:             fmt.Sprintf(cpePattern, r.Version),
+		PURL:            m.purlGenerator.Generate(m.name, r.Version, r.SHA256, sourceURI),
+		Licenses:        r.Licenses,
+		Target:          target,
 	}, nil
 }
