@@ -1,0 +1,97 @@
+#!/usr/bin/env bash
+
+set -eu
+set -o pipefail
+
+readonly PROGDIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
+function main() {
+  local version output_dir target bundler_dir
+
+  while [ "${#}" != 0 ]; do
+    case "${1}" in
+      --version)
+        version="${2}"
+        shift 2
+        ;;
+
+      --outputDir)
+        output_dir="${2}"
+        shift 2
+        ;;
+
+      --target)
+        target="${2}"
+        shift 2
+        ;;
+
+      "")
+        shift
+        ;;
+
+      *)
+        echo "unknown argument \"${1}\""
+        exit 1
+    esac
+  done
+
+  if [[ -z "${version:-}" ]]; then
+    echo "--version is required"
+    exit 1
+  fi
+
+  if [[ -z "${output_dir:-}" ]]; then
+    echo "--outputDir is required"
+    exit 1
+  fi
+
+  if [[ -z "${target:-}" ]]; then
+    echo "--target is required"
+    exit 1
+  fi
+
+  echo "Downloading bundler gem"
+
+  local gem_archive="${PROGDIR}/bundler.gem"
+  curl "https://rubygems.org/downloads/bundler-${version}.gem" \
+    --silent \
+    --show-error \
+    --output "${gem_archive}"
+
+  bundler_dir="/bundler"
+
+  mkdir -p "${bundler_dir}"
+
+  echo "Unpacking gem"
+
+  pushd "${bundler_dir}" 2>/dev/null
+
+    unset RUBYOPT # TODO: What does this do?
+    # TODO: deal with GEM_HOME and GEM_PATH
+    GEM_HOME="$(pwd)" GEM_PATH="$(pwd)" \
+      gem install "${gem_archive}" \
+      --no-document \
+      --env-shebang
+
+    # remove specific ruby version from shebangs in bin/
+    find . -type f -path './bin/*' -exec sed -i 's/^#!.*ruby.*/#!\/usr\/bin\/env ruby/g' {} \;
+
+  popd 2>/dev/null
+
+  # remove gem-packaged version of the dependency
+  rm -rf "${bundler_dir}/bundler-${version}.gem"
+  # remove cache
+  rm -rf "${bundler_dir}/cache/bundler-${version}.gem"
+
+  echo "Packaging bundler dependency"
+  tar czvf "${output_dir}/bundler-${target}-${version}.tgz" ${bundler_dir}
+  echo "Wrote bundler-${target}-${version}.tgz to ${output_dir}"
+
+  # extract SHA256 from sha256sum output in the form
+  # someshaabcdefgh /path/to/file
+  sha="$(sha256sum "${output_dir}/bundler-${target}-${version}.tgz" | cut -d " " -f 1 )"
+  echo "sha256:${sha}" > "${output_dir}/bundler-${target}-${version}.tgz.checksum"
+  echo "Wrote bundler-${target}-${version}.tgz.checksum to ${output_dir}"
+}
+
+main "${@:-}"
