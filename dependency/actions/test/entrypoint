@@ -1,0 +1,92 @@
+#!/usr/bin/env bash
+
+set -eu
+set -o pipefail
+
+readonly TESTDIR="/test"
+
+function main() {
+  local artifact
+
+  while [ "${#}" != 0 ]; do
+    case "${1}" in
+      --artifact)
+        artifact="${2}"
+        shift 2
+        ;;
+
+      "")
+        shift
+        ;;
+
+      *)
+        echo "unknown argument \"${1}\""
+        exit 1
+    esac
+  done
+
+  if [[ -z "${artifact:-}" ]]; then
+    echo "--artifact is required"
+    exit 1
+  fi
+
+
+  echo "Unpacking artifact..."
+  # TODO add strip components to dependency definition
+  tar zxf "${artifact}" --strip-components=2
+
+  echo "Checking artifact structure..."
+
+  if ! [ -f "${TESTDIR}/bin/bundler" ];
+  then
+    echo "missing bundler executable"
+    ls -al "${TESTDIR}"
+    exit 1
+  fi
+
+  if ! [ -f "${TESTDIR}/bin/bundle" ];
+  then
+    echo "missing bundle executable"
+    ls -al "${TESTDIR}"
+    exit 1
+  fi
+
+  if ! [[ ${artifact} =~ [0-9]+\.[0-9]+\.[0-9]+ ]]; then
+    echo "No semver version in artifact name"
+    exit 1
+  fi
+
+  local version
+  # this extracts the semver version that matched the regex in the previous if
+  # statment
+  version="${BASH_REMATCH[0]}"
+
+  # this is how the MRI buildpack sets the GEM_PATH; xargs just trims whitespace
+  gem_path="$(gem env path | tr -d '[:space:]')"
+
+  # add the bundler artifact path to the GEM_PATH (as in the bundler buildpack)
+  export GEM_PATH="${TESTDIR}:${gem_path}"
+
+  echo "Using bundler version:"
+  # the underscores-wrapped version forces bundler to use the requested
+  # version, not the latest installed version
+  ${TESTDIR}/bin/bundler "_${version}_" version
+
+  echo "Using bundle version"
+  ${TESTDIR}/bin/bundle "_${version}_" version
+
+  # test installing a gem
+  echo "Testing installing gems..."
+  ${TESTDIR}/bin/bundle "_${version}_" install
+
+  local green reset
+  green="\033[0;32m"
+  reset="\033[0;39m"
+
+  echo "Installed gems."
+  echo -e "${green}Dependency tests succeeded!${reset}" >&2
+  exit 0
+
+}
+
+main "${@:-}"

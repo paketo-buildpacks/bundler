@@ -8,7 +8,7 @@ import (
 )
 
 type Release struct {
-	Version    string `json:"number"` // TODO: handle prereleases
+	Version    string `json:"number"`
 	Licenses   []string
 	SHA256     string `json:"sha"`
 	Prerelease bool

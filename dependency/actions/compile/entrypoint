@@ -58,7 +58,7 @@ function main() {
     --show-error \
     --output "${gem_archive}"
 
-  bundler_dir="/bundler"
+  bundler_dir="/input/bundler"
 
   mkdir -p "${bundler_dir}"
 
@@ -84,7 +84,7 @@ function main() {
   rm -rf "${bundler_dir}/cache/bundler-${version}.gem"
 
   echo "Packaging bundler dependency"
-  tar czvf "${output_dir}/bundler-${target}-${version}.tgz" ${bundler_dir}
+  tar czvf "${output_dir}/bundler-${target}-${version}.tgz" "${bundler_dir}"
   echo "Wrote bundler-${target}-${version}.tgz to ${output_dir}"
 
   # extract SHA256 from sha256sum output in the form

@@ -30,14 +30,3 @@ runs:
   - name: print contents of output dir
     shell: bash
     run: ls -lah ${{ inputs.outputDir }}
-
-# TODO: add tests for dependency
-  # - name: build test
-  #   id: build-test
-  #   shell: bash
-  #   run: docker build -t test -f dependency/test/${{ inputs.target }}/Dockerfile dependency/test/${{ inputs.target }}
-
-  # - name: run test
-  #   id: run-test
-  #   shell: bash
-  #   run: docker run -v ${{ inputs.outputDir }}:/tarball_path test --version ${{ inputs.version }}
