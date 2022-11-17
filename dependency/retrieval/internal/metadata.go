@@ -2,7 +2,7 @@ package internal
 
 import "fmt"
 
-const cpePattern string = `cpe:2.3:a:bundler:bundler:%s:*:*:*:*:ruby:*:*`
+const cpeTemplate string = `cpe:2.3:a:bundler:bundler:%s:*:*:*:*:ruby:*:*`
 const sourceURI string = `https://rubygems.org/downloads/bundler-%s.gem`
 const depID string = "bundler"
 
@@ -51,8 +51,8 @@ func (m MetadataGenerator) Generate(r Release, stackIDs []string, target string)
 		Stacks:          stackIDs,
 		StripComponents: 2,
 		SourceURI:       sourceURI,
-		SourceChecksum:  r.SHA256,
-		CPE:             fmt.Sprintf(cpePattern, r.Version),
+		SourceChecksum:  fmt.Sprintf("sha256:%s", r.SHA256),
+		CPE:             fmt.Sprintf(cpeTemplate, r.Version),
 		PURL:            m.purlGenerator.Generate(m.name, r.Version, r.SHA256, sourceURI),
 		Licenses:        r.Licenses,
 		Target:          target,
