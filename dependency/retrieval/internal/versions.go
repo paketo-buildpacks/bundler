@@ -1,7 +1,6 @@
 package internal
 
 import (
-	"errors"
 	"sort"
 
 	"github.com/Masterminds/semver"
@@ -12,7 +11,7 @@ type VersionFinder struct {
 	depID string
 }
 
-func NewVersionFinder(depID string) VersionFinder {
+func NewVersionFinder() VersionFinder {
 	return VersionFinder{depID: depID}
 }
 
@@ -34,17 +33,7 @@ func (v VersionFinder) FindNewVersions(bpTOML cargo.Config, releases []Release) 
 		for _, release := range releases {
 			svVersion, err := semver.NewVersion(release.Version)
 			if err != nil {
-				// Some versions published look like '2.2.0.rc.2', which isn't valid SemVer.
-				// It's safe to ignore these.
-				if errors.Is(err, semver.ErrInvalidSemVer) {
-					continue
-				}
 				return nil, err
-			}
-
-			// Assumes that versions are stored in the release index in reverse-chronological order
-			if svConstraint.Check(svVersion) && svVersion.Equal(latestKnownVersion) {
-				break
 			}
 
 			if svConstraint.Check(svVersion) && svVersion.GreaterThan(latestKnownVersion) {
@@ -58,14 +47,13 @@ func (v VersionFinder) FindNewVersions(bpTOML cargo.Config, releases []Release) 
 			return iVersion.GreaterThan(jVersion)
 		})
 
-		if len(newConstraintVersions) < constraint.Patches {
-			newVersions = append(newVersions, newConstraintVersions...)
-		} else {
+		if len(newConstraintVersions) > constraint.Patches {
 			newVersions = append(newVersions, newConstraintVersions[:constraint.Patches]...)
+		} else {
+			newVersions = append(newVersions, newConstraintVersions...)
 		}
 	}
 
-	// return json of new dependency versions?
 	return newVersions, nil
 }
 

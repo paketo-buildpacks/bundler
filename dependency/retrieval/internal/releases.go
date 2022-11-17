@@ -2,23 +2,25 @@ package internal
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"net/http"
 )
 
 type Release struct {
-	Version  string `json:"number"` // TODO: handle prereleases
-	Licenses []string
-	SHA256   string `json:"sha"`
+	Version    string `json:"number"` // TODO: handle prereleases
+	Licenses   []string
+	SHA256     string `json:"sha"`
+	Prerelease bool
 }
 
 type ReleaseFetcher struct {
 	releaseIndex string
 }
 
-func NewReleaseFetcher() ReleaseFetcher {
+func NewReleaseFetcher(index string) ReleaseFetcher {
 	return ReleaseFetcher{
-		releaseIndex: "https://rubygems.org/api/v1/versions/bundler.json",
+		releaseIndex: index,
 	}
 }
 
@@ -30,14 +32,48 @@ func (r ReleaseFetcher) Get() ([]Release, error) {
 	defer response.Body.Close()
 
 	if response.StatusCode < 200 || response.StatusCode >= 300 {
-		return nil, fmt.Errorf("non 200 status code") // TODO: think more about handling
+		return nil, fmt.Errorf("release index returned status %d", response.StatusCode)
 	}
 
 	var releases []Release
 
-	err = json.NewDecoder(response.Body).Decode(&releases)
+	dec := json.NewDecoder(response.Body)
+
+	// read open bracket
+	_, err = dec.Token()
 	if err != nil {
-		return nil, fmt.Errorf("error parsing release JSON") // TODO: don't pull in entire json?
+		return nil, err
+	}
+
+	var i int
+	for dec.More() {
+		var r Release
+		err = dec.Decode(&r)
+		if err != nil {
+			return nil, fmt.Errorf("error parsing release index JSON: %w", err) // TODO: don't pull in entire json?
+		}
+		if r.Version == "" {
+			return nil, fmt.Errorf("release index element %d missing version", i)
+		}
+		if r.SHA256 == "" {
+			return nil, fmt.Errorf("release index element %d missing sha256", i)
+		}
+		if r.Prerelease {
+			i++
+			continue
+		}
+		releases = append(releases, r)
+		i++
+	}
+
+	// read closing bracket
+	_, err = dec.Token()
+	if err != nil {
+		return nil, err
+	}
+
+	if len(releases) == 0 {
+		return nil, errors.New("no valid releases found")
 	}
 
 	return releases, nil

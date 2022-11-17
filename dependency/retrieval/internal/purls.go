@@ -6,6 +6,7 @@ import (
 	"github.com/package-url/packageurl-go"
 )
 
+//go:generate faux --interface PackageURLGenerator --output fakes/purl_generator.go
 type PackageURLGenerator interface {
 	Generate(name, version, sha, uri string) string
 }

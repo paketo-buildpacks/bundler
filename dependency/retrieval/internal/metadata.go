@@ -3,6 +3,8 @@ package internal
 import "fmt"
 
 const cpePattern string = `cpe:2.3:a:bundler:bundler:%s:*:*:*:*:ruby:*:*`
+const sourceURI string = `https://rubygems.org/downloads/bundler-%s.gem`
+const depID string = "bundler"
 
 type ReleaseMetadata struct {
 	CPE string `json:"cpe"`
@@ -26,21 +28,21 @@ type MetadataGenerator struct {
 	checksummer      Checksummer
 }
 
+//go:generate faux --interface Checksummer --output fakes/checksummer.go
 type Checksummer interface {
 	Sum(paths ...string) (string, error)
 }
 
-func NewMetadataGenerator(name string, source string, checksummer Checksummer, purl PackageURLGenerator) MetadataGenerator {
+func NewMetadataGenerator(checksummer Checksummer, purl PackageURLGenerator) MetadataGenerator {
 	return MetadataGenerator{
-		name:             name,
-		sourceURIPattern: source,
+		name:             depID,
+		sourceURIPattern: sourceURI,
 		checksummer:      checksummer,
 		purlGenerator:    purl,
 	}
 }
 
 func (m MetadataGenerator) Generate(r Release, stackIDs []string, target string) (ReleaseMetadata, error) {
-
 	sourceURI := fmt.Sprintf(m.sourceURIPattern, r.Version)
 	return ReleaseMetadata{
 		Name:           m.name,
