@@ -67,9 +67,9 @@ function main() {
   pushd "${bundler_dir}" 2>/dev/null
 
     unset RUBYOPT # TODO: What does this do?
-    # TODO: deal with GEM_HOME and GEM_PATH
     GEM_HOME="$(pwd)" GEM_PATH="$(pwd)" \
       gem install "${gem_archive}" \
+      --local \
       --no-document \
       --env-shebang
 

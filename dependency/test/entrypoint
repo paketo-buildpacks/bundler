@@ -6,12 +6,17 @@ set -o pipefail
 readonly TESTDIR="/test"
 
 function main() {
-  local artifact
+  local artifact version
 
   while [ "${#}" != 0 ]; do
     case "${1}" in
       --artifact)
         artifact="${2}"
+        shift 2
+        ;;
+
+      --version)
+        version="${2}"
         shift 2
         ;;
 
@@ -30,6 +35,10 @@ function main() {
     exit 1
   fi
 
+  if [[ -z "${version:-}" ]]; then
+    echo "--version is required"
+    exit 1
+  fi
 
   echo "Unpacking artifact..."
   # TODO add strip components to dependency definition
@@ -51,15 +60,10 @@ function main() {
     exit 1
   fi
 
-  if ! [[ ${artifact} =~ [0-9]+\.[0-9]+\.[0-9]+ ]]; then
-    echo "No semver version in artifact name"
-    exit 1
-  fi
-
-  local version
-  # this extracts the semver version that matched the regex in the previous if
-  # statment
-  version="${BASH_REMATCH[0]}"
+  # if ! [[ ${artifact} =~ [0-9]+\.[0-9]+\.[0-9]+ ]]; then
+  #   echo "No semver version in artifact name"
+  #   exit 1
+  # fi
 
   # this is how the MRI buildpack sets the GEM_PATH; xargs just trims whitespace
   gem_path="$(gem env path | tr -d '[:space:]')"
@@ -67,13 +71,16 @@ function main() {
   # add the bundler artifact path to the GEM_PATH (as in the bundler buildpack)
   export GEM_PATH="${TESTDIR}:${gem_path}"
 
-  echo "Using bundler version:"
+  echo "Checking bundler version..."
   # the underscores-wrapped version forces bundler to use the requested
   # version, not the latest installed version
-  ${TESTDIR}/bin/bundler "_${version}_" version
+  local output
+  output=$(${TESTDIR}/bin/bundler "_${version}_" version)
+  check_version "${version}" "${output}"
 
-  echo "Using bundle version"
-  ${TESTDIR}/bin/bundle "_${version}_" version
+  echo "Checking bundle version..."
+  output=$(${TESTDIR}/bin/bundle "_${version}_" version)
+  check_version "${version}" "${output}"
 
   # test installing a gem
   echo "Testing installing gems..."
@@ -84,9 +91,32 @@ function main() {
   reset="\033[0;39m"
 
   echo "Installed gems."
-  echo -e "${green}Dependency tests succeeded!${reset}" >&2
+
+  os="$(grep '^VERSION=' /etc/os-release)"
+  echo -e "${green}Tests succeeded for ${artifact} on ${os}!${reset}" >&2
   exit 0
 
+}
+
+function check_version() {
+  local expected output
+  expected="${1}"
+  output="${2}"
+
+  if ! [[ ${output} =~ [0-9]+\.[0-9]+\.[0-9]+ ]]; then
+    echo "No semver version in version command output"
+    exit 1
+  fi
+
+  local actual
+  # this extracts the semver version that matched the regex in the previous if
+  # statment
+  actual="${BASH_REMATCH[0]}"
+
+  if [[ "${actual}" != "${expected}" ]]; then
+    echo "bundler version ${actual} doesn't match expected ${expected}"
+    exit 1
+  fi
 }
 
 main "${@:-}"
