@@ -6,6 +6,6 @@ retrieve:
 
 
 test:
-	@cd actions/test; \
+	@cd tests; \
 		./run-test --tarballPath $(tarballPath) \
 			--version $(version)

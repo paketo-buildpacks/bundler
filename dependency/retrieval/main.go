@@ -50,7 +50,12 @@ func main() {
 	var allMetadata []internal.ReleaseMetadata
 	generator := internal.NewMetadataGenerator(fs.NewChecksumCalculator(), internal.NewPURLGenerator())
 	for _, v := range newVersions {
-		metadata, err := generator.Generate(v, []string{"io.stacks.buildpacks.bionic"}, "bionic")
+		metadata, err := generator.Generate(v,
+			[]string{
+				"io.stacks.buildpacks.bionic",
+				"io.stacks.buildpacks.jammy",
+			},
+			"ubuntu")
 		if err != nil {
 			log.Fatal(err)
 		}
