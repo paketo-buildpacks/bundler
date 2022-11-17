@@ -66,7 +66,9 @@ function main() {
 
   pushd "${bundler_dir}" 2>/dev/null
 
-    unset RUBYOPT # TODO: What does this do?
+    # unset RUBYOPT to clear any preexisting settings that would interfere with
+    # desired gem install flags
+    unset RUBYOPT
     GEM_HOME="$(pwd)" GEM_PATH="$(pwd)" \
       gem install "${gem_archive}" \
       --local \

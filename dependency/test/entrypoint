@@ -41,7 +41,6 @@ function main() {
   fi
 
   echo "Unpacking artifact..."
-  # TODO add strip components to dependency definition
   tar zxf "${artifact}" --strip-components=2
 
   echo "Checking artifact structure..."

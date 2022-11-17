@@ -38,16 +38,17 @@ func testMetadataGenerator(t *testing.T, context spec.G, it spec.S) {
 			)
 			Expect(err).NotTo(HaveOccurred())
 			Expect(metadata).To(Equal(internal.ReleaseMetadata{
-				CPE:            "cpe:2.3:a:bundler:bundler:1.2.3:*:*:*:*:ruby:*:*",
-				Licenses:       []string{"SomeLicense"},
-				Name:           "bundler",
-				ID:             "bundler",
-				PURL:           "some-purl",
-				SourceChecksum: "abcdef",
-				SourceURI:      "https://rubygems.org/downloads/bundler-1.2.3.gem",
-				Stacks:         []string{"some.stack", "other.stack"},
-				Target:         "some-target",
-				Version:        "1.2.3",
+				CPE:             "cpe:2.3:a:bundler:bundler:1.2.3:*:*:*:*:ruby:*:*",
+				Licenses:        []string{"SomeLicense"},
+				Name:            "bundler",
+				ID:              "bundler",
+				PURL:            "some-purl",
+				SourceChecksum:  "abcdef",
+				SourceURI:       "https://rubygems.org/downloads/bundler-1.2.3.gem",
+				Stacks:          []string{"some.stack", "other.stack"},
+				StripComponents: 2,
+				Target:          "some-target",
+				Version:         "1.2.3",
 			}))
 
 		})

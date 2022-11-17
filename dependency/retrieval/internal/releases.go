@@ -50,7 +50,7 @@ func (r ReleaseFetcher) Get() ([]Release, error) {
 		var r Release
 		err = dec.Decode(&r)
 		if err != nil {
-			return nil, fmt.Errorf("error parsing release index JSON: %w", err) // TODO: don't pull in entire json?
+			return nil, fmt.Errorf("error parsing release index JSON: %w", err)
 		}
 		if r.Version == "" {
 			return nil, fmt.Errorf("release index element %d missing version", i)
