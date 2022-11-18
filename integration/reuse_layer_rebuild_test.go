@@ -94,7 +94,7 @@ func testReusingLayerRebuild(t *testing.T, context spec.G, it spec.S) {
 				"      <unknown> -> \"\"",
 			))
 			Expect(logs).To(ContainLines(
-				MatchRegexp(`    Selected Bundler version \(using <unknown>\): 2\.\d+\.\d+`),
+				MatchRegexp(`    Selected bundler version \(using <unknown>\): 2\.\d+\.\d+`),
 			))
 			Expect(logs).To(ContainLines(
 				"  Executing build process",
@@ -140,7 +140,7 @@ func testReusingLayerRebuild(t *testing.T, context spec.G, it spec.S) {
 				"      <unknown> -> \"\"",
 			))
 			Expect(logs).To(ContainLines(
-				MatchRegexp(`    Selected Bundler version \(using <unknown>\): 2\.\d+\.\d+`),
+				MatchRegexp(`    Selected bundler version \(using <unknown>\): 2\.\d+\.\d+`),
 			))
 			Expect(logs).To(ContainLines(
 				MatchRegexp(fmt.Sprintf("  Reusing cached layer /layers/%s/bundler", strings.ReplaceAll(settings.Buildpack.ID, "/", "_"))),
@@ -204,7 +204,7 @@ func testReusingLayerRebuild(t *testing.T, context spec.G, it spec.S) {
 				"      <unknown>    -> \"\"",
 			))
 			Expect(logs).To(ContainLines(
-				MatchRegexp(`    Selected Bundler version \(using Gemfile\.lock\): 1\.17\.\d+`),
+				MatchRegexp(`    Selected bundler version \(using Gemfile\.lock\): 1\.17\.\d+`),
 			))
 			Expect(logs).To(ContainLines(
 				"  Executing build process",
@@ -257,7 +257,7 @@ func testReusingLayerRebuild(t *testing.T, context spec.G, it spec.S) {
 				"      <unknown>    -> \"\"",
 			))
 			Expect(logs).To(ContainLines(
-				MatchRegexp(`    Selected Bundler version \(using Gemfile\.lock\): 2\.\d+\.\d+`),
+				MatchRegexp(`    Selected bundler version \(using Gemfile\.lock\): 2\.\d+\.\d+`),
 			))
 			Expect(logs).To(ContainLines(
 				"  Executing build process",

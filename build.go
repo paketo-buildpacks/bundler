@@ -6,6 +6,7 @@ import (
 
 	"github.com/Masterminds/semver"
 	"github.com/paketo-buildpacks/packit/v2"
+	"github.com/paketo-buildpacks/packit/v2/cargo"
 	"github.com/paketo-buildpacks/packit/v2/chronos"
 	"github.com/paketo-buildpacks/packit/v2/draft"
 	"github.com/paketo-buildpacks/packit/v2/postal"
@@ -84,8 +85,14 @@ func Build(
 		logger.Debug.Subprocess(bundlerLayer.Path)
 		logger.Debug.Break()
 
-		cachedSHA, ok := bundlerLayer.Metadata[DepKey].(string)
-		if ok && cachedSHA == dependency.SHA256 { //nolint:staticcheck
+		cachedChecksum, ok := bundlerLayer.Metadata[DepKey].(string)
+
+		dependencyChecksum := dependency.Checksum
+		if dependency.SHA256 != "" {
+			dependencyChecksum = dependency.SHA256
+		}
+
+		if ok && cargo.Checksum(dependencyChecksum).MatchString(cachedChecksum) {
 			logger.Process("Reusing cached layer %s", bundlerLayer.Path)
 			logger.Break()
 
@@ -144,7 +151,7 @@ func Build(
 		}
 
 		bundlerLayer.Metadata = map[string]interface{}{
-			DepKey: dependency.SHA256, //nolint:staticcheck
+			DepKey: dependency.Checksum,
 		}
 
 		bundlerLayer.SharedEnv.Append("GEM_PATH", bundlerLayer.Path, ":")

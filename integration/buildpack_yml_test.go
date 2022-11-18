@@ -85,7 +85,7 @@ func testBuildpackYML(t *testing.T, context spec.G, it spec.S) {
 				"      <unknown>     -> \"\"",
 			))
 			Expect(logs).To(ContainLines(
-				MatchRegexp(`    Selected Bundler version \(using buildpack\.yml\): 1\.17\.\d+`),
+				MatchRegexp(`    Selected bundler version \(using buildpack\.yml\): 1\.17\.\d+`),
 			))
 			Expect(logs).To(ContainLines(
 				"    WARNING: Setting the Bundler version through buildpack.yml will be deprecated soon in Bundler Buildpack v2.0.0.",

@@ -52,8 +52,8 @@ func main() {
 	for _, v := range newVersions {
 		metadata, err := generator.Generate(v,
 			[]string{
-				"io.stacks.buildpacks.bionic",
-				"io.stacks.buildpacks.jammy",
+				"io.buildpacks.stacks.bionic",
+				"io.buildpacks.stacks.jammy",
 			},
 			"ubuntu")
 		if err != nil {

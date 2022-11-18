@@ -69,7 +69,7 @@ func testLogging(t *testing.T, context spec.G, it spec.S) {
 				"      <unknown> -> \"\"",
 			))
 			Expect(logs).To(ContainLines(
-				MatchRegexp(`    Selected Bundler version \(using <unknown>\): 2\.\d+\.\d+`),
+				MatchRegexp(`    Selected bundler version \(using <unknown>\): 2\.\d+\.\d+`),
 			))
 			Expect(logs).To(ContainLines(
 				"  Executing build process",
@@ -113,7 +113,7 @@ func testLogging(t *testing.T, context spec.G, it spec.S) {
 					"      <unknown> -> \"\"",
 				))
 				Expect(logs).To(ContainLines(
-					MatchRegexp(`    Selected Bundler version \(using <unknown>\): 2\.\d+\.\d+`),
+					MatchRegexp(`    Selected bundler version \(using <unknown>\): 2\.\d+\.\d+`),
 				))
 				Expect(logs).To(ContainLines(
 					"  Getting the layer associated with Bundler:",
@@ -123,7 +123,7 @@ func testLogging(t *testing.T, context spec.G, it spec.S) {
 					"  Executing build process",
 					MatchRegexp(`    Installing Bundler 2\.\d+\.\d+`),
 					fmt.Sprintf("    Installation path: /layers/%s/bundler", strings.ReplaceAll(settings.Buildpack.ID, "/", "_")),
-					MatchRegexp(`    Source URI\: https\:\/\/deps\.paketo\.io\/bundler\/bundler_2\.\d+\.\d+_linux_noarch_bionic_.*\.tgz`),
+					MatchRegexp(`    Source URI\: https\:\/\/artifacts\.paketo\.io\/bundler\/bundler-ubuntu-2\.\d+\.\d+\.tgz`),
 					MatchRegexp(`      Completed in \d+\.?\d*`),
 				))
 				Expect(logs).To(ContainLines(
