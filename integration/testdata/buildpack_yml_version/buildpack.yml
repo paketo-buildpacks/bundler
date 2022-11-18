@@ -1,5 +1,5 @@
 ---
 mri:
-  version: 2.7.x
+  version: 3.1.x
 bundler:
   version: 1.17.x
