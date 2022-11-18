@@ -263,8 +263,8 @@ func testBuild(t *testing.T, context spec.G, it spec.S) {
 			Expect(err).NotTo(HaveOccurred())
 
 			dependencyManager.ResolveCall.Returns.Dependency = postal.Dependency{
-				Name:   "Bundler",
-				SHA256: "some-sha", //nolint:staticcheck
+				Name:     "Bundler",
+				Checksum: "sha256:some-sha",
 			}
 		})
 
