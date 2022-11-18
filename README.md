@@ -84,3 +84,9 @@ The options for this setting are:
 ```shell
 $BP_LOG_LEVEL="DEBUG"
 ```
+
+## Compatibility
+
+This buildpack is currently only supported on the Paketo Bionic and Jammy stack
+distributions. A pre-compiled distribution of Bundler is provided for the Paketo stacks (i.e.
+`io.buildpacks.stack.jammy` and `io.buildpacks.stacks.bionic`).
