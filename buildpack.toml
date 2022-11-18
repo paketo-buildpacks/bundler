@@ -27,7 +27,7 @@ api = "0.7"
     sha256 = "d59b0711914a7876a10032d925811b9cfe87a1e9f87c82a861c3d69bb6857e93"
     source = "https://rubygems.org/downloads/bundler-1.17.3.gem"
     source_sha256 = "bc4bf75b548b27451aa9f443b18c46a739dd22ad79f7a5f90b485376a67dc352"
-    stacks = ["io.buildpacks.stacks.bionic"]
+    stacks = ["io.buildpacks.stacks.bionic", "io.buildpacks.stacks.jammy"]
     uri = "https://deps.paketo.io/bundler/bundler_1.17.3_linux_noarch_bionic_d59b0711.tgz"
     version = "1.17.3"
 
@@ -69,3 +69,6 @@ api = "0.7"
 
 [[stacks]]
   id = "io.buildpacks.stacks.bionic"
+
+[[stacks]]
+  id = "io.buildpacks.stacks.jammy"
