@@ -85,7 +85,7 @@ func testGemfileLock(t *testing.T, context spec.G, it spec.S) {
 				"      <unknown>    -> \"\"",
 			))
 			Expect(logs).To(ContainLines(
-				MatchRegexp(`    Selected Bundler version \(using Gemfile\.lock\): 1\.17\.\d+`),
+				MatchRegexp(`    Selected bundler version \(using Gemfile\.lock\): 1\.17\.\d+`),
 			))
 			Expect(logs).To(ContainLines(
 				"  Executing build process",

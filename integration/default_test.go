@@ -85,7 +85,7 @@ func testDefault(t *testing.T, context spec.G, it spec.S) {
 				"      <unknown> -> \"\"",
 			))
 			Expect(logs).To(ContainLines(
-				MatchRegexp(`    Selected Bundler version \(using <unknown>\): 2\.\d+\.\d+`),
+				MatchRegexp(`    Selected bundler version \(using <unknown>\): 2\.\d+\.\d+`),
 			))
 			Expect(logs).To(ContainLines(
 				"  Executing build process",
@@ -170,7 +170,7 @@ func testDefault(t *testing.T, context spec.G, it spec.S) {
 					cLogs, err := docker.Container.Logs.Execute(container2.ID)
 					Expect(err).NotTo(HaveOccurred())
 					return cLogs.String()
-				}).Should(ContainSubstring(`"name":"Bundler"`))
+				}).Should(ContainSubstring(`"name":"bundler"`))
 
 				// check that all required SBOM files are present
 				Expect(filepath.Join(sbomDir, "sbom", "launch", strings.ReplaceAll(settings.Buildpack.ID, "/", "_"), "bundler", "sbom.cdx.json")).To(BeARegularFile())
@@ -180,7 +180,7 @@ func testDefault(t *testing.T, context spec.G, it spec.S) {
 				// check an SBOM file to make sure it has an entry for bundler
 				contents, err := os.ReadFile(filepath.Join(sbomDir, "sbom", "launch", strings.ReplaceAll(settings.Buildpack.ID, "/", "_"), "bundler", "sbom.cdx.json"))
 				Expect(err).NotTo(HaveOccurred())
-				Expect(string(contents)).To(ContainSubstring(`"name": "Bundler"`))
+				Expect(string(contents)).To(ContainSubstring(`"name": "bundler"`))
 			})
 		})
 	})

@@ -87,7 +87,7 @@ func testRunWithEnvVar(t *testing.T, context spec.G, it spec.S) {
 				"      <unknown>          -> \"\"",
 			))
 			Expect(logs).To(ContainLines(
-				MatchRegexp(`    Selected Bundler version \(using BP_BUNDLER_VERSION\): 2\.\d+\.\d+`),
+				MatchRegexp(`    Selected bundler version \(using BP_BUNDLER_VERSION\): 2\.\d+\.\d+`),
 			))
 			Expect(logs).To(ContainLines(
 				"  Executing build process",
