@@ -18,6 +18,48 @@ api = "0.7"
   [metadata.default-versions]
     bundler = "2.x.x"
 
+  [[metadata.dependencies]]
+    checksum = "sha256:047783a321565c13f42d0e24eeb9e675975e763447390ad12d12049baeace84b"
+    cpe = "cpe:2.3:a:bundler:bundler:1.17.3:*:*:*:*:ruby:*:*"
+    id = "bundler"
+    licenses = ["MIT"]
+    name = "bundler"
+    purl = "pkg:generic/bundler@1.17.3?checksum=bc4bf75b548b27451aa9f443b18c46a739dd22ad79f7a5f90b485376a67dc352&download_url=https://rubygems.org/downloads/bundler-1.17.3.gem"
+    source = "https://rubygems.org/downloads/bundler-1.17.3.gem"
+    source-checksum = "sha256:bc4bf75b548b27451aa9f443b18c46a739dd22ad79f7a5f90b485376a67dc352"
+    stacks = ["io.buildpacks.stacks.bionic", "io.buildpacks.stacks.jammy"]
+    strip-components = 2
+    uri = "https://artifacts.paketo.io/bundler/bundler-ubuntu-1.17.3.tgz"
+    version = "1.17.3"
+
+  [[metadata.dependencies]]
+    checksum = "sha256:3cf5d204d93baefad55ba3ae5678324367d24d9ad303f955ce6cf399333f16d2"
+    cpe = "cpe:2.3:a:bundler:bundler:2.4.1:*:*:*:*:ruby:*:*"
+    id = "bundler"
+    licenses = ["MIT"]
+    name = "bundler"
+    purl = "pkg:generic/bundler@2.4.1?checksum=a6eb7847f55ad87e288eec3660870bef82ffb8a5c5f1b59dee5598f03bafb827&download_url=https://rubygems.org/downloads/bundler-2.4.1.gem"
+    source = "https://rubygems.org/downloads/bundler-2.4.1.gem"
+    source-checksum = "sha256:a6eb7847f55ad87e288eec3660870bef82ffb8a5c5f1b59dee5598f03bafb827"
+    stacks = ["io.buildpacks.stacks.bionic", "io.buildpacks.stacks.jammy"]
+    strip-components = 2
+    uri = "https://artifacts.paketo.io/bundler/bundler-ubuntu-2.4.1.tgz"
+    version = "2.4.1"
+
+  [[metadata.dependencies]]
+    checksum = "sha256:1aa3109b92e7c4f08c09e4a326228a069dc22674f524fde5a9f2b383e8ffbe0c"
+    cpe = "cpe:2.3:a:bundler:bundler:2.4.2:*:*:*:*:ruby:*:*"
+    id = "bundler"
+    licenses = ["MIT"]
+    name = "bundler"
+    purl = "pkg:generic/bundler@2.4.2?checksum=99850ec40587ee1bfb2a7e76d4e548f0fcb3a0edd3e8b18f263031034edbb91f&download_url=https://rubygems.org/downloads/bundler-2.4.2.gem"
+    source = "https://rubygems.org/downloads/bundler-2.4.2.gem"
+    source-checksum = "sha256:99850ec40587ee1bfb2a7e76d4e548f0fcb3a0edd3e8b18f263031034edbb91f"
+    stacks = ["io.buildpacks.stacks.bionic", "io.buildpacks.stacks.jammy"]
+    strip-components = 2
+    uri = "https://artifacts.paketo.io/bundler/bundler-ubuntu-2.4.2.tgz"
+    version = "2.4.2"
+
   [[metadata.dependency-constraints]]
     constraint = "1.*.*"
     id = "bundler"
