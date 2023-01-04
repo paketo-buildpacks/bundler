@@ -32,6 +32,34 @@ api = "0.7"
     uri = "https://artifacts.paketo.io/bundler/bundler-ubuntu-1.17.3.tgz"
     version = "1.17.3"
 
+  [[metadata.dependencies]]
+    checksum = "sha256:cff4e71215de74bde5d5a3995c4a21950b3c01a5bf1e9e550e6c87fa1ad324a9"
+    cpe = "cpe:2.3:a:bundler:bundler:2.4.1:*:*:*:*:ruby:*:*"
+    id = "bundler"
+    licenses = ["MIT"]
+    name = "bundler"
+    purl = "pkg:generic/bundler@2.4.1?checksum=a6eb7847f55ad87e288eec3660870bef82ffb8a5c5f1b59dee5598f03bafb827&download_url=https://rubygems.org/downloads/bundler-2.4.1.gem"
+    source = "https://rubygems.org/downloads/bundler-2.4.1.gem"
+    source-checksum = "sha256:a6eb7847f55ad87e288eec3660870bef82ffb8a5c5f1b59dee5598f03bafb827"
+    stacks = ["io.buildpacks.stacks.bionic", "io.buildpacks.stacks.jammy"]
+    strip-components = 2
+    uri = "https://artifacts.paketo.io/bundler/bundler-ubuntu-cff4e712-2.4.1.tgz"
+    version = "2.4.1"
+
+  [[metadata.dependencies]]
+    checksum = "sha256:14c35ab0095a3ec8a2b9ef0f79798e67cbdf2f4098d418af19acebbb88983174"
+    cpe = "cpe:2.3:a:bundler:bundler:2.4.2:*:*:*:*:ruby:*:*"
+    id = "bundler"
+    licenses = ["MIT"]
+    name = "bundler"
+    purl = "pkg:generic/bundler@2.4.2?checksum=99850ec40587ee1bfb2a7e76d4e548f0fcb3a0edd3e8b18f263031034edbb91f&download_url=https://rubygems.org/downloads/bundler-2.4.2.gem"
+    source = "https://rubygems.org/downloads/bundler-2.4.2.gem"
+    source-checksum = "sha256:99850ec40587ee1bfb2a7e76d4e548f0fcb3a0edd3e8b18f263031034edbb91f"
+    stacks = ["io.buildpacks.stacks.bionic", "io.buildpacks.stacks.jammy"]
+    strip-components = 2
+    uri = "https://artifacts.paketo.io/bundler/bundler-ubuntu-14c35ab0-2.4.2.tgz"
+    version = "2.4.2"
+
   [[metadata.dependency-constraints]]
     constraint = "1.*.*"
     id = "bundler"
