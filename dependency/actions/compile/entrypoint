@@ -89,13 +89,15 @@ function main() {
 
   echo "Packaging bundler dependency"
   tar czvf "${output_dir}/bundler-${target}-${version}.tgz" "${bundler_dir}"
-  echo "Wrote bundler-${target}-${version}.tgz to ${output_dir}"
 
   # extract SHA256 from sha256sum output in the form
-  # someshaabcdefgh /path/to/file
+  # somesha /path/to/file
   sha="$(sha256sum "${output_dir}/bundler-${target}-${version}.tgz" | cut -d " " -f 1 )"
-  echo "sha256:${sha}" > "${output_dir}/bundler-${target}-${version}.tgz.checksum"
-  echo "Wrote bundler-${target}-${version}.tgz.checksum to ${output_dir}"
+  echo "sha256:${sha}" > "${output_dir}/bundler-${target}-${sha:0:8}-${version}.tgz.checksum"
+  echo "Wrote bundler-${target}-${sha:0:8}-${version}.tgz.checksum to ${output_dir}"
+
+  mv  "${output_dir}/bundler-${target}-${version}.tgz" "${output_dir}/bundler-${target}-${sha:0:8}-${version}.tgz"
+  echo "Wrote bundler-${target}-${sha:0:8}-${version}.tgz to ${output_dir}"
 }
 
 main "${@:-}"
