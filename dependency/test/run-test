@@ -36,10 +36,6 @@ main() {
   dir="$(dirname "${tarball_path}")"
   artifact="$(basename "${tarball_path}")"
 
-  echo "Running bionic test..."
-  docker build -t test-bionic -f bionic.Dockerfile .
-  docker run --rm -v "${dir}:/input" test-bionic --artifact "/input/${artifact}" --version "${version}"
-
   echo "Running jammy test..."
   docker build -t test-jammy -f jammy.Dockerfile .
   docker run --rm -v "${dir}:/input" test-jammy --artifact "/input/${artifact}" --version "${version}"
