@@ -123,7 +123,7 @@ func testLogging(t *testing.T, context spec.G, it spec.S) {
 					"  Executing build process",
 					MatchRegexp(`    Installing Bundler 2\.\d+\.\d+`),
 					fmt.Sprintf("    Installation path: /layers/%s/bundler", strings.ReplaceAll(settings.Buildpack.ID, "/", "_")),
-					MatchRegexp(`    Source URI\: https\:\/\/artifacts\.paketo\.io\/bundler\/bundler-ubuntu-2\.\d+\.\d+\.tgz`),
+					MatchRegexp(`    Source URI\: https\:\/\/artifacts\.paketo\.io\/bundler\/bundler-ubuntu-2\.\d+\.\d+(-\w+)*\.tgz`),
 					MatchRegexp(`      Completed in \d+\.?\d*`),
 				))
 				Expect(logs).To(ContainLines(
