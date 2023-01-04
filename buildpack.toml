@@ -19,6 +19,20 @@ api = "0.7"
     bundler = "2.x.x"
 
   [[metadata.dependencies]]
+    checksum = "sha256:bed6854be58c8e51d97ce2e46356fbfa363f6241a56a7321dd54feda2d4eefca"
+    cpe = "cpe:2.3:a:bundler:bundler:1.17.3:*:*:*:*:ruby:*:*"
+    id = "bundler"
+    licenses = ["MIT"]
+    name = "bundler"
+    purl = "pkg:generic/bundler@1.17.3?checksum=bc4bf75b548b27451aa9f443b18c46a739dd22ad79f7a5f90b485376a67dc352&download_url=https://rubygems.org/downloads/bundler-1.17.3.gem"
+    source = "https://rubygems.org/downloads/bundler-1.17.3.gem"
+    source-checksum = "sha256:bc4bf75b548b27451aa9f443b18c46a739dd22ad79f7a5f90b485376a67dc352"
+    stacks = ["io.buildpacks.stacks.bionic", "io.buildpacks.stacks.jammy"]
+    strip-components = 2
+    uri = "https://artifacts.paketo.io/bundler/bundler-ubuntu-1.17.3.tgz"
+    version = "1.17.3"
+
+  [[metadata.dependencies]]
     checksum = "sha256:ffa2e591d8045b216d1c48a7996a758562f00cdc06c47ab083d62c6ca2f08e31"
     cpe = "cpe:2.3:a:bundler:bundler:2.4.1:*:*:*:*:ruby:*:*"
     id = "bundler"
