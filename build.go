@@ -88,6 +88,7 @@ func Build(
 		cachedChecksum, ok := bundlerLayer.Metadata[DepKey].(string)
 
 		dependencyChecksum := dependency.Checksum
+		//nolint Ignore SA1019, informed usage of deprecated field
 		if dependency.SHA256 != "" {
 			dependencyChecksum = dependency.SHA256
 		}
