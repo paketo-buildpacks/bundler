@@ -87,13 +87,7 @@ func Build(
 
 		cachedChecksum, ok := bundlerLayer.Metadata[DepKey].(string)
 
-		dependencyChecksum := dependency.Checksum
-		//nolint Ignore SA1019, informed usage of deprecated field
-		if dependency.SHA256 != "" {
-			dependencyChecksum = dependency.SHA256
-		}
-
-		if ok && cargo.Checksum(dependencyChecksum).MatchString(cachedChecksum) {
+		if ok && cargo.Checksum(dependency.Checksum).MatchString(cachedChecksum) {
 			logger.Process("Reusing cached layer %s", bundlerLayer.Path)
 			logger.Break()
 
