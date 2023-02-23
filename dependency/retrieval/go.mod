@@ -13,6 +13,6 @@ require (
 require (
 	github.com/BurntSushi/toml v0.4.1 // indirect
 	golang.org/x/net v0.0.0-20210525063256-abc453219eb5 // indirect
-	golang.org/x/text v0.3.6 // indirect
+	golang.org/x/text v0.3.8 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 )
