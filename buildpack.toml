@@ -33,20 +33,6 @@ api = "0.7"
     version = "1.17.3"
 
   [[metadata.dependencies]]
-    checksum = "sha256:cebc7fcae11f92e4e34afbed76f070cd3f015dc0b640d3c07451f99e40f28666"
-    cpe = "cpe:2.3:a:bundler:bundler:2.4.18:*:*:*:*:ruby:*:*"
-    id = "bundler"
-    licenses = ["MIT"]
-    name = "bundler"
-    purl = "pkg:generic/bundler@2.4.18?checksum=b6f7d27121d49874a69c9194d4f8ef556b2390cceec41635ccf4f3c58069f70e&download_url=https://rubygems.org/downloads/bundler-2.4.18.gem"
-    source = "https://rubygems.org/downloads/bundler-2.4.18.gem"
-    source-checksum = "sha256:b6f7d27121d49874a69c9194d4f8ef556b2390cceec41635ccf4f3c58069f70e"
-    stacks = ["io.buildpacks.stacks.bionic", "io.buildpacks.stacks.jammy"]
-    strip-components = 2
-    uri = "https://artifacts.paketo.io/bundler/bundler-ubuntu-2.4.18-cebc7fca.tgz"
-    version = "2.4.18"
-
-  [[metadata.dependencies]]
     checksum = "sha256:d8cc4d5002d465cd1582cfa5cc215661e79d10e93c6de166811ceeffdb4d923f"
     cpe = "cpe:2.3:a:bundler:bundler:2.4.19:*:*:*:*:ruby:*:*"
     id = "bundler"
@@ -59,6 +45,20 @@ api = "0.7"
     strip-components = 2
     uri = "https://artifacts.paketo.io/bundler/bundler-ubuntu-2.4.19-d8cc4d50.tgz"
     version = "2.4.19"
+
+  [[metadata.dependencies]]
+    checksum = "sha256:0a90fa17d94164ef78abedc9b95b9b837445ae71569c174978d4f70fe27c45f6"
+    cpe = "cpe:2.3:a:bundler:bundler:2.4.20:*:*:*:*:ruby:*:*"
+    id = "bundler"
+    licenses = ["MIT"]
+    name = "bundler"
+    purl = "pkg:generic/bundler@2.4.20?checksum=744b2b1951da613af2af6854f7c1f9e16dd90b4b66cd9af1a27a9f448c761bee&download_url=https://rubygems.org/downloads/bundler-2.4.20.gem"
+    source = "https://rubygems.org/downloads/bundler-2.4.20.gem"
+    source-checksum = "sha256:744b2b1951da613af2af6854f7c1f9e16dd90b4b66cd9af1a27a9f448c761bee"
+    stacks = ["io.buildpacks.stacks.bionic", "io.buildpacks.stacks.jammy"]
+    strip-components = 2
+    uri = "https://artifacts.paketo.io/bundler/bundler-ubuntu-2.4.20-0a90fa17.tgz"
+    version = "2.4.20"
 
   [[metadata.dependency-constraints]]
     constraint = "1.*.*"
