@@ -33,32 +33,32 @@ api = "0.7"
     version = "1.17.3"
 
   [[metadata.dependencies]]
-    checksum = "sha256:5bcdaf48c8b61716556c5664551c5861ea61f2f62c2dbb59ff9235bbd37dc386"
-    cpe = "cpe:2.3:a:bundler:bundler:2.5.0:*:*:*:*:ruby:*:*"
+    checksum = "sha256:b4286c21af5af2d6b67e105fca2b9b0a5bae0165065f56775de51fff5f619f93"
+    cpe = "cpe:2.3:a:bundler:bundler:2.5.2:*:*:*:*:ruby:*:*"
     id = "bundler"
     licenses = ["MIT"]
     name = "bundler"
-    purl = "pkg:generic/bundler@2.5.0?checksum=8952136f2d10816c73def0e8bc4b25c8f3fec9d4a58d571516e923b7cd2ed6c2&download_url=https://rubygems.org/downloads/bundler-2.5.0.gem"
-    source = "https://rubygems.org/downloads/bundler-2.5.0.gem"
-    source-checksum = "sha256:8952136f2d10816c73def0e8bc4b25c8f3fec9d4a58d571516e923b7cd2ed6c2"
+    purl = "pkg:generic/bundler@2.5.2?checksum=4f41bc156623cc0a99bbf21a03475982bfa27dad6d8d31aa93b90752e7a255db&download_url=https://rubygems.org/downloads/bundler-2.5.2.gem"
+    source = "https://rubygems.org/downloads/bundler-2.5.2.gem"
+    source-checksum = "sha256:4f41bc156623cc0a99bbf21a03475982bfa27dad6d8d31aa93b90752e7a255db"
     stacks = ["io.buildpacks.stacks.bionic", "io.buildpacks.stacks.jammy"]
     strip-components = 2
-    uri = "https://artifacts.paketo.io/bundler/bundler-ubuntu-2.5.0-5bcdaf48.tgz"
-    version = "2.5.0"
+    uri = "https://artifacts.paketo.io/bundler/bundler-ubuntu-2.5.2-b4286c21.tgz"
+    version = "2.5.2"
 
   [[metadata.dependencies]]
-    checksum = "sha256:696db41f3741cb94f40ba8be13ce2ff70df282aa55fc83bf18365489a704b2d1"
-    cpe = "cpe:2.3:a:bundler:bundler:2.5.1:*:*:*:*:ruby:*:*"
+    checksum = "sha256:083a210ef11970f6c4e5cd0a3693187c2fa64fd270562d8c876af29435f73f20"
+    cpe = "cpe:2.3:a:bundler:bundler:2.5.3:*:*:*:*:ruby:*:*"
     id = "bundler"
     licenses = ["MIT"]
     name = "bundler"
-    purl = "pkg:generic/bundler@2.5.1?checksum=6b63f1bb4aedcde7fa2be3b309db7cb897170e9b4c09ad30314d50001b37b117&download_url=https://rubygems.org/downloads/bundler-2.5.1.gem"
-    source = "https://rubygems.org/downloads/bundler-2.5.1.gem"
-    source-checksum = "sha256:6b63f1bb4aedcde7fa2be3b309db7cb897170e9b4c09ad30314d50001b37b117"
+    purl = "pkg:generic/bundler@2.5.3?checksum=249cd075ac4f335ae70f788c9be0f4c188093a4da7d05bd53be2baef3f25e7cb&download_url=https://rubygems.org/downloads/bundler-2.5.3.gem"
+    source = "https://rubygems.org/downloads/bundler-2.5.3.gem"
+    source-checksum = "sha256:249cd075ac4f335ae70f788c9be0f4c188093a4da7d05bd53be2baef3f25e7cb"
     stacks = ["io.buildpacks.stacks.bionic", "io.buildpacks.stacks.jammy"]
     strip-components = 2
-    uri = "https://artifacts.paketo.io/bundler/bundler-ubuntu-2.5.1-696db41f.tgz"
-    version = "2.5.1"
+    uri = "https://artifacts.paketo.io/bundler/bundler-ubuntu-2.5.3-083a210e.tgz"
+    version = "2.5.3"
 
   [[metadata.dependency-constraints]]
     constraint = "1.*.*"
