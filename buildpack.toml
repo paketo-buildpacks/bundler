@@ -33,20 +33,6 @@ api = "0.7"
     version = "1.17.3"
 
   [[metadata.dependencies]]
-    checksum = "sha256:997eff25cd871b3f57607a4994931e8f7601262f3270bff4d7fbf3d935abb70b"
-    cpe = "cpe:2.3:a:bundler:bundler:2.5.4:*:*:*:*:ruby:*:*"
-    id = "bundler"
-    licenses = ["MIT"]
-    name = "bundler"
-    purl = "pkg:generic/bundler@2.5.4?checksum=f7b9f08c47e8c665613a668aa1b633df63f818b99183cee4b797704a816edefe&download_url=https://rubygems.org/downloads/bundler-2.5.4.gem"
-    source = "https://rubygems.org/downloads/bundler-2.5.4.gem"
-    source-checksum = "sha256:f7b9f08c47e8c665613a668aa1b633df63f818b99183cee4b797704a816edefe"
-    stacks = ["io.buildpacks.stacks.bionic", "io.buildpacks.stacks.jammy"]
-    strip-components = 2
-    uri = "https://artifacts.paketo.io/bundler/bundler-ubuntu-2.5.4-997eff25.tgz"
-    version = "2.5.4"
-
-  [[metadata.dependencies]]
     checksum = "sha256:eb46e2a7e7968d14a21790766704ef50632b68d16c3ac21992c1675923438188"
     cpe = "cpe:2.3:a:bundler:bundler:2.5.5:*:*:*:*:ruby:*:*"
     id = "bundler"
@@ -59,6 +45,20 @@ api = "0.7"
     strip-components = 2
     uri = "https://artifacts.paketo.io/bundler/bundler-ubuntu-2.5.5-eb46e2a7.tgz"
     version = "2.5.5"
+
+  [[metadata.dependencies]]
+    checksum = "sha256:f413bb13ea9264493b8912065c4b1b4ff2c5af74e39aa8a0a9e7c9da76a6b268"
+    cpe = "cpe:2.3:a:bundler:bundler:2.5.6:*:*:*:*:ruby:*:*"
+    id = "bundler"
+    licenses = ["MIT"]
+    name = "bundler"
+    purl = "pkg:generic/bundler@2.5.6?checksum=1a1f21d1456e16dd2fee93461d9640348047aa2dcaf5d776874a60ddd4df5c64&download_url=https://rubygems.org/downloads/bundler-2.5.6.gem"
+    source = "https://rubygems.org/downloads/bundler-2.5.6.gem"
+    source-checksum = "sha256:1a1f21d1456e16dd2fee93461d9640348047aa2dcaf5d776874a60ddd4df5c64"
+    stacks = ["io.buildpacks.stacks.bionic", "io.buildpacks.stacks.jammy"]
+    strip-components = 2
+    uri = "https://artifacts.paketo.io/bundler/bundler-ubuntu-2.5.6-f413bb13.tgz"
+    version = "2.5.6"
 
   [[metadata.dependency-constraints]]
     constraint = "1.*.*"
