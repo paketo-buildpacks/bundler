@@ -73,7 +73,7 @@ func testVersionShimmer(t *testing.T, context spec.G, it spec.S) {
 
 			content, err = os.ReadFile(firstShim.Name())
 			Expect(err).NotTo(HaveOccurred())
-			Expect(string(content)).To(Equal(fmt.Sprintf("#!/usr/bin/env sh\nexec %s _some-version_ ${@:-}", filepath.Join(dir, "_first"))))
+			Expect(string(content)).To(Equal(fmt.Sprintf("#!/usr/bin/env sh\nexec %s _some-version_ \"${@:-}\"", filepath.Join(dir, "_first"))))
 
 			info, err = firstShim.Stat()
 			Expect(err).NotTo(HaveOccurred())
@@ -97,7 +97,7 @@ func testVersionShimmer(t *testing.T, context spec.G, it spec.S) {
 
 			content, err = os.ReadFile(secondShim.Name())
 			Expect(err).NotTo(HaveOccurred())
-			Expect(string(content)).To(Equal(fmt.Sprintf("#!/usr/bin/env sh\nexec %s _some-version_ ${@:-}", filepath.Join(dir, "_second"))))
+			Expect(string(content)).To(Equal(fmt.Sprintf("#!/usr/bin/env sh\nexec %s _some-version_ \"${@:-}\"", filepath.Join(dir, "_second"))))
 
 			info, err = secondShim.Stat()
 			Expect(err).NotTo(HaveOccurred())
