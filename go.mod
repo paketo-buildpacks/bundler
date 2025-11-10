@@ -1,6 +1,6 @@
 module github.com/paketo-buildpacks/bundler
 
-go 1.25.3
+go 1.25.4
 
 require (
 	github.com/BurntSushi/toml v1.4.0
