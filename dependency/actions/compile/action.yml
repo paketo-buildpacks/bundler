@@ -12,6 +12,14 @@ inputs:
   target:
     description: 'dependency OS target variant'
     required: true
+  os:
+    description: 'target OS'
+    required: false
+    default: 'linux'
+  arch:
+    description: 'target architecture'
+    required: false
+    default: 'amd64'
 
 runs:
   using: 'composite'
@@ -19,13 +27,19 @@ runs:
 
   - name: build compilation
     id: build-compilation
-    shell: bash
-    run: docker build -t compilation -f dependency/actions/compile/${{ inputs.target }}.Dockerfile dependency/actions/compile
+    env:
+      SKIP_LOGIN: true
+    uses: actions-hub/docker/cli@master
+    with:
+      args: "build --platform ${{ inputs.os }}/${{ inputs.arch }} -t compilation -f dependency/actions/compile/${{ inputs.target }}.Dockerfile dependency/actions/compile"
 
   - name: run compilation
     id: run-compilation
-    shell: bash
-    run: docker run -v ${{ inputs.outputDir }}:/output compilation --version ${{ inputs.version }} --outputDir /output --target ${{ inputs.target }}
+    uses: actions-hub/docker/cli@master
+    env:
+      SKIP_LOGIN: true
+    with:
+      args: "run --platform ${{ inputs.os }}/${{ inputs.arch }} -v ${{ inputs.outputDir }}:/output compilation --version ${{ inputs.version }} --outputDir /output --target ${{ inputs.target }} --os ${{ inputs.os }} --arch ${{ inputs.arch }}"
 
   - name: print contents of output dir
     shell: bash
