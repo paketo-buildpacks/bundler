@@ -187,7 +187,9 @@ func testReusingLayerRebuild(t *testing.T, context spec.G, it spec.S) {
 					settings.Buildpacks.BuildPlan.Online,
 				)
 
-			firstImage, logs, err = build.Execute(name, source)
+			firstImage, logs, err = build.
+				WithEnv(map[string]string{"BP_BUNDLER_VERSION": "2.5.17"}).
+				Execute(name, source)
 			Expect(err).NotTo(HaveOccurred())
 
 			imageIDs[firstImage.ID] = struct{}{}
@@ -200,15 +202,16 @@ func testReusingLayerRebuild(t *testing.T, context spec.G, it spec.S) {
 				MatchRegexp(fmt.Sprintf(`%s \d+\.\d+\.\d+`, settings.Buildpack.Name)),
 				"  Resolving Bundler version",
 				"    Candidate version sources (in priority order):",
-				"      Gemfile.lock -> \"1.*.*\"",
-				"      <unknown>    -> \"\"",
+				"      BP_BUNDLER_VERSION -> \"2.5.17\"",
+				"      Gemfile.lock       -> \"2.*.*\"",
+				"      <unknown>          -> \"\"",
 			))
 			Expect(logs).To(ContainLines(
-				MatchRegexp(`    Selected bundler version \(using Gemfile\.lock\): 1\.17\.\d+`),
+				MatchRegexp(`    Selected bundler version \(using BP_BUNDLER_VERSION\): 2\.5\.17`),
 			))
 			Expect(logs).To(ContainLines(
 				"  Executing build process",
-				MatchRegexp(`    Installing Bundler 1\.17\.\d+`),
+				MatchRegexp(`    Installing Bundler 2\.5\.17`),
 				MatchRegexp(`      Completed in \d+\.?\d*`),
 			))
 			Expect(logs).To(ContainLines(
