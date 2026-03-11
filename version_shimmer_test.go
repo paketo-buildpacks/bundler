@@ -57,7 +57,9 @@ func testVersionShimmer(t *testing.T, context spec.G, it spec.S) {
 
 			first, err := os.Open(filepath.Join(dir, "_first"))
 			Expect(err).NotTo(HaveOccurred())
-			defer first.Close()
+			defer func() {
+				Expect(first.Close()).To(Succeed())
+			}()
 
 			content, err := os.ReadFile(first.Name())
 			Expect(err).NotTo(HaveOccurred())
@@ -69,7 +71,9 @@ func testVersionShimmer(t *testing.T, context spec.G, it spec.S) {
 
 			firstShim, err := os.Open(filepath.Join(dir, "first"))
 			Expect(err).NotTo(HaveOccurred())
-			defer firstShim.Close()
+			defer func() {
+				Expect(firstShim.Close()).To(Succeed())
+			}()
 
 			content, err = os.ReadFile(firstShim.Name())
 			Expect(err).NotTo(HaveOccurred())
@@ -81,7 +85,9 @@ func testVersionShimmer(t *testing.T, context spec.G, it spec.S) {
 
 			second, err := os.Open(filepath.Join(dir, "_second"))
 			Expect(err).NotTo(HaveOccurred())
-			defer second.Close()
+			defer func() {
+				Expect(second.Close()).To(Succeed())
+			}()
 
 			content, err = os.ReadFile(second.Name())
 			Expect(err).NotTo(HaveOccurred())
@@ -93,7 +99,9 @@ func testVersionShimmer(t *testing.T, context spec.G, it spec.S) {
 
 			secondShim, err := os.Open(filepath.Join(dir, "second"))
 			Expect(err).NotTo(HaveOccurred())
-			defer secondShim.Close()
+			defer func() {
+				Expect(secondShim.Close()).To(Succeed())
+			}()
 
 			content, err = os.ReadFile(secondShim.Name())
 			Expect(err).NotTo(HaveOccurred())
@@ -105,7 +113,9 @@ func testVersionShimmer(t *testing.T, context spec.G, it spec.S) {
 
 			third, err := os.Open(filepath.Join(dir, "third"))
 			Expect(err).NotTo(HaveOccurred())
-			defer third.Close()
+			defer func() {
+				Expect(third.Close()).To(Succeed())
+			}()
 
 			content, err = os.ReadFile(third.Name())
 			Expect(err).NotTo(HaveOccurred())
@@ -117,7 +127,9 @@ func testVersionShimmer(t *testing.T, context spec.G, it spec.S) {
 
 			fourth, err := os.Open(filepath.Join(dir, "fourth"))
 			Expect(err).NotTo(HaveOccurred())
-			defer fourth.Close()
+			defer func() {
+				Expect(fourth.Close()).To(Succeed())
+			}()
 
 			info, err = fourth.Stat()
 			Expect(err).NotTo(HaveOccurred())

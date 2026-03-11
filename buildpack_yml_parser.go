@@ -1,6 +1,7 @@
 package bundler
 
 import (
+	"fmt"
 	"os"
 
 	"gopkg.in/yaml.v2"
@@ -25,7 +26,11 @@ func (p BuildpackYMLParser) ParseVersion(path string) (string, error) {
 	if err != nil && !os.IsNotExist(err) {
 		return "", err
 	}
-	defer file.Close()
+	defer func() {
+		if err := file.Close(); err != nil {
+			fmt.Fprintf(os.Stderr, "failed to close file: %v\n", err)
+		}
+	}()
 
 	if !os.IsNotExist(err) {
 		err = yaml.NewDecoder(file).Decode(&buildpack)

@@ -21,7 +21,9 @@ func testGemfileLockParser(t *testing.T, context spec.G, it spec.S) {
 	it.Before(func() {
 		file, err := os.CreateTemp("", "Gemfile.lock")
 		Expect(err).NotTo(HaveOccurred())
-		defer file.Close()
+		defer func() {
+			Expect(file.Close()).To(Succeed())
+		}()
 
 		_, err = file.WriteString(`GEM
   remote: https://rubygems.org/
