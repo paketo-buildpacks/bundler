@@ -10,7 +10,7 @@ inputs:
     description: 'output directory'
     required: true
   target:
-    description: 'dependency OS target variant'
+    description: 'dependency OS target variant (jammy or noble)'
     required: true
   os:
     description: 'target OS'
