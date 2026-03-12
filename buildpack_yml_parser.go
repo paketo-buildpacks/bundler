@@ -23,20 +23,23 @@ func (p BuildpackYMLParser) ParseVersion(path string) (string, error) {
 	}
 
 	file, err := os.Open(path)
-	if err != nil && !os.IsNotExist(err) {
+	if err != nil {
+		if os.IsNotExist(err) {
+			return "", nil
+		}
+
 		return "", err
 	}
+
 	defer func() {
 		if err := file.Close(); err != nil {
 			fmt.Fprintf(os.Stderr, "failed to close file: %v\n", err)
 		}
 	}()
 
-	if !os.IsNotExist(err) {
-		err = yaml.NewDecoder(file).Decode(&buildpack)
-		if err != nil {
-			return "", err
-		}
+	err = yaml.NewDecoder(file).Decode(&buildpack)
+	if err != nil {
+		return "", err
 	}
 
 	return buildpack.Bundler.Version, nil

@@ -24,6 +24,11 @@ func (p GemfileLockParser) ParseVersion(path string) (string, error) {
 
 		return "", fmt.Errorf("failed to parse Gemfile.lock: %w", err)
 	}
+	defer func() {
+		if err := file.Close(); err != nil {
+			fmt.Fprintf(os.Stderr, "failed to close file: %v\n", err)
+		}
+	}()
 
 	scanner := bufio.NewScanner(file)
 	for scanner.Scan() {
@@ -37,6 +42,10 @@ func (p GemfileLockParser) ParseVersion(path string) (string, error) {
 				return fmt.Sprintf("%d.*.*", version.Major()), nil
 			}
 		}
+	}
+
+	if err := scanner.Err(); err != nil {
+		return "", fmt.Errorf("failed to parse Gemfile.lock: %w", err)
 	}
 
 	return "", nil
