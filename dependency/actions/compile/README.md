@@ -20,6 +20,8 @@ Notes:
 - <os>: linux
 - <arch>: amd64 or arm64
 - If you omit --platform/--os/--arch, defaults are linux/amd64.
+- Bundler 2.7.x requires Ruby 3.2+, so the compile/test containers use an Ubuntu 24.04 base even for the jammy target.
+- The legacy ubuntu target has been removed. Use jammy for Ubuntu 22.04-compatible artifacts.
 
 Example for Bundler 2.5.18 on noble/arm64:
 ```

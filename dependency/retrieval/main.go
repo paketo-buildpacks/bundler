@@ -55,7 +55,7 @@ func main() {
 				"io.buildpacks.stacks.bionic",
 				"io.buildpacks.stacks.jammy",
 			},
-			"ubuntu")
+			"jammy")
 		if err != nil {
 			log.Fatal(err)
 		}
