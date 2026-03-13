@@ -17,11 +17,11 @@ type BuildPlanMetadata struct {
 	Version       string `toml:"version"`
 }
 
-func Detect(buildpackYMLParser, gemfileLockParser VersionParser) packit.DetectFunc {
+func Detect(gemfileLockParser VersionParser) packit.DetectFunc {
 	return func(context packit.DetectContext) (packit.DetectResult, error) {
 		var requirements []packit.BuildPlanRequirement
 
-		// If versions are provided via BP_BUNDLER_VERSION, buildpack.yml, and/or Gemfile.lock:
+		// If versions are provided via BP_BUNDLER_VERSION and/or Gemfile.lock:
 		// Detection will pass all versions as build plan requirements.
 		// The build phase is responsible for using a priority mapping to select correct version.
 		// This will allow for greater clarity in log output if the user has set version through multiple configurations.
@@ -39,24 +39,8 @@ func Detect(buildpackYMLParser, gemfileLockParser VersionParser) packit.DetectFu
 			})
 		}
 
-		// check buildpack.yml
-		version, err := buildpackYMLParser.ParseVersion(filepath.Join(context.WorkingDir, BuildpackYMLSource))
-		if err != nil {
-			return packit.DetectResult{}, err
-		}
-
-		if version != "" {
-			requirements = append(requirements, packit.BuildPlanRequirement{
-				Name: Bundler,
-				Metadata: BuildPlanMetadata{
-					VersionSource: BuildpackYMLSource,
-					Version:       version,
-				},
-			})
-		}
-
 		// check Gemfile.lock
-		version, err = gemfileLockParser.ParseVersion(filepath.Join(context.WorkingDir, GemfileLockSource))
+		version, err := gemfileLockParser.ParseVersion(filepath.Join(context.WorkingDir, GemfileLockSource))
 		if err != nil {
 			return packit.DetectResult{}, err
 		}

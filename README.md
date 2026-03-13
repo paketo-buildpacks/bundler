@@ -52,21 +52,12 @@ supply another value as the first argument to package.sh.
 
 ## Bundler Configurations
 
-Specifying the `Bundler` version through `buildpack.yml` configuration will be
-deprecated in Bundler Buildpack v1.0.0.
-
-To migrate from using `buildpack.yml` please set the `$BP_BUNDLER_VERSION`
-environment variable at build time either directly (ex. `pack build my-app
+Set the `$BP_BUNDLER_VERSION` environment variable at build time either directly (ex. `pack build my-app
 --env BP_BUNDLER_VERSION=2.7.*`) or through a [`project.toml`
 file](https://github.com/buildpacks/spec/blob/main/extensions/project-descriptor.md)
 
 ```shell
 $BP_BUNDLER_VERSION="2.1.4"
-```
-This will replace the following structure in `buildpack.yml`:
-```yaml
-bundler:
-  version: 2.1.4
 ```
 
 ## Logging Configurations

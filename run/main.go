@@ -23,7 +23,6 @@ func main() {
 
 	packit.Run(
 		bundler.Detect(
-			bundler.NewBuildpackYMLParser(),
 			bundler.NewGemfileLockParser(),
 		),
 		bundler.Build(

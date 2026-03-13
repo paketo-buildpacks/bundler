@@ -4,7 +4,6 @@ import (
 	"path/filepath"
 	"time"
 
-	"github.com/Masterminds/semver"
 	"github.com/paketo-buildpacks/packit/v2"
 	"github.com/paketo-buildpacks/packit/v2/cargo"
 	"github.com/paketo-buildpacks/packit/v2/chronos"
@@ -45,7 +44,7 @@ func Build(
 
 		planner := draft.NewPlanner()
 
-		entry, allEntries := planner.Resolve("bundler", context.Plan.Entries, []interface{}{"BP_BUNDLER_VERSION", "buildpack.yml", "Gemfile.lock"})
+		entry, allEntries := planner.Resolve("bundler", context.Plan.Entries, []interface{}{"BP_BUNDLER_VERSION", "Gemfile.lock"})
 		logger.Candidates(allEntries)
 
 		version, _ := entry.Metadata["version"].(string)
@@ -55,14 +54,6 @@ func Build(
 		}
 
 		logger.SelectedDependency(entry, dependency, clock.Now())
-
-		source, _ := entry.Metadata["version-source"].(string)
-		if source == "buildpack.yml" {
-			nextMajorVersion := semver.MustParse(context.BuildpackInfo.Version).IncMajor()
-			logger.Subprocess("WARNING: Setting the Bundler version through buildpack.yml will be deprecated soon in Bundler Buildpack v%s.", nextMajorVersion.String())
-			logger.Subprocess("Please specify the version through the $BP_BUNDLER_VERSION environment variable instead. See README.md for more information.")
-			logger.Break()
-		}
 
 		legacySBOM := dependencies.GenerateBillOfMaterials(dependency)
 		launch, build := planner.MergeLayerTypes("bundler", context.Plan.Entries)

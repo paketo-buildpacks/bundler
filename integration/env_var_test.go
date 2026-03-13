@@ -52,7 +52,7 @@ func testRunWithEnvVar(t *testing.T, context spec.G, it spec.S) {
 
 		it("builds app successfully with the version specified in $BP_BUNDLER_VERSION", func() {
 			var err error
-			source, err = occam.Source(filepath.Join("testdata", "buildpack_yml_version"))
+			source, err = occam.Source(filepath.Join("testdata", "default_app"))
 			Expect(err).NotTo(HaveOccurred())
 
 			var logs fmt.Stringer
@@ -83,7 +83,6 @@ func testRunWithEnvVar(t *testing.T, context spec.G, it spec.S) {
 				"  Resolving Bundler version",
 				"    Candidate version sources (in priority order):",
 				"      BP_BUNDLER_VERSION -> \"2.*\"",
-				"      buildpack.yml      -> \"2.5.*\"",
 				"      <unknown>          -> \"\"",
 			))
 			Expect(logs).To(ContainLines(
