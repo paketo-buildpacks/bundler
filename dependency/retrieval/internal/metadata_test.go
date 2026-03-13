@@ -35,6 +35,8 @@ func testMetadataGenerator(t *testing.T, context spec.G, it spec.S) {
 			},
 				[]string{"some.stack", "other.stack"},
 				"some-target",
+				"linux",
+				"amd64",
 			)
 			Expect(err).NotTo(HaveOccurred())
 			Expect(metadata).To(Equal(internal.ReleaseMetadata{
@@ -43,6 +45,8 @@ func testMetadataGenerator(t *testing.T, context spec.G, it spec.S) {
 				Name:            "bundler",
 				ID:              "bundler",
 				PURL:            "some-purl",
+				OS:              "linux",
+				Arch:            "amd64",
 				SourceChecksum:  "sha256:abcdef",
 				SourceURI:       "https://rubygems.org/downloads/bundler-1.2.3.gem",
 				Stacks:          []string{"some.stack", "other.stack"},

@@ -13,6 +13,8 @@ type ReleaseMetadata struct {
 	Name            string   `json:"name"`
 	ID              string   `json:"id"`
 	PURL            string   `json:"purl"`
+	OS              string   `json:"os,omitempty"`
+	Arch            string   `json:"arch,omitempty"`
 	SourceChecksum  string   `json:"source-checksum"`
 	SourceURI       string   `json:"source"`
 	Stacks          []string `json:"stacks"`
@@ -42,7 +44,7 @@ func NewMetadataGenerator(checksummer Checksummer, purl PackageURLGenerator) Met
 	}
 }
 
-func (m MetadataGenerator) Generate(r Release, stackIDs []string, target string) (ReleaseMetadata, error) {
+func (m MetadataGenerator) Generate(r Release, stackIDs []string, target, os, arch string) (ReleaseMetadata, error) {
 	sourceURI := fmt.Sprintf(m.sourceURIPattern, r.Version)
 	return ReleaseMetadata{
 		Name:            m.name,
@@ -50,6 +52,8 @@ func (m MetadataGenerator) Generate(r Release, stackIDs []string, target string)
 		Version:         r.Version,
 		Stacks:          stackIDs,
 		StripComponents: 2,
+		OS:              os,
+		Arch:            arch,
 		SourceURI:       sourceURI,
 		SourceChecksum:  fmt.Sprintf("sha256:%s", r.SHA256),
 		CPE:             fmt.Sprintf(cpeTemplate, r.Version),

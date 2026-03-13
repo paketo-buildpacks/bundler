@@ -239,7 +239,7 @@ func testReusingLayerRebuild(t *testing.T, context spec.G, it spec.S) {
 			Expect(err).NotTo(HaveOccurred())
 
 			re := regexp.MustCompile(`BUNDLED WITH\s+\d+\.\d+\.\d+`)
-			err = os.WriteFile(filepath.Join(source, "Gemfile.lock"), re.ReplaceAll(contents, []byte("BUNDLED WITH\n   2.1.4")), 0644)
+			err = os.WriteFile(filepath.Join(source, "Gemfile.lock"), re.ReplaceAll(contents, []byte("BUNDLED WITH\n   4.0.8")), 0644)
 			Expect(err).NotTo(HaveOccurred())
 
 			// Second pack build
@@ -256,15 +256,15 @@ func testReusingLayerRebuild(t *testing.T, context spec.G, it spec.S) {
 				MatchRegexp(fmt.Sprintf(`%s \d+\.\d+\.\d+`, settings.Buildpack.Name)),
 				"  Resolving Bundler version",
 				"    Candidate version sources (in priority order):",
-				"      Gemfile.lock -> \"2.*.*\"",
+				"      Gemfile.lock -> \"4.*.*\"",
 				"      <unknown>    -> \"\"",
 			))
 			Expect(logs).To(ContainLines(
-				MatchRegexp(`    Selected bundler version \(using Gemfile\.lock\): 2\.\d+\.\d+`),
+				MatchRegexp(`    Selected bundler version \(using Gemfile\.lock\): 4\.\d+\.\d+`),
 			))
 			Expect(logs).To(ContainLines(
 				"  Executing build process",
-				MatchRegexp(`    Installing Bundler 2\.\d+\.\d+`),
+				MatchRegexp(`    Installing Bundler 4\.\d+\.\d+`),
 				MatchRegexp(`      Completed in \d+\.?\d*`),
 			))
 			Expect(logs).To(ContainLines(
@@ -287,7 +287,7 @@ func testReusingLayerRebuild(t *testing.T, context spec.G, it spec.S) {
 			containerIDs[secondContainer.ID] = struct{}{}
 
 			Eventually(secondContainer).Should(Serve(ContainSubstring(fmt.Sprintf("/layers/%s/bundler/bin/bundler", strings.ReplaceAll(settings.Buildpack.ID, "/", "_")))).OnPort(8080))
-			Eventually(secondContainer).Should(Serve(MatchRegexp(`Bundler version 2\.\d+\.\d+`)).OnPort(8080))
+			Eventually(secondContainer).Should(Serve(MatchRegexp(`Bundler version 4\.\d+\.\d+`)).OnPort(8080))
 
 			Expect(secondImage.Buildpacks[1].Layers["bundler"].SHA).NotTo(Equal(firstImage.Buildpacks[1].Layers["bundler"].SHA))
 		})

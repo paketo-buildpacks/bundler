@@ -119,13 +119,20 @@ func testLogging(t *testing.T, context spec.G, it spec.S) {
 					"  Getting the layer associated with Bundler:",
 					fmt.Sprintf("    /layers/%s/bundler", strings.ReplaceAll(settings.Buildpack.ID, "/", "_")),
 				))
-				Expect(logs).To(ContainLines(
-					"  Executing build process",
-					MatchRegexp(`    Installing Bundler 2\.\d+\.\d+`),
-					fmt.Sprintf("    Installation path: /layers/%s/bundler", strings.ReplaceAll(settings.Buildpack.ID, "/", "_")),
-					MatchRegexp(`    Source URI\: https\:\/\/\S+\/bundler\/bundler-ubuntu-2\.\d+\.\d+(-\w+)*\.tgz`),
-					MatchRegexp(`      Completed in \d+\.?\d*`),
-				))
+
+				if strings.Contains(logs.String(), "  Reusing cached layer ") {
+					Expect(logs).To(ContainLines(
+						MatchRegexp(fmt.Sprintf("  Reusing cached layer /layers/%s/bundler", strings.ReplaceAll(settings.Buildpack.ID, "/", "_"))),
+					))
+				} else {
+					Expect(logs).To(ContainLines(
+						"  Executing build process",
+						MatchRegexp(`    Installing Bundler 2\.\d+\.\d+`),
+						fmt.Sprintf("    Installation path: /layers/%s/bundler", strings.ReplaceAll(settings.Buildpack.ID, "/", "_")),
+						MatchRegexp(`    Source URI\: https\:\/\/\S+\/bundler\/bundler-ubuntu-2\.\d+\.\d+(-\w+)*\.tgz`),
+						MatchRegexp(`      Completed in \d+\.?\d*`),
+					))
+				}
 				Expect(logs).To(ContainLines(
 					"  Configuring build environment",
 					MatchRegexp(fmt.Sprintf(`    GEM_PATH -> "\$GEM_PATH:/layers/%s/bundler"`, strings.ReplaceAll(settings.Buildpack.ID, "/", "_"))),
