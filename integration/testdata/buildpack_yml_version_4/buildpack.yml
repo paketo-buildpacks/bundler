@@ -1,0 +1,5 @@
+---
+mri:
+  version: 3.2.x
+bundler:
+  version: 4.*
