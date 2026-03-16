@@ -264,7 +264,7 @@ func testReusingLayerRebuild(t *testing.T, context spec.G, it spec.S) {
 				MatchRegexp(fmt.Sprintf(`%s \d+\.\d+\.\d+`, settings.Buildpack.Name)),
 				"  Resolving Bundler version",
 				"    Candidate version sources (in priority order):",
-				"      Gemfile.lock -> \"2.*.*\"",
+				"      Gemfile.lock -> \"4.*.*\"",
 				"      <unknown>    -> \"\"",
 			))
 			Expect(logs).To(ContainLines(
