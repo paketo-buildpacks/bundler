@@ -6,13 +6,41 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"strings"
 
+	"github.com/BurntSushi/toml"
 	"github.com/paketo-buildpacks/bundler/dependency/retrieval/internal"
 	"github.com/paketo-buildpacks/packit/cargo"
 	"github.com/paketo-buildpacks/packit/fs"
 )
 
 const depID string = "bundler"
+
+type buildpackConfig struct {
+	Stacks []stackConfig `toml:"stacks"`
+}
+
+type stackConfig struct {
+	ID string `toml:"id"`
+}
+
+func parseBuildpackConfig(path string) (buildpackConfig, error) {
+	var cfg buildpackConfig
+	if _, err := toml.DecodeFile(path, &cfg); err != nil {
+		return buildpackConfig{}, err
+	}
+
+	return cfg, nil
+}
+
+func resolveTarget(stackIDs []string) string {
+	if len(stackIDs) > 0 {
+		parts := strings.Split(stackIDs[len(stackIDs)-1], ".")
+		return parts[len(parts)-1]
+	}
+
+	return ""
+}
 
 func main() {
 	var bpTOML = flag.String("buildpack-toml-path", "", "Path to buildpack.toml with existing dependencies")
@@ -39,6 +67,10 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
+	bpConfig, err := parseBuildpackConfig(*bpTOML)
+	if err != nil {
+		log.Fatal(err)
+	}
 
 	finder := internal.NewVersionFinder()
 	newVersions, err := finder.FindNewVersions(config, availableVersions)
@@ -47,15 +79,18 @@ func main() {
 	}
 
 	log.Printf("New versions: %+v", newVersions)
+
+	var stackIDs []string
+	for _, stack := range bpConfig.Stacks {
+		stackIDs = append(stackIDs, stack.ID)
+	}
+
+	target := resolveTarget(stackIDs)
+
 	var allMetadata []internal.ReleaseMetadata
 	generator := internal.NewMetadataGenerator(fs.NewChecksumCalculator(), internal.NewPURLGenerator())
 	for _, v := range newVersions {
-		metadata, err := generator.Generate(v,
-			[]string{
-				"io.buildpacks.stacks.bionic",
-				"io.buildpacks.stacks.jammy",
-			},
-			"jammy")
+		metadata, err := generator.Generate(v, stackIDs, target)
 		if err != nil {
 			log.Fatal(err)
 		}

@@ -1,8 +1,11 @@
 module github.com/paketo-buildpacks/bundler/dependency/retrieval
 
-go 1.18
+go 1.23.0
+
+toolchain go1.23.5
 
 require (
+	github.com/BurntSushi/toml v0.4.1
 	github.com/Masterminds/semver v1.5.0
 	github.com/onsi/gomega v1.17.0
 	github.com/package-url/packageurl-go v0.1.0
@@ -11,7 +14,6 @@ require (
 )
 
 require (
-	github.com/BurntSushi/toml v0.4.1 // indirect
 	golang.org/x/net v0.38.0 // indirect
 	golang.org/x/text v0.23.0 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
