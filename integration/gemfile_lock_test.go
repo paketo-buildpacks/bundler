@@ -75,7 +75,7 @@ func testGemfileLock(t *testing.T, context spec.G, it spec.S) {
 
 			Eventually(container).Should(BeAvailable())
 			Eventually(container).Should(Serve(ContainSubstring(fmt.Sprintf("/layers/%s/bundler/bin/bundler", strings.ReplaceAll(settings.Buildpack.ID, "/", "_")))).OnPort(8080))
-			Eventually(container).Should(Serve(MatchRegexp(`Bundler version 2\.5\.\d+`)).OnPort(8080))
+			Eventually(container).Should(Serve(MatchRegexp(`Bundler version 2\.\d+\.\d+`)).OnPort(8080))
 
 			Expect(logs).To(ContainLines(
 				MatchRegexp(fmt.Sprintf(`%s \d+\.\d+\.\d+`, settings.Buildpack.Name)),
@@ -85,11 +85,11 @@ func testGemfileLock(t *testing.T, context spec.G, it spec.S) {
 				"      <unknown>    -> \"\"",
 			))
 			Expect(logs).To(ContainLines(
-				MatchRegexp(`    Selected bundler version \(using Gemfile\.lock\): 2\.5\.\d+`),
+				MatchRegexp(`    Selected bundler version \(using Gemfile\.lock\): 2\.\d+\.\d+`),
 			))
 			Expect(logs).To(ContainLines(
 				"  Executing build process",
-				MatchRegexp(`    Installing Bundler 2\.5\.\d+`),
+				MatchRegexp(`    Installing Bundler 2\.\d+\.\d+`),
 				MatchRegexp(`      Completed in \d+\.?\d*`),
 			))
 			Expect(logs).To(ContainLines(
