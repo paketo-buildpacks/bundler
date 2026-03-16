@@ -242,8 +242,16 @@ func testReusingLayerRebuild(t *testing.T, context spec.G, it spec.S) {
 			err = os.WriteFile(filepath.Join(source, "Gemfile.lock"), re.ReplaceAll(contents, []byte("BUNDLED WITH\n   2.1.4")), 0644)
 			Expect(err).NotTo(HaveOccurred())
 
-			// Second pack build
-			secondImage, logs, err = build.Execute(name, source)
+			// Second pack build - create fresh build object without BP_BUNDLER_VERSION
+			secondBuild := pack.WithNoColor().Build.
+				WithPullPolicy("never").
+				WithBuildpacks(
+					settings.Buildpacks.MRI.Online,
+					settings.Buildpacks.Bundler.Online,
+					settings.Buildpacks.BuildPlan.Online,
+				)
+
+			secondImage, logs, err = secondBuild.Execute(name, source)
 			Expect(err).NotTo(HaveOccurred())
 
 			imageIDs[secondImage.ID] = struct{}{}
