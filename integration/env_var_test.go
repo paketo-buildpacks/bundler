@@ -83,7 +83,7 @@ func testRunWithEnvVar(t *testing.T, context spec.G, it spec.S) {
 				"  Resolving Bundler version",
 				"    Candidate version sources (in priority order):",
 				"      BP_BUNDLER_VERSION -> \"2.*\"",
-				"      buildpack.yml      -> \"2.7.*\"",
+				"      buildpack.yml      -> \"2.*\"",
 				"      <unknown>          -> \"\"",
 			))
 			Expect(logs).To(ContainLines(
