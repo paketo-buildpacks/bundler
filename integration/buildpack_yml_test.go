@@ -75,17 +75,17 @@ func testBuildpackYML(t *testing.T, context spec.G, it spec.S) {
 
 			Eventually(container).Should(BeAvailable())
 			Eventually(container).Should(Serve(ContainSubstring(fmt.Sprintf("/layers/%s/bundler/bin/bundler", strings.ReplaceAll(settings.Buildpack.ID, "/", "_")))).OnPort(8080))
-			Eventually(container).Should(Serve(MatchRegexp(`Bundler version 2\.5\.\d+`)).OnPort(8080))
+			Eventually(container).Should(Serve(MatchRegexp(`Bundler version 2\.\d+\.\d+`)).OnPort(8080))
 
 			Expect(logs).To(ContainLines(
 				MatchRegexp(fmt.Sprintf(`%s \d+\.\d+\.\d+`, settings.Buildpack.Name)),
 				"  Resolving Bundler version",
 				"    Candidate version sources (in priority order):",
-				"      buildpack.yml -> \"2.5.*\"",
+				"      buildpack.yml -> \"2.*\"",
 				"      <unknown>     -> \"\"",
 			))
 			Expect(logs).To(ContainLines(
-				MatchRegexp(`    Selected bundler version \(using buildpack\.yml\): 2\.5\.\d+`),
+				MatchRegexp(`    Selected bundler version \(using buildpack\.yml\): 2\.\d+\.\d+`),
 			))
 			Expect(logs).To(ContainLines(
 				"    WARNING: Setting the Bundler version through buildpack.yml will be deprecated soon in Bundler Buildpack v2.0.0.",
@@ -93,7 +93,63 @@ func testBuildpackYML(t *testing.T, context spec.G, it spec.S) {
 			))
 			Expect(logs).To(ContainLines(
 				"  Executing build process",
-				MatchRegexp(`    Installing Bundler 2\.5\.\d+`),
+				MatchRegexp(`    Installing Bundler 2\.\d+\.\d+`),
+				MatchRegexp(`      Completed in \d+\.?\d*`),
+			))
+			Expect(logs).To(ContainLines(
+				"  Configuring build environment",
+				MatchRegexp(fmt.Sprintf(`    GEM_PATH -> "\$GEM_PATH:/layers/%s/bundler"`, strings.ReplaceAll(settings.Buildpack.ID, "/", "_"))),
+			))
+			Expect(logs).To(ContainLines(
+				"  Configuring launch environment",
+				MatchRegexp(fmt.Sprintf(`    GEM_PATH -> "\$GEM_PATH:/layers/%s/bundler"`, strings.ReplaceAll(settings.Buildpack.ID, "/", "_"))),
+			))
+		})
+
+		it("installs Bundler 4.x when specified in buildpack.yml", func() {
+			var err error
+			source, err = occam.Source(filepath.Join("testdata", "buildpack_yml_version_4"))
+			Expect(err).NotTo(HaveOccurred())
+
+			var logs fmt.Stringer
+			image, logs, err = pack.WithNoColor().Build.
+				WithPullPolicy("never").
+				WithBuildpacks(
+					settings.Buildpacks.MRI.Online,
+					settings.Buildpacks.Bundler.Online,
+					settings.Buildpacks.BuildPlan.Online,
+				).
+				Execute(name, source)
+			Expect(err).ToNot(HaveOccurred(), logs.String)
+
+			container, err = docker.Container.Run.
+				WithEnv(map[string]string{"PORT": "8080"}).
+				WithPublish("8080").
+				WithPublishAll().
+				WithCommand("ruby run.rb").Execute(image.ID)
+			Expect(err).NotTo(HaveOccurred())
+
+			Eventually(container).Should(BeAvailable())
+			Eventually(container).Should(Serve(ContainSubstring(fmt.Sprintf("/layers/%s/bundler/bin/bundler", strings.ReplaceAll(settings.Buildpack.ID, "/", "_")))).OnPort(8080))
+			Eventually(container).Should(Serve(MatchRegexp(`4\.\d+\.\d+ \(`)).OnPort(8080))
+
+			Expect(logs).To(ContainLines(
+				MatchRegexp(fmt.Sprintf(`%s \d+\.\d+\.\d+`, settings.Buildpack.Name)),
+				"  Resolving Bundler version",
+				"    Candidate version sources (in priority order):",
+				"      buildpack.yml -> \"4.*\"",
+				"      <unknown>     -> \"\"",
+			))
+			Expect(logs).To(ContainLines(
+				MatchRegexp(`    Selected bundler version \(using buildpack\.yml\): 4\.\d+\.\d+`),
+			))
+			Expect(logs).To(ContainLines(
+				"    WARNING: Setting the Bundler version through buildpack.yml will be deprecated soon in Bundler Buildpack v2.0.0.",
+				"    Please specify the version through the $BP_BUNDLER_VERSION environment variable instead. See README.md for more information.",
+			))
+			Expect(logs).To(ContainLines(
+				"  Executing build process",
+				MatchRegexp(`    Installing Bundler 4\.\d+\.\d+`),
 				MatchRegexp(`      Completed in \d+\.?\d*`),
 			))
 			Expect(logs).To(ContainLines(
