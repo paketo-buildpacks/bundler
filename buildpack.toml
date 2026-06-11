@@ -47,32 +47,32 @@ api = "0.7"
     version = "2.7.2"
 
   [[metadata.dependencies]]
-    checksum = "sha256:b226e664f16661d9fd83103809a2ffb3ea9f3ba0dbcbddf80bdae75c8ec190e0"
-    cpe = "cpe:2.3:a:bundler:bundler:4.0.9:*:*:*:*:ruby:*:*"
+    checksum = "sha256:d056dbe613a9c6a3355dbad4340c4a6517bce9c64c7690d172bb46464299ed26"
+    cpe = "cpe:2.3:a:bundler:bundler:4.0.13:*:*:*:*:ruby:*:*"
     id = "bundler"
     licenses = ["MIT"]
     name = "bundler"
-    purl = "pkg:generic/bundler@4.0.9?checksum=1f76de64e7c5b5260d5e144f3f709a4369286f9154af08b3199702639860bb3b&download_url=https://rubygems.org/downloads/bundler-4.0.9.gem"
-    source = "https://rubygems.org/downloads/bundler-4.0.9.gem"
-    source-checksum = "sha256:1f76de64e7c5b5260d5e144f3f709a4369286f9154af08b3199702639860bb3b"
+    purl = "pkg:generic/bundler@4.0.13?checksum=19f08be7f27022cf0b89f27da0b044ae075e8270a9ef44ad248a932614e1ca3b&download_url=https://rubygems.org/downloads/bundler-4.0.13.gem"
+    source = "https://rubygems.org/downloads/bundler-4.0.13.gem"
+    source-checksum = "sha256:19f08be7f27022cf0b89f27da0b044ae075e8270a9ef44ad248a932614e1ca3b"
     stacks = ["io.buildpacks.stacks.jammy", "io.buildpacks.stacks.noble"]
     strip-components = 2
-    uri = "https://artifacts.paketo.io/bundler/bundler-noble-4.0.9-b226e664.tgz"
-    version = "4.0.9"
+    uri = "https://artifacts.paketo.io/bundler/bundler-noble-4.0.13-d056dbe6.tgz"
+    version = "4.0.13"
 
   [[metadata.dependencies]]
-    checksum = "sha256:cf1d659cf6829a59747b62ce3402a777cec7342853d429a570ac9aaa3dd48615"
-    cpe = "cpe:2.3:a:bundler:bundler:4.0.10:*:*:*:*:ruby:*:*"
+    checksum = "sha256:9e79ca19f42c7f6db2e0b36e7980855feb9bec33be9f498a7306700916a4f9d1"
+    cpe = "cpe:2.3:a:bundler:bundler:4.0.14:*:*:*:*:ruby:*:*"
     id = "bundler"
     licenses = ["MIT"]
     name = "bundler"
-    purl = "pkg:generic/bundler@4.0.10?checksum=ee73a75abe610f4f2bb4dece7459587eb19b30276fd0998257ec9bd6f64ce3e9&download_url=https://rubygems.org/downloads/bundler-4.0.10.gem"
-    source = "https://rubygems.org/downloads/bundler-4.0.10.gem"
-    source-checksum = "sha256:ee73a75abe610f4f2bb4dece7459587eb19b30276fd0998257ec9bd6f64ce3e9"
+    purl = "pkg:generic/bundler@4.0.14?checksum=d09a0a965cf772266a7e49e83610be7c2f4e49e61134c42a56804bb383cc24b8&download_url=https://rubygems.org/downloads/bundler-4.0.14.gem"
+    source = "https://rubygems.org/downloads/bundler-4.0.14.gem"
+    source-checksum = "sha256:d09a0a965cf772266a7e49e83610be7c2f4e49e61134c42a56804bb383cc24b8"
     stacks = ["io.buildpacks.stacks.jammy", "io.buildpacks.stacks.noble"]
     strip-components = 2
-    uri = "https://artifacts.paketo.io/bundler/bundler-noble-4.0.10-cf1d659c.tgz"
-    version = "4.0.10"
+    uri = "https://artifacts.paketo.io/bundler/bundler-noble-4.0.14-9e79ca19.tgz"
+    version = "4.0.14"
 
   [[metadata.dependency-constraints]]
     constraint = "2.*.*"
