@@ -17,7 +17,7 @@ import (
 // executable specifying a version number as is outlined here:
 // https://stackoverflow.com/questions/4373128/how-do-i-activate-a-different-version-of-a-particular-gem#answer-4373478
 
-const VersionShimTemplate = "#!/usr/bin/env sh\nexec %s _%s_ ${@:-}"
+const VersionShimTemplate = "#!/usr/bin/env sh\nexec %s _%s_ \"${@:-}\""
 
 type VersionShimmer struct{}
 
