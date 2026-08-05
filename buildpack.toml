@@ -47,20 +47,6 @@ api = "0.7"
     version = "2.7.2"
 
   [[metadata.dependencies]]
-    checksum = "sha256:6b5eb79419bdf5be2fef111f0e402ff5447a62ff95ab2584c62e8ddb486227f6"
-    cpe = "cpe:2.3:a:bundler:bundler:4.0.16:*:*:*:*:ruby:*:*"
-    id = "bundler"
-    licenses = ["MIT"]
-    name = "bundler"
-    purl = "pkg:generic/bundler@4.0.16?checksum=d6ca5dd440c24f9abce9844cf44cc8e18c6a553de65a47efb4544137af92c47d&download_url=https://rubygems.org/downloads/bundler-4.0.16.gem"
-    source = "https://rubygems.org/downloads/bundler-4.0.16.gem"
-    source-checksum = "sha256:d6ca5dd440c24f9abce9844cf44cc8e18c6a553de65a47efb4544137af92c47d"
-    stacks = ["io.buildpacks.stacks.jammy", "io.buildpacks.stacks.noble"]
-    strip-components = 2
-    uri = "https://artifacts.paketo.io/bundler/bundler-noble-4.0.16-6b5eb794.tgz"
-    version = "4.0.16"
-
-  [[metadata.dependencies]]
     checksum = "sha256:a6bdf4419a4bc523fdd67592e2598a3329997b91c340a9e26180482899a0b92f"
     cpe = "cpe:2.3:a:bundler:bundler:4.0.17:*:*:*:*:ruby:*:*"
     id = "bundler"
@@ -73,6 +59,20 @@ api = "0.7"
     strip-components = 2
     uri = "https://artifacts.paketo.io/bundler/bundler-noble-4.0.17-a6bdf441.tgz"
     version = "4.0.17"
+
+  [[metadata.dependencies]]
+    checksum = "sha256:2e879a3999c579fc29baadc941e27b4e465c0297dac70ac5ea80ca41a86f7eb1"
+    cpe = "cpe:2.3:a:bundler:bundler:4.0.18:*:*:*:*:ruby:*:*"
+    id = "bundler"
+    licenses = ["MIT"]
+    name = "bundler"
+    purl = "pkg:generic/bundler@4.0.18?checksum=02d9a17429de1847b4e0c9f27a9ee4b20c0a74c0a641b4e77195d6019e3618ac&download_url=https://rubygems.org/downloads/bundler-4.0.18.gem"
+    source = "https://rubygems.org/downloads/bundler-4.0.18.gem"
+    source-checksum = "sha256:02d9a17429de1847b4e0c9f27a9ee4b20c0a74c0a641b4e77195d6019e3618ac"
+    stacks = ["io.buildpacks.stacks.jammy", "io.buildpacks.stacks.noble"]
+    strip-components = 2
+    uri = "https://artifacts.paketo.io/bundler/bundler-noble-4.0.18-2e879a39.tgz"
+    version = "4.0.18"
 
   [[metadata.dependency-constraints]]
     constraint = "2.*.*"
