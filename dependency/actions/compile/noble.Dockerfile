@@ -1,4 +1,4 @@
-FROM ubuntu:22.04
+FROM ubuntu:24.04
 ARG RUBY_VERSION=3.4.10
 
 RUN apt-get -y update \
@@ -33,10 +33,6 @@ RUN apt-get -y update \
  && apt-get clean \
  && rm -rf /var/lib/apt/lists/*
 
-COPY Gemfile /test/Gemfile
-
 COPY entrypoint /entrypoint
 
 ENTRYPOINT ["/entrypoint"]
-
-WORKDIR /test

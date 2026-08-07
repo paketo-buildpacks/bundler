@@ -87,6 +87,8 @@ $BP_LOG_LEVEL="DEBUG"
 
 ## Compatibility
 
-This buildpack is currently only supported on the Paketo Bionic and Jammy stack
+This buildpack is currently supported on the Paketo Jammy and Noble stack
 distributions. A pre-compiled distribution of Bundler is provided for the Paketo stacks (i.e.
-`io.buildpacks.stack.jammy` and `io.buildpacks.stacks.bionic`).
+`io.buildpacks.stacks.jammy` and `io.buildpacks.stacks.noble`).
+
+Packaged buildpack binaries are published for Linux on `amd64` and `arm64`.

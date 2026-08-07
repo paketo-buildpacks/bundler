@@ -33,10 +33,6 @@ RUN apt-get -y update \
  && apt-get clean \
  && rm -rf /var/lib/apt/lists/*
 
-COPY Gemfile /test/Gemfile
-
 COPY entrypoint /entrypoint
 
 ENTRYPOINT ["/entrypoint"]
-
-WORKDIR /test
