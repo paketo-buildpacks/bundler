@@ -27,7 +27,7 @@ api = "0.7"
     purl = "pkg:generic/bundler@2.7.1?checksum=0ad5a002a879776b2a98be652f557ac8731be3353612d63fa4ef1b2706dc1e0b&download_url=https://rubygems.org/downloads/bundler-2.7.1.gem"
     source = "https://rubygems.org/downloads/bundler-2.7.1.gem"
     source-checksum = "sha256:0ad5a002a879776b2a98be652f557ac8731be3353612d63fa4ef1b2706dc1e0b"
-    stacks = ["io.buildpacks.stacks.jammy", "io.buildpacks.stacks.noble", "io.buildpacks.stacks.resolute"]
+    stacks = ["*"]
     strip-components = 2
     uri = "https://artifacts.paketo.io/bundler/bundler-resolute-2.7.1-29b1057d.tgz"
     version = "2.7.1"
@@ -41,7 +41,7 @@ api = "0.7"
     purl = "pkg:generic/bundler@2.7.2?checksum=1decaf9e2e1acb91b6586a2925c8f3f6da2334a82731a62ff2ded1b83c283871&download_url=https://rubygems.org/downloads/bundler-2.7.2.gem"
     source = "https://rubygems.org/downloads/bundler-2.7.2.gem"
     source-checksum = "sha256:1decaf9e2e1acb91b6586a2925c8f3f6da2334a82731a62ff2ded1b83c283871"
-    stacks = ["io.buildpacks.stacks.jammy", "io.buildpacks.stacks.noble", "io.buildpacks.stacks.resolute"]
+    stacks = ["*"]
     strip-components = 2
     uri = "https://artifacts.paketo.io/bundler/bundler-resolute-2.7.2-005aa9fe.tgz"
     version = "2.7.2"
@@ -55,7 +55,7 @@ api = "0.7"
     purl = "pkg:generic/bundler@4.0.17?checksum=214e21431b5665dd2f99df8a5511c6b151d7a72e8015c8b38f8b775b61cbb6c1&download_url=https://rubygems.org/downloads/bundler-4.0.17.gem"
     source = "https://rubygems.org/downloads/bundler-4.0.17.gem"
     source-checksum = "sha256:214e21431b5665dd2f99df8a5511c6b151d7a72e8015c8b38f8b775b61cbb6c1"
-    stacks = ["io.buildpacks.stacks.jammy", "io.buildpacks.stacks.noble", "io.buildpacks.stacks.resolute"]
+    stacks = ["*"]
     strip-components = 2
     uri = "https://artifacts.paketo.io/bundler/bundler-resolute-4.0.17-8b8e208f.tgz"
     version = "4.0.17"
@@ -69,7 +69,7 @@ api = "0.7"
     purl = "pkg:generic/bundler@4.0.18?checksum=02d9a17429de1847b4e0c9f27a9ee4b20c0a74c0a641b4e77195d6019e3618ac&download_url=https://rubygems.org/downloads/bundler-4.0.18.gem"
     source = "https://rubygems.org/downloads/bundler-4.0.18.gem"
     source-checksum = "sha256:02d9a17429de1847b4e0c9f27a9ee4b20c0a74c0a641b4e77195d6019e3618ac"
-    stacks = ["io.buildpacks.stacks.jammy", "io.buildpacks.stacks.noble", "io.buildpacks.stacks.resolute"]
+    stacks = ["*"]
     strip-components = 2
     uri = "https://artifacts.paketo.io/bundler/bundler-resolute-4.0.18-2b677fbb.tgz"
     version = "4.0.18"
@@ -85,13 +85,7 @@ api = "0.7"
     patches = 2
 
 [[stacks]]
-  id = "io.buildpacks.stacks.jammy"
-
-[[stacks]]
-  id = "io.buildpacks.stacks.noble"
-
-[[stacks]]
-  id = "io.buildpacks.stacks.resolute"
+  id = "*"
 
 [[targets]]
   arch = "amd64"
