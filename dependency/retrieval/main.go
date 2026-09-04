@@ -16,6 +16,8 @@ import (
 
 const depID string = "bundler"
 
+const defaultTarget string = "resolute"
+
 type buildpackConfig struct {
 	Stacks []stackConfig `toml:"stacks"`
 }
@@ -33,13 +35,19 @@ func parseBuildpackConfig(path string) (buildpackConfig, error) {
 	return cfg, nil
 }
 
+// resolveTarget derives the compilation target from the buildpack's stack IDs.
+// Wildcard stacks carry no target information, so fall back to the newest
+// supported target (see dependency/actions/compile/*.Dockerfile).
 func resolveTarget(stackIDs []string) string {
 	if len(stackIDs) > 0 {
 		parts := strings.Split(stackIDs[len(stackIDs)-1], ".")
-		return parts[len(parts)-1]
+		target := parts[len(parts)-1]
+		if target != "" && target != "*" {
+			return target
+		}
 	}
 
-	return ""
+	return defaultTarget
 }
 
 func main() {
