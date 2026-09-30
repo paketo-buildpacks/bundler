@@ -47,20 +47,6 @@ api = "0.7"
     version = "2.7.2"
 
   [[metadata.dependencies]]
-    checksum = "sha256:5ff89a9b35885df9ece64f34fee3baa7c0023076121e7ba930c7beb18f8c74b2"
-    cpe = "cpe:2.3:a:bundler:bundler:4.0.20:*:*:*:*:ruby:*:*"
-    id = "bundler"
-    licenses = ["MIT"]
-    name = "bundler"
-    purl = "pkg:generic/bundler@4.0.20?checksum=7978a8ac648767f5e635bc522445b79e80a52b907a39a36c2d8085ed6bc762ae&download_url=https://rubygems.org/downloads/bundler-4.0.20.gem"
-    source = "https://rubygems.org/downloads/bundler-4.0.20.gem"
-    source-checksum = "sha256:7978a8ac648767f5e635bc522445b79e80a52b907a39a36c2d8085ed6bc762ae"
-    stacks = ["*"]
-    strip-components = 2
-    uri = "https://artifacts.paketo.io/bundler/bundler-resolute-4.0.20-5ff89a9b.tgz"
-    version = "4.0.20"
-
-  [[metadata.dependencies]]
     checksum = "sha256:941291ea32410c8782b7c9f9093f308a483c7d108527f3137826bf0945d4e4b1"
     cpe = "cpe:2.3:a:bundler:bundler:4.0.21:*:*:*:*:ruby:*:*"
     id = "bundler"
@@ -73,6 +59,20 @@ api = "0.7"
     strip-components = 2
     uri = "https://artifacts.paketo.io/bundler/bundler-resolute-4.0.21-941291ea.tgz"
     version = "4.0.21"
+
+  [[metadata.dependencies]]
+    checksum = "sha256:8fa0408313901d808c27605bddf3853e4098a4bc3dac9a4f15ef26311caffed8"
+    cpe = "cpe:2.3:a:bundler:bundler:4.0.22:*:*:*:*:ruby:*:*"
+    id = "bundler"
+    licenses = ["MIT"]
+    name = "bundler"
+    purl = "pkg:generic/bundler@4.0.22?checksum=d8d5ec84c8555e0af71db63ed7aee4d1a8fb839ec46d84212d61979242a5d75a&download_url=https://rubygems.org/downloads/bundler-4.0.22.gem"
+    source = "https://rubygems.org/downloads/bundler-4.0.22.gem"
+    source-checksum = "sha256:d8d5ec84c8555e0af71db63ed7aee4d1a8fb839ec46d84212d61979242a5d75a"
+    stacks = ["*"]
+    strip-components = 2
+    uri = "https://artifacts.paketo.io/bundler/bundler-resolute-4.0.22-8fa04083.tgz"
+    version = "4.0.22"
 
   [[metadata.dependency-constraints]]
     constraint = "2.*.*"
